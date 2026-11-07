@@ -12,6 +12,7 @@ import { walletRoutes } from './wallet/wallet.routes';
 export const app = new Hono()
 	.use(logger())
 	.use(secureHeaders({ contentSecurityPolicy: undefined }))
+	.get('/api/health', (c) => c.json({ ok: true }))
 	.route('/api/auth', authRoutes)
 	.route('/api/wallet', walletRoutes)
 	.route('/api/tables', tableRoutes)

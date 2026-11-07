@@ -44,7 +44,7 @@ export interface SeatView {
 	hands: HandView[];
 }
 
-export interface DealerView {
+interface DealerView {
 	cards: CardView[];
 	/** Total of the visible cards only. */
 	total: number | null;

@@ -6,7 +6,7 @@ const MAX_CHIPS = 10;
 const CHIP_RADIUS = 24;
 
 /** Chip colors, matching the chip buttons in the Angular betting panel. */
-export const chipColors: Record<(typeof CHIP_VALUES)[number], number> = {
+const chipColors: Record<(typeof CHIP_VALUES)[number], number> = {
 	5: colors.red,
 	25: colors.green,
 	100: colors.sky,

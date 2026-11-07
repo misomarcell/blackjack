@@ -17,7 +17,7 @@
 
 		@if (session.table(); as table) {
 			<bj-table-status
-				class="status"
+				class="status-bar"
 				[table]="table"
 				[receivedAt]="session.receivedAt()"
 				[viewerId]="viewerId()"
@@ -55,7 +55,7 @@
 				}
 			</div>
 		} @else {
-			<p class="status loading-note"><span class="loading loading-dots"></span> Joining table…</p>
+			<p class="status-bar"><span class="loading loading-dots"></span> Joining table…</p>
 		}
 
 		<bj-chat-panel

@@ -30,7 +30,7 @@ const suitPainters: Record<Suit, SuitPainter> = {
 			.poly([x, y, x - 0.36 * s, y + s, x + 0.36 * s, y + s]),
 };
 
-export function suitColor(suit: Suit): number {
+function suitColor(suit: Suit): number {
 	return RED_SUITS.includes(suit) ? colors.red : colors.ink;
 }
 

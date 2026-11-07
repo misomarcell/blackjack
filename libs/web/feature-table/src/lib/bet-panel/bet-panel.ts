@@ -16,8 +16,10 @@ export class BetPanel {
 	readonly maxBet = input.required<number>();
 	/** The stake of the viewer's previous round, 0 when there is none. */
 	readonly lastBet = input(0);
-	/** Some seat has at least the minimum down, so the bets can be placed. */
-	readonly canPlace = input.required<boolean>();
+	/** "Seat 2 of 3" when the viewer holds several seats, otherwise empty. */
+	readonly seatLabel = input('');
+	/** With several seats, a seat can skip the round: "Place bet" with no chips becomes "Sit out". */
+	readonly canSitOut = input(false);
 
 	readonly chip = output<number>();
 	readonly clear = output();
@@ -25,6 +27,9 @@ export class BetPanel {
 
 	protected readonly chips = CHIP_VALUES;
 	protected readonly dollars = formatDollars;
+
+	protected readonly sittingOut = computed(() => this.canSitOut() && this.bet() === 0);
+	protected readonly canPlace = computed(() => this.sittingOut() || this.bet() >= this.minBet());
 
 	/** Offered while no chips are down yet. */
 	protected readonly showRepeat = computed(() => this.bet() === 0 && this.lastBet() > 0);

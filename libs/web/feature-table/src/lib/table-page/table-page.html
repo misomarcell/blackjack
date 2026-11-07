@@ -12,6 +12,7 @@
 			class="canvas"
 			[table]="session.table()"
 			[viewerId]="viewerId()"
+			[focusSeat]="betSeat()?.index ?? null"
 			(seatPicked)="send({ type: 'sit', seat: $event })"
 		/>
 
@@ -26,24 +27,18 @@
 			<div class="controls">
 				@if (hudShown()) {
 					<div class="hud" [class.attention]="needsMyMove()" [class.untimed]="!table.timer">
-						@if (canBet() && betSeat(); as seat) {
-							@if (openSeats().length > 1) {
-								<bj-seat-tabs
-									[seats]="openSeats()"
-									[selected]="seat.index"
-									(picked)="pickedSeat.set($event)"
-								/>
-							}
+						@if (betSeat(); as seat) {
 							<bj-bet-panel
 								[bet]="seat.bet"
 								[balance]="auth.balance()"
 								[minBet]="table.minBet"
 								[maxBet]="table.maxBet"
 								[lastBet]="session.lastBet()"
-								[canPlace]="canPlace()"
+								[seatLabel]="seatLabel(seat)"
+								[canSitOut]="session.mySeats().length > 1"
 								(chip)="send({ type: 'bet', seat: seat.index, amount: $event })"
 								(clear)="send({ type: 'clear-bet', seat: seat.index })"
-								(ready)="placeBets()"
+								(ready)="confirmSeat()"
 							/>
 						} @else if (waitingForOthers()) {
 							<p class="font-display text-lg">You're in! Waiting for the others…</p>

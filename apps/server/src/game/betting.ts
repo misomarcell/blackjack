@@ -17,7 +17,7 @@ export interface BettingContext {
  * Chips, the Ready button and the betting countdowns:
  * - the first Ready at an idle table starts a short countdown so others can join in,
  * - after each round everyone gets a longer betting window,
- * - the round starts early as soon as every seated player is ready,
+ * - the round starts early as soon as every seat is ready (a seat without chips sits out),
  * - a player alone at the table gets no countdown at all and can take as long as they like.
  */
 export class Betting {
@@ -59,12 +59,13 @@ export class Betting {
 		return null;
 	}
 
+	/** Confirms a seat's bet. A seat with no chips at all sits the round out (handy with several seats). */
 	ready(seat: Seat): string | null {
 		const { minBet } = this.ctx.state.table;
 		if (!this.open) {
 			return 'Bets are closed';
 		}
-		if (seat.bet < minBet) {
+		if (seat.bet > 0 && seat.bet < minBet) {
 			return `The minimum bet is $${minBet}`;
 		}
 		seat.ready = true;
@@ -128,20 +129,10 @@ export class Betting {
 		}
 	}
 
-	/**
-	 * Every player has confirmed their bets. A player with several seats is done once a seat is ready
-	 * and none of their other seats holds an unconfirmed stake (empty seats just sit the round out).
-	 */
+	/** Every seat has confirmed its bet or chosen to sit out. */
 	private everyoneReady(): boolean {
-		const { seats, table } = this.ctx.state;
-		const seated = seats.filter((seat) => seat.player !== null);
-		const readyPlayers = new Set(seated.filter((seat) => seat.ready).map((seat) => seat.player?.userId));
-		return (
-			seated.length > 0 &&
-			seated.every(
-				(seat) => seat.ready || (seat.bet < table.minBet && readyPlayers.has(seat.player?.userId)),
-			)
-		);
+		const seated = occupiedSeats(this.ctx.state);
+		return seated.length > 0 && seated.every((seat) => seat.ready);
 	}
 
 	/** Bets can close or the player can leave while the wallet call is in flight. */

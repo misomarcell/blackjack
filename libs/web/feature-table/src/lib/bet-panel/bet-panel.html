@@ -1,3 +1,6 @@
+@if (seatLabel()) {
+	<p class="font-display seat-label">{{ seatLabel() }}</p>
+}
 <div class="chips" role="group" aria-label="Add chips">
 	@for (value of chips; track value) {
 		<button
@@ -38,5 +41,5 @@
 	}
 </div>
 <button type="button" class="btn btn-primary chunky-sm place" [disabled]="!canPlace()" (click)="ready.emit()">
-	Place bet
+	{{ sittingOut() ? 'Sit out this round' : 'Place bet' }}
 </button>

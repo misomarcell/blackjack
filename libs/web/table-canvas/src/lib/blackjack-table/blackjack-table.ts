@@ -27,6 +27,8 @@ import { TableScene } from '../scene/table-scene';
 export class BlackjackTable {
 	readonly table = input<TableView | null>(null);
 	readonly viewerId = input<number | null>(null);
+	/** The viewer's seat taking chips right now, highlighted on the felt. */
+	readonly focusSeat = input<number | null>(null);
 	readonly seatPicked = output<number>();
 
 	private readonly stage = viewChild.required<ElementRef<HTMLDivElement>>('stage');
@@ -51,7 +53,7 @@ export class BlackjackTable {
 			const scene = this.scene();
 			const table = this.table();
 			if (scene && table) {
-				scene.render(table, this.viewerId());
+				scene.render(table, this.viewerId(), this.focusSeat());
 			}
 		});
 		this.audio.enterTable();

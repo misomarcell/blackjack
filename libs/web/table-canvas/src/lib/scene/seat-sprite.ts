@@ -1,7 +1,7 @@
 import type { SeatView } from '@blackjack/shared/protocol';
 import { formatDollars } from '@blackjack/web/ui';
 import { Container, Graphics, Text } from 'pixi.js';
-import { chipStack } from './chips';
+import { chipStacks } from './chips';
 import { handLabel } from './hand-labels';
 import { HandPointer } from './hand-pointer';
 import { handOrigin, handScale, type Point, seatPosition } from './layout';
@@ -30,6 +30,11 @@ function paintSpot(spot: Graphics, open: boolean, pickable: boolean, isViewer: b
 	});
 }
 
+/** A seat confirmed without chips sits the round out. */
+function readyTag(seat: SeatView): string {
+	return seat.bet > 0 ? 'READY' : 'SITTING OUT';
+}
+
 export interface SeatContext {
 	/** Whether the person looking can take open seats (players may hold several). */
 	canSit: boolean;
@@ -37,6 +42,8 @@ export interface SeatContext {
 	/** Index of the hand whose turn it is at this seat, if any. */
 	activeHand: number | null;
 	showReady: boolean;
+	/** The viewer's seat that needs them now: the one taking chips, or the one in turn. */
+	focused: boolean;
 }
 
 /**
@@ -58,6 +65,8 @@ export class SeatSprite extends Container {
 	/** -1 until the first snapshot, so joining a table plays no chip sounds. */
 	private shownBet = -1;
 	private shownTurn: number | null = null;
+	/** The viewer's own highlight ring breathes; other players' rings stay steady. */
+	private ringPulses = false;
 
 	constructor(
 		private readonly index: number,
@@ -87,8 +96,10 @@ export class SeatSprite extends Container {
 		this.drawSpot(seat, context);
 		this.drawBet(seat);
 		this.drawNameplate(seat, context);
-		// Others see a steady ring on whoever is playing; the viewer's own turn lights up the action buttons.
-		this.turnRing.visible = context.activeHand !== null && !context.isViewer;
+		// A ring marks whoever is playing; the viewer's own seat also gets it while it takes chips.
+		this.turnRing.visible = context.activeHand !== null || context.focused;
+		this.ringPulses = context.isViewer;
+		this.turnRing.alpha = 1;
 		this.announceTurn(context);
 	}
 
@@ -108,9 +119,7 @@ export class SeatSprite extends Container {
 			badge.position = this.labelPosition(index, seat.hands.length, hand.cards.length);
 			badge.scale.set(this.uiScale);
 			this.labels.addChild(badge);
-			if (this.popIfNew(index, label.text, badge) && isViewer && hand.result) {
-				this.sounds.result(hand.result);
-			}
+			this.popIfNew(index, label.text, badge);
 		});
 		this.placePointer(seat, activeHand, isViewer);
 	}
@@ -118,12 +127,15 @@ export class SeatSprite extends Container {
 	/** Called every frame. */
 	pulse(time: number): void {
 		this.pointer.bob(time);
+		if (this.turnRing.visible && this.ringPulses) {
+			this.turnRing.alpha = 0.55 + 0.45 * Math.sin(time / 220);
+		}
 	}
 
-	/** Only split seats need to show which hand is up. */
+	/** Points at the hand being decided: always for the viewer, and on split seats for everyone. */
 	private placePointer(seat: SeatView, activeHand: number | null, isViewer: boolean): void {
 		const hand = activeHand === null ? undefined : seat.hands[activeHand];
-		if (activeHand === null || !hand || seat.hands.length < 2) {
+		if (activeHand === null || !hand || (seat.hands.length < 2 && !isViewer)) {
 			this.pointer.hide();
 			return;
 		}
@@ -163,10 +175,10 @@ export class SeatSprite extends Container {
 		if (amount <= 0) {
 			return;
 		}
-		const stack = chipStack(amount);
-		stack.y = 6;
+		const stack = chipStacks(amount, this.index + 1);
+		stack.y = -2;
 		const label = pill(formatDollars(amount), colors.ink);
-		label.position.set(0, 44);
+		label.position.set(0, 48);
 		label.scale.set(0.8);
 		this.bet.addChild(stack, label);
 	}
@@ -178,7 +190,7 @@ export class SeatSprite extends Container {
 		}
 		const tags = [
 			context.isViewer ? 'YOU' : null,
-			context.showReady ? 'READY' : null,
+			context.showReady ? readyTag(seat) : null,
 			seat.insurance ? 'INSURED' : null,
 		];
 		const suffix = tags.filter(Boolean).join(' · ');

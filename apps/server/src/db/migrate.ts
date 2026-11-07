@@ -30,6 +30,14 @@ const schema = [
 		FOREIGN KEY (table_id) REFERENCES blackjack_tables(id) ON DELETE CASCADE,
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	)`,
+	`CREATE TABLE IF NOT EXISTS table_log (
+		id BIGINT AUTO_INCREMENT PRIMARY KEY,
+		table_id VARCHAR(12) NOT NULL,
+		parts TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		INDEX idx_log_table (table_id, id),
+		FOREIGN KEY (table_id) REFERENCES blackjack_tables(id) ON DELETE CASCADE
+	)`,
 ];
 
 async function waitForDatabase(): Promise<void> {

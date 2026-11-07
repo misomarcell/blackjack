@@ -43,6 +43,15 @@
 	gap: 0.5rem;
 }
 
+.audio-toggle {
+	background: var(--color-base-100);
+	font-size: 0.95rem;
+
+	&.off {
+		opacity: 0.55;
+	}
+}
+
 @media (max-width: 900px) {
 	.table-title p {
 		display: none;

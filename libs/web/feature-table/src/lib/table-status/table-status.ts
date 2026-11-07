@@ -1,6 +1,7 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Phase, TableView } from '@blackjack/shared/protocol';
+import { TableAudio } from '@blackjack/web/table-canvas';
 import { Countdown, formatDollars } from '@blackjack/web/ui';
 
 const PHASE_MESSAGES: Record<Phase, string> = {
@@ -26,6 +27,7 @@ export class TableStatus {
 	readonly viewerId = input<number | null>(null);
 	readonly leaveSeat = output();
 
+	protected readonly audio = inject(TableAudio);
 	protected readonly copied = signal(false);
 	protected readonly limits = computed(
 		() => `${formatDollars(this.table().minBet)} – ${formatDollars(this.table().maxBet)}`,

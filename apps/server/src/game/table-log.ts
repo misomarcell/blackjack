@@ -2,8 +2,6 @@ import { type Card, handTotal } from '@blackjack/shared/blackjack';
 import type { LogEntry, LogPart } from '@blackjack/shared/protocol';
 import type { Seat } from './model';
 
-const HISTORY = 60;
-
 /** Plain strings are ordinary text; parts carry a highlight tone. */
 export type LogFragment = string | LogPart;
 
@@ -30,26 +28,51 @@ export function total(cards: Card[]): LogPart {
 	return value(soft && sum < 21 ? `soft ${sum}` : sum);
 }
 
-/** Recent table events, kept in memory and pushed to every client as they happen. */
-export class TableLog {
-	private readonly entries: LogEntry[] = [];
-	private nextId = 1;
+/** Where log lines are kept. Ids come from the store, so every client and the history agree. */
+export interface LogStore {
+	add(tableId: string, parts: LogPart[]): Promise<number>;
+	recent(tableId: string): Promise<LogEntry[]>;
+}
 
-	constructor(private readonly publish: (entry: LogEntry) => void) {}
+/**
+ * Table events, written to the store in order and pushed to every client once saved.
+ * Game code calls `add` synchronously; the writes queue up behind each other.
+ */
+export class TableLog {
+	private queue: Promise<void> = Promise.resolve();
+	/** Fallback ids for lines the store could not save, counting down so they never clash. */
+	private unsavedId = -1;
+
+	constructor(
+		private readonly tableId: string,
+		private readonly store: LogStore,
+		private readonly publish: (entry: LogEntry) => void,
+	) {}
 
 	add(...fragments: LogFragment[]): void {
 		const parts = fragments.map((fragment): LogPart =>
 			typeof fragment === 'string' ? { tone: 'text', text: fragment } : fragment,
 		);
-		const entry = { id: this.nextId++, parts };
-		this.entries.push(entry);
-		if (this.entries.length > HISTORY) {
-			this.entries.shift();
-		}
-		this.publish(entry);
+		this.queue = this.queue.then(() => this.save(parts));
 	}
 
-	recent(): LogEntry[] {
-		return [...this.entries];
+	recent(): Promise<LogEntry[]> {
+		return this.store.recent(this.tableId);
+	}
+
+	/** Resolves once every line added so far has been saved and published. */
+	flushed(): Promise<void> {
+		return this.queue;
+	}
+
+	private async save(parts: LogPart[]): Promise<void> {
+		let id: number;
+		try {
+			id = await this.store.add(this.tableId, parts);
+		} catch (error) {
+			console.error('Could not save a table log line', error);
+			id = this.unsavedId--;
+		}
+		this.publish({ id, parts });
 	}
 }

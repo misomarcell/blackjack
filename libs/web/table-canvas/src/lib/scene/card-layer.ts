@@ -1,6 +1,7 @@
 import type { CardView } from '@blackjack/shared/protocol';
 import { Container } from 'pixi.js';
 import { CardSprite } from './card-sprite';
+import type { SceneSounds } from './sounds';
 import { DISCARD, SHOE } from './layout';
 import { ease, type Tweener } from './tween';
 
@@ -33,7 +34,10 @@ export class CardLayer extends Container {
 	/** When the last running deal, flip or move finishes (performance.now() time). */
 	private settledAt = 0;
 
-	constructor(private readonly tweener: Tweener) {
+	constructor(
+		private readonly tweener: Tweener,
+		private readonly sounds: SceneSounds,
+	) {
 		super();
 		this.sortableChildren = true;
 	}
@@ -69,6 +73,7 @@ export class CardLayer extends Container {
 			this.place(sprite, target, { duration: MOVE_MS });
 		}
 		if (target.card.faceUp !== sprite.intendedFaceUp) {
+			setTimeout(() => this.sounds.card(), slot * STAGGER_MS);
 			void this.flip(sprite, target, slot * STAGGER_MS);
 			return slot + 1;
 		}
@@ -84,6 +89,7 @@ export class CardLayer extends Container {
 		sprite.intendedFaceUp = target.card.faceUp;
 		this.sprites.set(target.card.id, sprite);
 		this.addChild(sprite);
+		setTimeout(() => this.sounds.card(), delay);
 		await this.place(sprite, target, { duration: SLIDE_MS, delay });
 		if (target.card.faceUp) {
 			await this.flip(sprite, target, 0);
@@ -103,10 +109,17 @@ export class CardLayer extends Container {
 
 	/** Squashes the card edge-on, swaps the side, and opens it up again. */
 	private async flip(sprite: CardSprite, target: CardTarget, delay: number): Promise<void> {
+		// The card may have been cleared (or the scene torn down) while it was still flying in.
+		if (sprite.destroyed) {
+			return;
+		}
 		sprite.intendedFaceUp = target.card.faceUp;
 		this.busyFor(delay + FLIP_MS);
 		const half = { duration: FLIP_MS / 2, ease: ease.inOutQuad };
 		await this.tweener.to(sprite.scale, { x: 0 }, { ...half, delay });
+		if (sprite.destroyed) {
+			return;
+		}
 		sprite.showSide(target.card);
 		await this.tweener.to(sprite.scale, { x: target.scale }, half);
 	}

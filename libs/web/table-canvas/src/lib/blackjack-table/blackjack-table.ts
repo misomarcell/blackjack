@@ -12,6 +12,7 @@ import {
 	viewChild,
 } from '@angular/core';
 import type { TableView } from '@blackjack/shared/protocol';
+import { TableAudio } from '../audio/table-audio';
 import { TableScene } from '../scene/table-scene';
 
 /**
@@ -30,6 +31,7 @@ export class BlackjackTable {
 
 	private readonly stage = viewChild.required<ElementRef<HTMLDivElement>>('stage');
 	private readonly destroyRef = inject(DestroyRef);
+	private readonly audio = inject(TableAudio);
 	private readonly scene = signal<TableScene | null>(null);
 
 	/** Text alternative for screen readers, since the canvas itself is not accessible. */
@@ -52,12 +54,16 @@ export class BlackjackTable {
 				scene.render(table, this.viewerId());
 			}
 		});
-		this.destroyRef.onDestroy(() => this.scene()?.destroy());
+		this.audio.enterTable();
+		this.destroyRef.onDestroy(() => {
+			this.audio.leaveTable();
+			this.scene()?.destroy();
+		});
 	}
 
 	private async createScene(): Promise<void> {
 		await document.fonts.load('32px "Lilita One"');
-		const scene = await TableScene.create(this.stage().nativeElement, (seat) =>
+		const scene = await TableScene.create(this.stage().nativeElement, this.audio, (seat) =>
 			this.seatPicked.emit(seat),
 		);
 		if (this.destroyRef.destroyed) {

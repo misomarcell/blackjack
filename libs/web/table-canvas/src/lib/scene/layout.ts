@@ -9,22 +9,23 @@ export const SHOE = { x: 1420, y: 120 };
 export const DISCARD = { x: 60, y: -180 };
 export const DEALER = { x: 800, y: 175 };
 
-const TABLE_CENTER = { x: 800, y: 40 };
-const SEAT_RADIUS = { x: 660, y: 600 };
-const FIRST_SEAT_DEGREES = 158;
-const SEAT_STEP_DEGREES = (FIRST_SEAT_DEGREES - 22) / (SEAT_COUNT - 1);
+/** The player-side rail: its lowest point, thickness, and how far it rises at the visible edges. */
+export const RAIL = { edge: 845, width: 46, rise: 80 };
+
+/** Seats follow a shallow curve: lowest in the middle, rising towards both ends. */
+const SEAT_ARC = { halfWidth: 640, bottom: 600, rise: 120 };
 
 export interface Point {
 	x: number;
 	y: number;
 }
 
-/** Seats sit on an arc, seat 0 on the left as players see it. */
+/** Seats sit on a shallow arc, seat 0 on the left as players see it. */
 export function seatPosition(index: number): Point {
-	const angle = ((FIRST_SEAT_DEGREES - index * SEAT_STEP_DEGREES) * Math.PI) / 180;
+	const t = (index / (SEAT_COUNT - 1)) * 2 - 1;
 	return {
-		x: TABLE_CENTER.x + SEAT_RADIUS.x * Math.cos(angle),
-		y: TABLE_CENTER.y + SEAT_RADIUS.y * Math.sin(angle),
+		x: STAGE.width / 2 + SEAT_ARC.halfWidth * t,
+		y: SEAT_ARC.bottom - SEAT_ARC.rise * t * t,
 	};
 }
 

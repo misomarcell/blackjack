@@ -2,7 +2,7 @@ import { SEAT_COUNT, type TableView } from '@blackjack/shared/protocol';
 import { Application, Container } from 'pixi.js';
 import { CardLayer } from './card-layer';
 import { cardTargets } from './card-targets';
-import { drawFelt } from './felt';
+import { Felt } from './felt';
 import { DEALER, STAGE } from './layout';
 import { colors } from './palette';
 import { pill } from './pill';
@@ -15,10 +15,12 @@ const TOP_INSET = 56;
 /** The whole PixiJS table. Angular feeds it snapshots through `render`; it never talks to the server. */
 export class TableScene {
 	private readonly world = new Container();
+	private readonly felt = new Felt();
 	private readonly dealerLabels = new Container();
 	private readonly tweener: Tweener;
 	private readonly cards: CardLayer;
 	private readonly seats: SeatSprite[];
+	private labelTimer: ReturnType<typeof setTimeout> | undefined;
 
 	private constructor(
 		private readonly app: Application,
@@ -30,7 +32,9 @@ export class TableScene {
 			{ length: SEAT_COUNT },
 			(_, index) => new SeatSprite(index, this.tweener, onSeatPicked),
 		);
-		this.world.addChild(drawFelt(), ...this.seats, this.cards, this.dealerLabels);
+		const dealerTitle = pill('DEALER', colors.ink);
+		dealerTitle.position.set(DEALER.x, DEALER.y - 112);
+		this.world.addChild(this.felt, ...this.seats, this.cards, dealerTitle, this.dealerLabels);
 		app.stage.addChild(this.world);
 		app.renderer.on('resize', this.fit, this);
 		app.ticker.add(() => this.seats.forEach((seat) => seat.pulse(performance.now())));
@@ -62,19 +66,35 @@ export class TableScene {
 			});
 		});
 		this.cards.sync(cardTargets(table));
-		this.drawDealerLabels(table);
+		this.scheduleLabels(table);
 	}
 
 	destroy(): void {
+		clearTimeout(this.labelTimer);
 		this.tweener.destroy();
 		this.app.destroy(true, { children: true });
 	}
 
+	/** Totals and results appear only once the cards behind them have landed, so they never spoil a card. */
+	private scheduleLabels(table: TableView): void {
+		clearTimeout(this.labelTimer);
+		const draw = (): void => {
+			table.seats.forEach((seat) => {
+				const activeHand = table.turn?.seat === seat.index ? table.turn.hand : null;
+				this.seats[seat.index]?.updateLabels(seat, activeHand);
+			});
+			this.drawDealerLabels(table);
+		};
+		const wait = this.cards.remainingMs;
+		if (wait > 0) {
+			this.labelTimer = setTimeout(draw, wait);
+		} else {
+			draw();
+		}
+	}
+
 	private drawDealerLabels(table: TableView): void {
 		this.dealerLabels.removeChildren().forEach((child) => child.destroy({ children: true }));
-		const title = pill('DEALER', colors.ink);
-		title.position.set(DEALER.x, DEALER.y - 112);
-		this.dealerLabels.addChild(title);
 		if (table.dealer.total !== null) {
 			const total = pill(String(table.dealer.total), table.dealer.total > 21 ? colors.red : colors.sky);
 			total.position.set(DEALER.x + 70 * (table.dealer.cards.length / 2) + 70, DEALER.y);
@@ -88,6 +108,7 @@ export class TableScene {
 		const height = this.app.screen.height - TOP_INSET;
 		const scale = Math.min(width / STAGE.width, height / STAGE.height);
 		this.world.scale.set(scale);
+		this.felt.fit(width / scale / 2);
 		this.world.position.set(
 			(width - STAGE.width * scale) / 2,
 			TOP_INSET + (height - STAGE.height * scale) / 2,

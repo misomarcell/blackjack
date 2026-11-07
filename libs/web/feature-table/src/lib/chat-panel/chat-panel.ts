@@ -11,11 +11,12 @@ import {
 } from '@angular/core';
 import { form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { CHAT_MAX_LENGTH, type ChatMessage } from '@blackjack/shared/protocol';
+import { FloatingPanel } from '@blackjack/web/ui';
 
-/** Table chat in the bottom-left corner. Collapsible so it never hides the cards on small screens. */
+/** Table chat in the bottom-left corner. Collapses to a small button so it never hides chips or cards. */
 @Component({
 	selector: 'bj-chat-panel',
-	imports: [FormField, FormRoot],
+	imports: [FormField, FormRoot, FloatingPanel],
 	templateUrl: './chat-panel.html',
 	styleUrl: './chat-panel.scss',
 })
@@ -62,6 +63,7 @@ export class ChatPanel {
 		});
 		afterRenderEffect(() => {
 			this.messages();
+			this.open();
 			const log = this.log()?.nativeElement;
 			if (log) {
 				log.scrollTop = log.scrollHeight;

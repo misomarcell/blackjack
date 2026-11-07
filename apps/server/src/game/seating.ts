@@ -1,5 +1,6 @@
 import type { Betting, BettingContext } from './betting';
 import { clearSeat, type Seat, seatOfUser } from './model';
+import { who } from './table-log';
 
 interface SeatedUser {
 	id: number;
@@ -24,6 +25,7 @@ export class Seating {
 			return 'You already have a seat here';
 		}
 		seat.player = { userId: user.id, username: user.username, connected: true };
+		this.ctx.log.add(who(seat), ' sits down');
 		this.changed();
 		this.betting.evaluate();
 		return null;
@@ -41,6 +43,7 @@ export class Seating {
 		}
 		const { userId } = seat.player;
 		const refund = seat.bet;
+		this.ctx.log.add(who(seat), ' leaves the table');
 		clearSeat(seat);
 		await this.ctx.wallet.credit(userId, refund);
 		this.changed();
@@ -66,7 +69,10 @@ export class Seating {
 		const absent = this.ctx.state.seats.filter(
 			(seat) => seat.leaving || seat.player?.connected === false,
 		);
-		absent.forEach(clearSeat);
+		absent.forEach((seat) => {
+			this.ctx.log.add(who(seat), ' leaves the table');
+			clearSeat(seat);
+		});
 		if (absent.length > 0) {
 			this.onSeatsChanged();
 		}

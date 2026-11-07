@@ -1,12 +1,20 @@
-import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import type { ClientMessage } from '@blackjack/shared/protocol';
-import { AuthStore, TablesApi, TableSession } from '@blackjack/web/data-access';
+import {
+	AuthStore,
+	PageTitle,
+	type PageTitleInfo,
+	TablesApi,
+	TableSession,
+} from '@blackjack/web/data-access';
 import { BlackjackTable } from '@blackjack/web/table-canvas';
+import { formatDollars } from '@blackjack/web/ui';
 import { ActionBar } from '../action-bar/action-bar';
 import { BetPanel } from '../bet-panel/bet-panel';
 import { ChatPanel } from '../chat-panel/chat-panel';
 import { InsurancePrompt } from '../insurance-prompt/insurance-prompt';
+import { TableLog } from '../table-log/table-log';
 import { TableStatus } from '../table-status/table-status';
 
 const TOAST_MS = 2500;
@@ -14,7 +22,16 @@ const TOAST_MS = 2500;
 /** The table screen: the PixiJS table with Angular controls and chat layered on top. */
 @Component({
 	selector: 'bj-table-page',
-	imports: [RouterLink, BlackjackTable, TableStatus, BetPanel, ActionBar, InsurancePrompt, ChatPanel],
+	imports: [
+		RouterLink,
+		BlackjackTable,
+		TableStatus,
+		BetPanel,
+		ActionBar,
+		InsurancePrompt,
+		TableLog,
+		ChatPanel,
+	],
 	providers: [TableSession],
 	templateUrl: './table-page.html',
 	styleUrl: './table-page.scss',
@@ -22,6 +39,7 @@ const TOAST_MS = 2500;
 export class TablePage {
 	private readonly api = inject(TablesApi);
 	private readonly router = inject(Router);
+	private readonly pageTitle = inject(PageTitle);
 	protected readonly session = inject(TableSession);
 	protected readonly auth = inject(AuthStore);
 
@@ -60,12 +78,26 @@ export class TablePage {
 				void this.router.navigateByUrl('/lobby');
 			}
 		});
+		effect(() => this.pageTitle.current.set(this.titleInfo()));
+		inject(DestroyRef).onDestroy(() => this.pageTitle.current.set(null));
 		effect((onCleanup) => {
 			const error = this.session.error();
 			this.toast.set(error?.message ?? null);
 			const timer = setTimeout(() => this.toast.set(null), TOAST_MS);
 			onCleanup(() => clearTimeout(timer));
 		});
+	}
+
+	/** Phones show the table name and back button in the app bar instead of over the table. */
+	private titleInfo(): PageTitleInfo | null {
+		const table = this.session.table();
+		return table
+			? {
+					title: table.name,
+					subtitle: `${formatDollars(table.minBet)} – ${formatDollars(table.maxBet)}`,
+					backLink: '/lobby',
+				}
+			: null;
 	}
 
 	protected send(message: ClientMessage): void {

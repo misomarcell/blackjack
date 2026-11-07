@@ -40,13 +40,14 @@
 					<p class="hud font-display text-lg">You're in! Waiting for the others…</p>
 				} @else if (insuranceCost(); as cost) {
 					<bj-insurance-prompt
-						class="hud"
+						class="hud attention"
 						[cost]="cost"
 						[affordable]="auth.balance() >= cost"
 						(decide)="send({ type: 'insurance', accept: $event })"
 					/>
 				} @else if (session.myTurnHand(); as hand) {
 					<bj-action-bar
+						class="hud attention"
 						[hand]="hand"
 						[handCount]="session.mySeat()?.hands?.length ?? 1"
 						[balance]="auth.balance()"
@@ -58,11 +59,10 @@
 			<p class="status-bar"><span class="loading loading-dots"></span> Joining table…</p>
 		}
 
-		<bj-chat-panel
-			class="chat"
-			[messages]="session.chat()"
-			(send)="send({ type: 'chat', text: $event })"
-		/>
+		<div class="side">
+			<bj-table-log [entries]="session.log()" />
+			<bj-chat-panel [messages]="session.chat()" (send)="send({ type: 'chat', text: $event })" />
+		</div>
 
 		@if (toast(); as message) {
 			<div class="toast toast-top toast-center">

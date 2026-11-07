@@ -10,8 +10,19 @@ import {
 import type { PlayerAction } from '@blackjack/shared/protocol';
 import type { GameConfig } from '../config';
 import { type Countdown, Waiter } from './countdown';
-import { type CardSource, type Hand, playingSeats, type Seat, type TableState, type Wallet } from './model';
+import {
+	type CardSource,
+	type Hand,
+	markNatural,
+	needsDealer,
+	playingSeats,
+	type Seat,
+	type TableState,
+	type Wallet,
+} from './model';
 import { playerActions } from './player-actions';
+import { logAction, logDealerDone, logInsurance, logSettlement } from './round-log';
+import { dealerName, type TableLog, total, value, who } from './table-log';
 
 export interface RoundContext {
 	readonly state: TableState;
@@ -19,6 +30,7 @@ export interface RoundContext {
 	readonly wallet: Wallet;
 	readonly config: GameConfig;
 	readonly countdown: Countdown;
+	readonly log: TableLog;
 	broadcast(): void;
 }
 
@@ -59,6 +71,7 @@ export class Round {
 			return 'It is not your turn';
 		}
 		this.busy = true;
+		const before = [...hand.cards];
 		const outcome = await playerActions[action]({
 			seat,
 			hand,
@@ -69,10 +82,11 @@ export class Round {
 		if (typeof outcome === 'object') {
 			return outcome.error;
 		}
+		logAction(this.ctx.log, seat, hand, { action, before });
 		if (outcome === 'done') {
 			this.endTurn();
 		} else {
-			this.startTurnTimer(hand);
+			this.startTurnTimer(seat, hand);
 		}
 		this.ctx.broadcast();
 		return null;
@@ -87,6 +101,7 @@ export class Round {
 		if (accept && (await this.ctx.wallet.debit(seat.player.userId, hand.bet / 2))) {
 			seat.insurance = hand.bet / 2;
 		}
+		logInsurance(this.ctx.log, seat);
 		this.ctx.broadcast();
 		if (playingSeats(this.ctx.state).every((other) => other.insurance !== null)) {
 			this.endTurn();
@@ -107,6 +122,7 @@ export class Round {
 		}
 		state.dealer.holeHidden = true;
 		seats.forEach((seat) => markNatural(seat.hands[0]));
+		this.ctx.log.add('Round ', value(state.round), ' is dealt');
 		this.ctx.broadcast();
 		await this.pause((seats.length + 1) * 2 * this.ctx.config.dealMs);
 	}
@@ -125,6 +141,7 @@ export class Round {
 			return false;
 		}
 		dealer.holeHidden = false;
+		this.ctx.log.add(dealerName, ' has ', value('blackjack'));
 		return true;
 	}
 
@@ -158,23 +175,33 @@ export class Round {
 			return;
 		}
 		this.ctx.state.turn = { seat: seat.index, hand: index };
-		this.startTurnTimer(hand);
+		this.startTurnTimer(seat, hand);
 		this.ctx.broadcast();
 		await this.wait();
 	}
 
+	/** Turns the hole card over, then draws one card at a time so every client sees each hit. */
 	private async dealerTurn(): Promise<void> {
-		const { state, shoe, config } = this.ctx;
+		const { state, shoe, config, log } = this.ctx;
+		const { cards } = state.dealer;
 		state.phase = 'dealer';
 		state.dealer.holeHidden = false;
-		let cardsShown = 1;
-		const handsInPlay = playingSeats(state).some((seat) => seat.hands.some(needsDealer));
-		while (handsInPlay && dealerShouldHit(state.dealer.cards, config.hitSoft17)) {
-			state.dealer.cards.push(shoe.draw());
-			cardsShown++;
+		log.add(dealerName, ' turns over ', total(cards));
+		await this.showDealerCard();
+		if (!playingSeats(state).some((seat) => seat.hands.some(needsDealer))) {
+			return;
 		}
+		while (dealerShouldHit(cards, config.hitSoft17)) {
+			log.add(dealerName, ' hits on ', total(cards));
+			cards.push(shoe.draw());
+			await this.showDealerCard();
+		}
+		logDealerDone(log, cards);
+	}
+
+	private async showDealerCard(): Promise<void> {
 		this.ctx.broadcast();
-		await this.pause(cardsShown * config.dealMs);
+		await this.pause(2 * this.ctx.config.dealMs);
 	}
 
 	private async settle(dealerNatural: boolean): Promise<void> {
@@ -198,6 +225,7 @@ export class Round {
 			hand.payout = settlement.payout;
 			payout += settlement.payout;
 		}
+		logSettlement(this.ctx.log, seat, this.ctx.state.dealer.cards, dealerNatural);
 		if (seat.player) {
 			await this.ctx.wallet.credit(seat.player.userId, payout);
 		}
@@ -208,8 +236,9 @@ export class Round {
 		return phase === 'playing' && turn?.seat === seat.index ? seat.hands[turn.hand] : undefined;
 	}
 
-	private startTurnTimer(hand: Hand): void {
+	private startTurnTimer(seat: Seat, hand: Hand): void {
 		this.ctx.countdown.start(this.ctx.config.turnMs, () => {
+			this.ctx.log.add(who(seat), ' ran out of time and stands on ', total(hand.cards));
 			hand.status = 'stood';
 			this.waiter.done();
 		});
@@ -235,15 +264,4 @@ export class Round {
 			throw new RoundAborted();
 		}
 	}
-}
-
-function markNatural(hand: Hand | undefined): void {
-	if (hand && isNatural(hand.cards)) {
-		hand.status = 'blackjack';
-	}
-}
-
-/** The dealer only draws when some player hand can still be beaten or pushed. */
-function needsDealer(hand: Hand): boolean {
-	return hand.status !== 'bust' && hand.status !== 'blackjack';
 }

@@ -48,8 +48,27 @@ export class SeatSprite extends Container {
 		this.drawSpot(seat, context);
 		this.drawBet(seat);
 		this.drawNameplate(seat, context);
-		this.drawHandLabels(seat, context);
-		this.turnRing.visible = context.activeHand !== null;
+		// The viewer's own turn is shown on the action buttons instead.
+		this.turnRing.visible = context.activeHand !== null && !context.isViewer;
+	}
+
+	/** Hand totals and results. The scene calls this once the cards they describe have landed. */
+	updateLabels(seat: SeatView, activeHand: number | null): void {
+		this.labels.children.forEach((child) => this.tweener.cancel(child.scale));
+		this.labels.removeChildren().forEach((child) => child.destroy({ children: true }));
+		if (seat.hands.length === 0) {
+			this.shownLabels.clear();
+		}
+		seat.hands.forEach((hand, index) => {
+			if (hand.cards.length === 0) {
+				return;
+			}
+			const label = handLabel(hand, activeHand === index);
+			const badge = pill(label.text, label.fill, label.textColor);
+			badge.position = this.labelPosition(index, seat.hands.length, hand.cards.length);
+			this.labels.addChild(badge);
+			this.popIfNew(index, label.text, badge);
+		});
 	}
 
 	/** Gentle glow on the seat whose turn it is. Called every frame. */
@@ -106,24 +125,6 @@ export class SeatSprite extends Container {
 		const name = pill(suffix ? `${seat.player.username} · ${suffix}` : seat.player.username, colors.rail);
 		name.alpha = seat.player.connected ? 1 : 0.45;
 		this.nameplate.addChild(name);
-	}
-
-	private drawHandLabels(seat: SeatView, context: SeatContext): void {
-		this.labels.children.forEach((child) => this.tweener.cancel(child.scale));
-		this.labels.removeChildren().forEach((child) => child.destroy({ children: true }));
-		if (seat.hands.length === 0) {
-			this.shownLabels.clear();
-		}
-		seat.hands.forEach((hand, index) => {
-			if (hand.cards.length === 0) {
-				return;
-			}
-			const label = handLabel(hand, context.activeHand === index);
-			const badge = pill(label.text, label.fill, label.textColor);
-			badge.position = this.labelPosition(index, seat.hands.length, hand.cards.length);
-			this.labels.addChild(badge);
-			this.popIfNew(index, label.text, badge);
-		});
 	}
 
 	private labelPosition(hand: number, handCount: number, cardCount: number): Point {

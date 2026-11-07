@@ -10,6 +10,20 @@ export interface ChatMessage {
 	sentAt: string;
 }
 
+/** How a fragment of a table log line is highlighted. */
+type LogTone = 'text' | 'player' | 'dealer' | 'money' | 'value';
+
+export interface LogPart {
+	tone: LogTone;
+	text: string;
+}
+
+/** One line of the table log, such as "alice hits on 12". */
+export interface LogEntry {
+	id: number;
+	parts: LogPart[];
+}
+
 /** Messages a client sends over a table socket. */
 export type ClientMessage =
 	| { type: 'sit'; seat: number }
@@ -26,6 +40,8 @@ export type TableServerMessage =
 	| { type: 'state'; table: TableView }
 	| { type: 'chat'; message: ChatMessage }
 	| { type: 'chat-history'; messages: ChatMessage[] }
+	| { type: 'log'; entry: LogEntry }
+	| { type: 'log-history'; entries: LogEntry[] }
 	| { type: 'balance'; balance: number }
 	| { type: 'error'; message: string }
 	| { type: 'closed' };

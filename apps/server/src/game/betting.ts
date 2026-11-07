@@ -2,12 +2,14 @@ import { CHIP_VALUES } from '@blackjack/shared/protocol';
 import type { GameConfig } from '../config';
 import type { Countdown } from './countdown';
 import { newHand, occupiedSeats, type Seat, type TableState, type Wallet } from './model';
+import { money, type TableLog, who } from './table-log';
 
 export interface BettingContext {
 	readonly state: TableState;
 	readonly wallet: Wallet;
 	readonly config: GameConfig;
 	readonly countdown: Countdown;
+	readonly log: TableLog;
 	broadcast(): void;
 }
 
@@ -107,6 +109,7 @@ export class Betting {
 		for (const seat of occupiedSeats(state)) {
 			if (seat.bet >= state.table.minBet) {
 				seat.hands = [newHand([], seat.bet)];
+				this.ctx.log.add(who(seat), ' bets ', money(seat.bet));
 				players++;
 			} else if (seat.bet > 0 && seat.player) {
 				await wallet.credit(seat.player.userId, seat.bet);

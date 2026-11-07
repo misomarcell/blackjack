@@ -1,4 +1,4 @@
-import type { Card, HandResult } from '@blackjack/shared/blackjack';
+import { type Card, type HandResult, isNatural } from '@blackjack/shared/blackjack';
 import type { HandStatus, Phase, SeatPlayer, Turn } from '@blackjack/shared/protocol';
 import { SEAT_COUNT } from '@blackjack/shared/protocol';
 import type { TableRecord } from '../db/tables.repo';
@@ -88,4 +88,15 @@ export function seatOfUser(state: TableState, userId: number): Seat | undefined 
 export function moneyOnTable(seat: Seat): number {
 	const handBets = seat.hands.reduce((sum, hand) => sum + hand.bet, 0);
 	return seat.bet + handBets + (seat.insurance ?? 0);
+}
+
+export function markNatural(hand: Hand | undefined): void {
+	if (hand && isNatural(hand.cards)) {
+		hand.status = 'blackjack';
+	}
+}
+
+/** The dealer only draws when some player hand can still be beaten or pushed. */
+export function needsDealer(hand: Hand): boolean {
+	return hand.status !== 'bust' && hand.status !== 'blackjack';
 }

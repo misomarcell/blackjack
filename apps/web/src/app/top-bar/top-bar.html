@@ -1,18 +1,43 @@
-<header class="navbar gap-2 border-b-[3px] border-neutral bg-primary px-3 text-primary-content">
-	<a routerLink="/lobby" class="brand flex-none">♠ Blackjack Party</a>
-	<nav class="flex flex-1 gap-1" aria-label="Main">
-		<a routerLink="/lobby" routerLinkActive="btn-active" class="btn btn-ghost btn-sm">Lobby</a>
+<header class="app-bar">
+	<a routerLink="/lobby" class="brand">♠ Blackjack Party</a>
+
+	@if (pageTitle.current(); as page) {
+		<div class="page-nav">
+			<a [routerLink]="page.backLink" class="back" aria-label="Back to lobby">←</a>
+			<div class="page-title">
+				<span class="page-name">{{ page.title }}</span>
+				<span class="page-sub">{{ page.subtitle }}</span>
+			</div>
+		</div>
+	}
+
+	<nav class="main-nav" aria-label="Main">
+		<a routerLink="/lobby" routerLinkActive="active" class="nav-link">Lobby</a>
 		@if (auth.isAdmin()) {
-			<a routerLink="/admin" routerLinkActive="btn-active" class="btn btn-ghost btn-sm">Tables</a>
+			<a routerLink="/admin" routerLinkActive="active" class="nav-link">Tables</a>
 		}
 	</nav>
-	@if (broke()) {
-		<button type="button" class="btn btn-accent btn-sm chunky-sm" (click)="refill()">Free refill</button>
-	}
-	@if (refillError(); as error) {
-		<span class="text-sm" role="alert">{{ error }}</span>
-	}
-	<bj-balance-display [amount]="auth.balance()" />
-	<span class="hidden font-display sm:inline">{{ auth.user()?.username }}</span>
-	<button type="button" class="btn btn-neutral btn-sm" (click)="logout()">Log out</button>
+
+	<div class="account">
+		@if (refillError(); as error) {
+			<span class="text-sm" role="alert">{{ error }}</span>
+		}
+		@if (broke()) {
+			<button type="button" class="btn btn-accent chunky-sm bar-item" (click)="refill()">
+				Free refill
+			</button>
+		}
+		<bj-balance-display class="bar-item" [amount]="auth.balance()" />
+		<span class="separator" aria-hidden="true"></span>
+		<span class="user" [attr.title]="auth.user()?.username">
+			<span class="avatar-initial" aria-hidden="true">{{ initial() }}</span>
+			<span class="username">{{ auth.user()?.username }}</span>
+		</span>
+		<button type="button" class="logout bar-item" aria-label="Log out" (click)="logout()">
+			<svg viewBox="0 0 24 24" aria-hidden="true">
+				<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+			</svg>
+			<span class="logout-label">Log out</span>
+		</button>
+	</div>
 </header>

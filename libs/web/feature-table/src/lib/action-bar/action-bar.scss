@@ -2,17 +2,96 @@
 	display: block;
 }
 
-kbd {
-	color: var(--color-base-content);
+.moves {
+	display: grid;
+	grid-template-columns: repeat(4, 6.75rem);
+	gap: 0.5rem;
 }
 
-@media (max-height: 500px) {
-	.btn-lg {
-		--size: 2.5rem;
+.move {
+	--move: var(--color-base-100);
+	--move-content: var(--color-base-content);
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 3rem;
+	border: 3px solid var(--color-neutral);
+	border-radius: var(--radius-field);
+	background: var(--move);
+	color: var(--move-content);
+	box-shadow: var(--shadow-chunky-sm);
+	font-family: var(--font-display);
+	font-size: 1.2rem;
+	letter-spacing: 0.03em;
+	cursor: pointer;
+	transition:
+		transform 0.1s,
+		box-shadow 0.1s,
+		filter 0.1s;
+
+	&:hover:not(:disabled) {
+		filter: brightness(1.06);
+		transform: translateY(-2px);
+		box-shadow: 0 5px 0 0 var(--color-neutral);
+	}
+
+	&:active:not(:disabled) {
+		transform: translateY(2px);
+		box-shadow: 0 1px 0 0 var(--color-neutral);
+	}
+
+	&:disabled {
+		border-color: color-mix(in oklch, var(--color-neutral) 30%, transparent);
+		background: var(--color-base-300);
+		color: color-mix(in oklch, var(--color-base-content) 40%, transparent);
+		box-shadow: none;
+		cursor: not-allowed;
+	}
+}
+
+.move-hit {
+	--move: var(--color-success);
+	--move-content: var(--color-success-content);
+}
+
+.move-stand {
+	--move: var(--color-error);
+	--move-content: var(--color-error-content);
+}
+
+.move-double {
+	--move: var(--color-accent);
+	--move-content: var(--color-accent-content);
+}
+
+.move-split {
+	--move: var(--color-secondary);
+	--move-content: var(--color-secondary-content);
+}
+
+/* The keyboard hint sits quietly in the corner. */
+.key {
+	position: absolute;
+	top: 0.2rem;
+	right: 0.35rem;
+	font-family: var(--font-sans);
+	font-size: 0.6rem;
+	opacity: 0.65;
+}
+
+@media (max-width: 1000px), (max-height: 500px) {
+	.moves {
+		grid-template-columns: repeat(4, 5rem);
+		gap: 0.4rem;
+	}
+
+	.move {
+		height: 2.5rem;
 		font-size: 1rem;
 	}
 
-	kbd {
+	.key {
 		display: none;
 	}
 }

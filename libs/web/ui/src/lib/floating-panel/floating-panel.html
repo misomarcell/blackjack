@@ -1,0 +1,32 @@
+<section class="panel" [id]="bodyId" [hidden]="!open()" [attr.aria-label]="heading()">
+	<header class="panel-header">
+		<h2 class="panel-heading">{{ heading() }}</h2>
+		<button
+			type="button"
+			class="btn btn-xs btn-circle btn-ghost"
+			[attr.aria-label]="'Hide ' + heading()"
+			aria-expanded="true"
+			[attr.aria-controls]="bodyId"
+			(click)="open.set(false)"
+		>
+			✕
+		</button>
+	</header>
+	<ng-content />
+</section>
+
+@if (!open()) {
+	<button
+		type="button"
+		class="toggle"
+		[attr.aria-label]="'Show ' + heading()"
+		aria-expanded="false"
+		[attr.aria-controls]="bodyId"
+		(click)="open.set(true)"
+	>
+		<span aria-hidden="true">{{ icon() }}</span>
+		@if (badge() > 0) {
+			<span class="toggle-badge">{{ badge() > 9 ? '9+' : badge() }}</span>
+		}
+	</button>
+}

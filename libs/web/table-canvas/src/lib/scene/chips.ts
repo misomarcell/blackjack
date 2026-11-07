@@ -1,6 +1,6 @@
 import { CHIP_VALUES } from '@blackjack/shared/protocol';
-import { Container, Graphics } from 'pixi.js';
-import { colors } from './palette';
+import { Container, Graphics, Text } from 'pixi.js';
+import { colors, textStyles } from './palette';
 
 const MAX_CHIPS = 10;
 const CHIP_RADIUS = 24;
@@ -34,12 +34,23 @@ function drawChip(value: (typeof CHIP_VALUES)[number]): Graphics {
 		.stroke({ width: 3, color: colors.white, alpha: 0.85 });
 }
 
+/** The value printed in the middle of the top chip, like the chip buttons. */
+function chipValue(value: number): Text {
+	const label = new Text({ text: String(value), style: textStyles.chip });
+	label.anchor.set(0.5);
+	return label;
+}
+
 /** A small stack of chips representing a bet, largest at the bottom. */
 export function chipStack(amount: number): Container {
 	const stack = new Container();
-	chipsFor(amount).forEach((value, index) => {
+	const chips = chipsFor(amount);
+	chips.forEach((value, index) => {
 		const chip = drawChip(value as (typeof CHIP_VALUES)[number]);
 		chip.y = -index * 6;
+		if (index === chips.length - 1) {
+			chip.addChild(chipValue(value));
+		}
 		stack.addChild(chip);
 	});
 	return stack;

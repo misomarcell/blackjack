@@ -1,46 +1,25 @@
 :host {
-	display: inline-block;
+	display: block;
 }
 
-.ring {
-	--size: 3.25rem;
-	--fill: var(--color-secondary);
-	display: grid;
-	place-items: center;
-	width: var(--size);
-	height: var(--size);
-	border: 3px solid var(--color-neutral);
-	border-radius: 50%;
-	background: conic-gradient(var(--fill) calc(var(--progress) * 360deg), var(--color-base-100) 0);
-	box-shadow: var(--shadow-chunky-sm);
-	transition: --fill 0.3s;
-
-	span {
-		display: grid;
-		place-items: center;
-		width: 72%;
-		height: 72%;
-		border-radius: 50%;
-		background: var(--color-base-100);
-		font-family: var(--font-display);
-		font-size: 1.3rem;
-		color: var(--color-base-content);
-	}
+/* A thin bar that drains from right to left, like a toast's timeout. */
+.track {
+	/* Callers can set the thickness. */
+	height: var(--countdown-height, 0.5rem);
+	overflow: hidden;
+	background: color-mix(in oklch, var(--color-neutral) 15%, transparent);
 }
 
-.ring.urgent {
-	--fill: var(--color-error);
-	animation: pulse 1s ease-in-out infinite;
+.fill {
+	height: 100%;
+	background: var(--color-secondary);
+	transform-origin: left;
+	/* Matches the tick, so the bar glides instead of stepping. */
+	transition:
+		transform 0.2s linear,
+		background-color 0.3s;
 }
 
-@keyframes pulse {
-	50% {
-		transform: scale(1.08);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ring.urgent {
-		animation: none;
-	}
+.urgent .fill {
+	background: var(--color-error);
 }

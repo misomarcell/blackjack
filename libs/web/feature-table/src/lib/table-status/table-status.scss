@@ -52,12 +52,6 @@
 	}
 }
 
-@media (max-width: 900px) {
-	.table-title p {
-		display: none;
-	}
-}
-
 /* Phones: the app bar shows the table name and back button instead (keep in sync with top-bar.scss). */
 @media (max-width: 767px), (max-height: 500px) {
 	:host {

@@ -9,7 +9,7 @@ import {
 	TableSession,
 } from '@blackjack/web/data-access';
 import { BlackjackTable } from '@blackjack/web/table-canvas';
-import { formatDollars } from '@blackjack/web/ui';
+import { Countdown, formatDollars } from '@blackjack/web/ui';
 import { ActionBar } from '../action-bar/action-bar';
 import { BetPanel } from '../bet-panel/bet-panel';
 import { ChatPanel } from '../chat-panel/chat-panel';
@@ -31,6 +31,7 @@ const TOAST_MS = 2500;
 		InsurancePrompt,
 		TableLog,
 		ChatPanel,
+		Countdown,
 	],
 	providers: [TableSession],
 	templateUrl: './table-page.html',
@@ -67,6 +68,20 @@ export class TablePage {
 		const offered = this.session.table()?.phase === 'insurance' && seat?.insurance === null;
 		return offered && seat?.hands[0] ? seat.hands[0].bet / 2 : null;
 	});
+
+	/** Whether the bottom card has anything to show (bets, waiting, insurance or moves). */
+	protected readonly hudShown = computed(
+		() =>
+			this.canBet() ||
+			this.waitingForOthers() ||
+			this.insuranceCost() !== null ||
+			this.session.myTurnHand() !== null,
+	);
+
+	/** The table is waiting on the viewer's decision. */
+	protected readonly needsMyMove = computed(
+		() => this.insuranceCost() !== null || this.session.myTurnHand() !== null,
+	);
 
 	constructor() {
 		effect(() => {

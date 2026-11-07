@@ -2,7 +2,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import type { Phase, TableView } from '@blackjack/shared/protocol';
 import { TableAudio } from '@blackjack/web/table-canvas';
-import { Countdown, formatDollars } from '@blackjack/web/ui';
+import { formatDollars } from '@blackjack/web/ui';
 
 const PHASE_MESSAGES: Record<Phase, string> = {
 	idle: 'Place a bet to start',
@@ -14,16 +14,15 @@ const PHASE_MESSAGES: Record<Phase, string> = {
 	settled: 'Round over',
 };
 
-/** Top bar of the table screen: name, what is happening, the countdown and seat/share buttons. */
+/** Top bar of the table screen: name and limits, what is happening, and the sound/share/seat buttons. */
 @Component({
 	selector: 'bj-table-status',
-	imports: [RouterLink, Countdown],
+	imports: [RouterLink],
 	templateUrl: './table-status.html',
 	styleUrl: './table-status.scss',
 })
 export class TableStatus {
 	readonly table = input.required<TableView>();
-	readonly receivedAt = input(0);
 	readonly viewerId = input<number | null>(null);
 	readonly leaveSeat = output();
 

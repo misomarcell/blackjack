@@ -45,7 +45,15 @@ export class TableScene {
 			(_, index) => new SeatSprite(index, this.tweener, sounds, onSeatPicked),
 		);
 		this.dealerTitle.position.set(DEALER.x, DEALER.y - 112);
-		this.world.addChild(this.felt, ...this.seats, this.cards, this.dealerTitle, this.dealerLabels);
+		this.world.addChild(
+			this.felt,
+			...this.seats,
+			this.cards,
+			// Totals, results and pointers above every card, the dealer's included.
+			...this.seats.map((seat) => seat.overlay),
+			this.dealerTitle,
+			this.dealerLabels,
+		);
 		app.stage.addChild(this.world);
 		app.renderer.on('resize', this.fit, this);
 		app.ticker.add(() => this.seats.forEach((seat) => seat.pulse(performance.now())));

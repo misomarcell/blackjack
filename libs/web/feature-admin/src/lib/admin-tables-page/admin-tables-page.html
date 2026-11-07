@@ -1,14 +1,16 @@
-<main class="mx-auto flex max-w-5xl flex-col gap-5 p-4 md:p-8">
-	<header class="flex flex-wrap items-center justify-between gap-3">
-		<h1 class="text-4xl">Manage tables</h1>
-		<button type="button" class="btn btn-primary chunky-sm" (click)="form.open()">+ New table</button>
+<main class="mx-auto flex max-w-5xl flex-col gap-8 p-4 md:p-8">
+	<header class="flex flex-wrap items-end justify-between gap-3">
+		<h1 class="text-4xl md:text-5xl">Manage tables</h1>
+		<button type="button" class="btn btn-primary chunky-sm admin-button" (click)="form.open()">
+			<bj-icon name="plus" /> New table
+		</button>
 	</header>
 
 	@if (error(); as message) {
 		<p class="alert alert-error" role="alert">{{ message }}</p>
 	}
 
-	<div class="chunky overflow-x-auto rounded-box bg-base-100">
+	<div class="table-sheet">
 		<table class="table table-zebra">
 			<thead>
 				<tr>
@@ -31,9 +33,15 @@
 							>
 						</td>
 						<td class="flex justify-end gap-2">
-							<button type="button" class="btn btn-sm" (click)="form.open(table)">Edit</button>
-							<button type="button" class="btn btn-sm btn-error" (click)="askDelete(table)">
-								Delete
+							<button type="button" class="btn btn-sm chunky-sm" (click)="form.open(table)">
+								<bj-icon name="edit" /> Edit
+							</button>
+							<button
+								type="button"
+								class="btn btn-sm btn-error chunky-sm"
+								(click)="askDelete(table)"
+							>
+								<bj-icon name="trash" /> Delete
 							</button>
 						</td>
 					</tr>

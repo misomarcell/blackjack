@@ -2,9 +2,12 @@
 	display: block;
 }
 
-.logo {
-	text-align: center;
-	font-size: 2rem;
-	letter-spacing: 0.4em;
-	color: var(--color-primary);
+/* Room above the card for the fanned cards that stick out of its top edge. */
+main {
+	padding-top: 4rem;
+}
+
+.brand-mark {
+	margin-top: -4.75rem;
+	margin-bottom: 0.25rem;
 }

@@ -1,4 +1,4 @@
-<bj-floating-panel heading="Table chat" icon="💬" [badge]="unread()" [(open)]="open">
+<bj-floating-panel heading="Table chat" icon="chat" [badge]="unread()" [(open)]="open">
 	<ol #log class="lines" aria-live="polite" aria-label="Messages">
 		@for (message of messages(); track message.id) {
 			<li>

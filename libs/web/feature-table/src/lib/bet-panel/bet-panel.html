@@ -20,7 +20,7 @@
 			title="Clear bet"
 			(click)="clear.emit()"
 		>
-			✕
+			<bj-icon name="close" />
 		</button>
 	} @else if (showRepeat()) {
 		<button
@@ -31,7 +31,7 @@
 			[attr.title]="'Repeat ' + dollars(lastBet())"
 			(click)="repeat()"
 		>
-			↻
+			<bj-icon name="repeat" />
 		</button>
 	} @else {
 		<span class="chip chip-tool chip-placeholder" aria-hidden="true"></span>

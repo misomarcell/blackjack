@@ -2,13 +2,13 @@ import { Component, type ElementRef, inject, signal, viewChild } from '@angular/
 import { RouterLink } from '@angular/router';
 import type { TableSummary } from '@blackjack/shared/protocol';
 import { apiErrorMessage, LobbyFeed, TablesApi } from '@blackjack/web/data-access';
-import { formatDollars } from '@blackjack/web/ui';
+import { formatDollars, Icon } from '@blackjack/web/ui';
 import { TableFormDialog } from '../table-form-dialog/table-form-dialog';
 
 /** Admin list of tables with create, edit and delete. The list is the live lobby feed. */
 @Component({
 	selector: 'bj-admin-tables-page',
-	imports: [RouterLink, TableFormDialog],
+	imports: [RouterLink, TableFormDialog, Icon],
 	providers: [LobbyFeed],
 	templateUrl: './admin-tables-page.html',
 	styleUrl: './admin-tables-page.scss',

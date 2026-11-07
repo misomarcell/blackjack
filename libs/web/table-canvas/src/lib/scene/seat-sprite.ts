@@ -12,6 +12,24 @@ import { ease, type Tweener } from './tween';
 
 const SPOT_RADIUS = 58;
 
+/** An open seat is a betting spot printed on the felt; a taken one is a solid ringed spot. */
+function paintSpot(spot: Graphics, open: boolean, pickable: boolean, isViewer: boolean): void {
+	spot.clear().circle(0, 0, SPOT_RADIUS);
+	if (open) {
+		spot.fill({ color: colors.feltDark, alpha: pickable ? 0.45 : 0.25 }).stroke({
+			width: 5,
+			color: colors.feltPrint,
+			alpha: pickable ? 0.9 : 0.45,
+		});
+		return;
+	}
+	spot.fill({ color: colors.feltDark, alpha: 0.9 }).stroke({
+		width: 5,
+		color: isViewer ? colors.yellow : colors.cream,
+		alpha: 0.9,
+	});
+}
+
 export interface SeatContext {
 	/** Whether the person looking at the table already has a seat. */
 	viewerSeated: boolean;
@@ -124,11 +142,7 @@ export class SeatSprite extends Container {
 	private drawSpot(seat: SeatView, context: SeatContext): void {
 		const open = !seat.player;
 		const pickable = open && !context.viewerSeated;
-		this.spot
-			.clear()
-			.circle(0, 0, SPOT_RADIUS)
-			.fill({ color: colors.feltDark, alpha: open ? 0.6 : 0.9 });
-		this.spot.stroke({ width: 5, color: context.isViewer ? colors.yellow : colors.cream, alpha: 0.9 });
+		paintSpot(this.spot, open, pickable, context.isViewer);
 		this.spot.eventMode = pickable ? 'static' : 'none';
 		this.spot.cursor = pickable ? 'pointer' : 'default';
 		this.spot.removeChildren().forEach((child) => child.destroy());

@@ -1,0 +1,64 @@
+:host {
+	display: flex;
+	justify-content: center;
+	height: 5.5rem;
+}
+
+/* Cards share one pivot below the fan, so they spread like a hand held in a fist. */
+.mini-card {
+	--turn: 0deg;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: space-between;
+	width: 3.6rem;
+	height: 5rem;
+	margin-inline: -0.9rem;
+	padding: 0.3rem 0.45rem;
+	border: 3px solid var(--color-neutral);
+	border-radius: 0.6rem;
+	background: var(--color-base-100);
+	box-shadow: var(--shadow-chunky-sm);
+	color: var(--color-base-content);
+	font-family: var(--font-display);
+	line-height: 1;
+	transform: rotate(var(--turn));
+	transform-origin: 50% 160%;
+	transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+
+	&:nth-child(1) {
+		--turn: -14deg;
+	}
+
+	&:nth-child(3) {
+		--turn: 14deg;
+	}
+
+	&.red {
+		color: var(--color-error);
+	}
+}
+
+.rank {
+	font-size: 1.35rem;
+}
+
+.suit {
+	align-self: flex-end;
+	font-size: 1.6rem;
+}
+
+/* The hand spreads a little wider under the pointer. */
+:host(:hover) .mini-card:nth-child(1) {
+	--turn: -20deg;
+}
+
+:host(:hover) .mini-card:nth-child(3) {
+	--turn: 20deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mini-card {
+		transition: none;
+	}
+}

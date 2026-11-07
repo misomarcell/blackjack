@@ -1,4 +1,4 @@
-<bj-floating-panel heading="Table log" icon="📜" [badge]="unread()" [(open)]="open">
+<bj-floating-panel heading="Table log" icon="log" [badge]="unread()" [(open)]="open">
 	<ol #list class="lines" aria-live="polite" aria-label="Table events">
 		@for (entry of entries(); track entry.id) {
 			<li>

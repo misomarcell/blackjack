@@ -9,7 +9,7 @@
 			[attr.aria-controls]="bodyId"
 			(click)="open.set(false)"
 		>
-			✕
+			<bj-icon name="close" />
 		</button>
 	</header>
 	<ng-content />
@@ -18,15 +18,15 @@
 @if (!open()) {
 	<button
 		type="button"
-		class="toggle"
+		class="panel-toggle"
 		[attr.aria-label]="'Show ' + heading()"
 		aria-expanded="false"
 		[attr.aria-controls]="bodyId"
 		(click)="open.set(true)"
 	>
-		<span aria-hidden="true">{{ icon() }}</span>
+		<bj-icon [name]="icon()" />
 		@if (badge() > 0) {
-			<span class="toggle-badge">{{ badge() > 9 ? '9+' : badge() }}</span>
+			<span class="panel-toggle-badge">{{ badge() > 9 ? '9+' : badge() }}</span>
 		}
 	</button>
 }

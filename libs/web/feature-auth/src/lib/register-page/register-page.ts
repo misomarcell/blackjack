@@ -12,14 +12,14 @@ import {
 } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { apiErrorMessage, AuthStore } from '@blackjack/web/data-access';
-import { FieldError } from '@blackjack/web/ui';
+import { CardFan, FieldError } from '@blackjack/web/ui';
 import { safeReturnUrl } from '../return-url';
 
 const USERNAME_PATTERN = /^[\p{L}\p{N}_.-]+$/u;
 
 @Component({
 	selector: 'bj-register-page',
-	imports: [FormField, FormRoot, RouterLink, FieldError],
+	imports: [FormField, FormRoot, RouterLink, FieldError, CardFan],
 	templateUrl: './register-page.html',
 	styleUrl: './register-page.scss',
 })

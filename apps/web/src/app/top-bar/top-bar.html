@@ -3,7 +3,9 @@
 
 	@if (pageTitle.current(); as page) {
 		<div class="page-nav">
-			<a [routerLink]="page.backLink" class="back" aria-label="Back to lobby">←</a>
+			<a [routerLink]="page.backLink" class="back" aria-label="Back to lobby"
+				><bj-icon name="back"
+			/></a>
 			<div class="page-title">
 				<span class="page-name">{{ page.title }}</span>
 				<span class="page-sub">{{ page.subtitle }}</span>
@@ -34,9 +36,7 @@
 			<span class="username">{{ auth.user()?.username }}</span>
 		</span>
 		<button type="button" class="logout bar-item" aria-label="Log out" (click)="logout()">
-			<svg viewBox="0 0 24 24" aria-hidden="true">
-				<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-			</svg>
+			<bj-icon name="logout" />
 			<span class="logout-label">Log out</span>
 		</button>
 	</div>

@@ -5,6 +5,10 @@ export const colors = {
 	ink: 0x262047,
 	felt: 0x1fa37a,
 	feltDark: 0x137a5b,
+	/** Printed lines and lettering on the felt. */
+	feltPrint: 0x9ff0cf,
+	/** The room below the rail (theme --color-floor). */
+	floor: 0x1e1838,
 	rail: 0xdf6100,
 	railDark: 0xb03f00,
 	cream: 0xfff8e6,
@@ -36,7 +40,7 @@ export const textStyles = {
 	feltTitle: new TextStyle({
 		fontFamily: display,
 		fontSize: 34,
-		fill: 0x9ff0cf,
+		fill: colors.feltPrint,
 		letterSpacing: 4,
 	}),
 };

@@ -45,10 +45,13 @@
 
 .audio-toggle {
 	background: var(--color-base-100);
-	font-size: 0.95rem;
+	color: var(--color-base-content);
+	--icon-size: 1.05rem;
 
+	/* Off keeps a solid face so it stays readable over the felt; only the icon dims. */
 	&.off {
-		opacity: 0.55;
+		background: var(--color-base-300);
+		color: color-mix(in oklch, var(--color-base-content) 50%, transparent);
 	}
 }
 

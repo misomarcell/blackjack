@@ -1,0 +1,6 @@
+@for (card of cards; track card.rank) {
+	<span class="mini-card" [class.red]="card.red">
+		<span class="rank">{{ card.rank }}</span>
+		<span class="suit">{{ card.suit }}</span>
+	</span>
+}

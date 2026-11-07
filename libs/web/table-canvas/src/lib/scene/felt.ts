@@ -4,11 +4,18 @@ import { CARD, RAIL, SHOE, STAGE } from './layout';
 import { colors, textStyles } from './palette';
 
 const CENTER_X = STAGE.width / 2;
+const PRINT_ALPHA = 0.55;
+/** How far inside the rail the printed border line runs. */
+const BORDER_INSET = 34;
+/** Big enough to cover any letterbox around the stage. */
+const FLOOR_REACH = 6000;
 
 function feltText(text: string, y: number, size: number): Text {
 	const label = new Text({ text, style: { ...textStyles.feltTitle, fontSize: size } });
 	label.anchor.set(0.5);
 	label.position.set(CENTER_X, y);
+	// Printed into the felt: quiet enough that cards and totals laid on top stay the loudest thing.
+	label.alpha = PRINT_ALPHA;
 	return label;
 }
 
@@ -36,11 +43,11 @@ function drawInsuranceLine(): Graphics {
 	const centerY = 385 - radius;
 	return new Graphics()
 		.arc(CENTER_X, centerY, radius, Math.PI / 2 + spread, Math.PI / 2 - spread, true)
-		.stroke({ width: 4, color: 0x9ff0cf, alpha: 0.45 });
+		.stroke({ width: 4, color: colors.feltPrint, alpha: 0.4 });
 }
 
 /**
- * The static table: felt, rail, printed rules and the shoe. The felt reaches past the visible area so it
+ * The static table: the floor, felt, rail, printed rules and the shoe. The felt reaches past the visible area so it
  * fills the whole canvas; only the player-side rail shows, as a gentle curve.
  */
 export class Felt extends Container {
@@ -64,11 +71,15 @@ export class Felt extends Container {
 		const centerY = RAIL.edge - radius;
 		this.table
 			.clear()
+			.rect(-FLOOR_REACH, -FLOOR_REACH, STAGE.width + 2 * FLOOR_REACH, 2 * FLOOR_REACH)
+			.fill(colors.floor)
 			.circle(CENTER_X, centerY, radius + RAIL.width)
 			.fill(colors.rail)
 			.stroke({ width: 8, color: colors.ink })
 			.circle(CENTER_X, centerY, radius)
 			.fill(colors.felt)
-			.stroke({ width: 6, color: colors.ink });
+			.stroke({ width: 6, color: colors.ink })
+			.circle(CENTER_X, centerY, radius - BORDER_INSET)
+			.stroke({ width: 4, color: colors.feltPrint, alpha: 0.4 });
 	}
 }

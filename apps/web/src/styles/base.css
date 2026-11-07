@@ -7,22 +7,47 @@
 
 	body {
 		@apply bg-base-200 font-sans font-bold text-base-content;
-		background-image:
-			radial-gradient(circle at 10% 20%, oklch(85% 0.12 55 / 0.35) 0 18rem, transparent 18rem),
-			radial-gradient(circle at 90% 80%, oklch(85% 0.12 230 / 0.35) 0 22rem, transparent 22rem),
-			radial-gradient(oklch(25% 0.06 280 / 0.07) 2px, transparent 2px);
-		background-size:
-			auto,
-			auto,
-			24px 24px;
-		background-attachment: fixed;
+		scrollbar-color: var(--color-neutral) transparent;
+		/* Its own stacking context, so the suit print below paints above the body color but under the app. */
+		isolation: isolate;
+	}
+
+	/* A faint tiled print of the four suits, like a game-night tablecloth. The tile is a mask, so its color
+	   stays a theme token. */
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		background: var(--color-pattern);
+		mask: var(--suit-tile) 0 0 / 7.5rem 7.5rem repeat;
+		pointer-events: none;
 	}
 
 	h1,
 	h2,
 	h3 {
 		@apply font-display tracking-wide;
+		text-wrap: balance;
 	}
+
+	::selection {
+		background: var(--color-accent);
+		color: var(--color-accent-content);
+	}
+
+	:focus-visible {
+		outline: 3px solid var(--color-secondary);
+		outline-offset: 3px;
+	}
+
+	a {
+		text-underline-offset: 0.2em;
+	}
+}
+
+:root {
+	--suit-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg transform='translate(14 14) rotate(-12 12 12)'%3E%3Cpath d='M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z'/%3E%3C/g%3E%3Cg transform='translate(74 14) rotate(10 12 12)'%3E%3Cpath d='M12 2s-9 7-9 12a4.5 4.5 0 0 0 7.5 3.3L9 22h6l-1.5-4.7A4.5 4.5 0 0 0 21 14c0-5-9-12-9-12z'/%3E%3C/g%3E%3Cg transform='translate(44 74) rotate(8 12 12)'%3E%3Cpath d='M12 2l7 10-7 10-7-10z'/%3E%3C/g%3E%3Cg transform='translate(104 74) rotate(-10 12 12)'%3E%3Cpath d='M12 2a4.5 4.5 0 0 0-4 6.6A4.5 4.5 0 1 0 10.5 17L9 22h6l-1.5-5A4.5 4.5 0 1 0 16 8.6 4.5 4.5 0 0 0 12 2z'/%3E%3C/g%3E%3Cg transform='translate(-16 74) rotate(-10 12 12)'%3E%3Cpath d='M12 2a4.5 4.5 0 0 0-4 6.6A4.5 4.5 0 1 0 10.5 17L9 22h6l-1.5-5A4.5 4.5 0 1 0 16 8.6 4.5 4.5 0 0 0 12 2z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 @utility chunky {

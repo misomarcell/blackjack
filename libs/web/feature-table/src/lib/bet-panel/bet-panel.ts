@@ -1,10 +1,11 @@
 import { Component, computed, input, output } from '@angular/core';
 import { CHIP_VALUES } from '@blackjack/shared/protocol';
-import { formatDollars } from '@blackjack/web/ui';
+import { formatDollars, Icon } from '@blackjack/web/ui';
 
 /** Chip buttons with a clear / repeat-last-bet chip, and "Place bet", while bets are open. */
 @Component({
 	selector: 'bj-bet-panel',
+	imports: [Icon],
 	templateUrl: './bet-panel.html',
 	styleUrl: './bet-panel.scss',
 })

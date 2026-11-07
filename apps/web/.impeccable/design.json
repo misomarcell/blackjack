@@ -1,0 +1,492 @@
+{
+	"schemaVersion": 2,
+	"generatedAt": "2026-11-07T10:37:53.268614+00:00",
+	"title": "Design System: Blackjack Party",
+	"extensions": {
+		"colorMeta": {
+			"sunset-orange": {
+				"role": "primary",
+				"displayName": "Sunset Orange",
+				"canonical": "oklch(64% 0.18 48)",
+				"tonalRamp": [
+					"oklch(15% 0.045 48)",
+					"oklch(25% 0.075 48)",
+					"oklch(38% 0.114 48)",
+					"oklch(50% 0.15 48)",
+					"oklch(62% 0.174 48)",
+					"oklch(74% 0.138 48)",
+					"oklch(85% 0.105 48)",
+					"oklch(95% 0.075 48)"
+				]
+			},
+			"pool-blue": {
+				"role": "secondary",
+				"displayName": "Pool Blue",
+				"canonical": "oklch(72% 0.17 230)",
+				"tonalRamp": [
+					"oklch(15% 0.043 230)",
+					"oklch(25% 0.071 230)",
+					"oklch(38% 0.108 230)",
+					"oklch(50% 0.142 230)",
+					"oklch(62% 0.164 230)",
+					"oklch(74% 0.13 230)",
+					"oklch(85% 0.099 230)",
+					"oklch(95% 0.071 230)"
+				]
+			},
+			"lemon-pop": {
+				"role": "tertiary",
+				"displayName": "Lemon Pop",
+				"canonical": "oklch(86% 0.18 95)",
+				"tonalRamp": [
+					"oklch(15% 0.045 95)",
+					"oklch(25% 0.075 95)",
+					"oklch(38% 0.114 95)",
+					"oklch(50% 0.15 95)",
+					"oklch(62% 0.174 95)",
+					"oklch(74% 0.138 95)",
+					"oklch(85% 0.105 95)",
+					"oklch(95% 0.075 95)"
+				]
+			},
+			"night-ink": {
+				"role": "neutral",
+				"displayName": "Night Ink",
+				"canonical": "oklch(30% 0.08 280)",
+				"tonalRamp": [
+					"oklch(15% 0.02 280)",
+					"oklch(25% 0.033 280)",
+					"oklch(38% 0.051 280)",
+					"oklch(50% 0.067 280)",
+					"oklch(62% 0.077 280)",
+					"oklch(74% 0.061 280)",
+					"oklch(85% 0.047 280)",
+					"oklch(95% 0.033 280)"
+				]
+			},
+			"ink-text": {
+				"role": "neutral",
+				"displayName": "Ink Text",
+				"canonical": "oklch(25% 0.06 280)",
+				"tonalRamp": [
+					"oklch(15% 0.015 280)",
+					"oklch(25% 0.025 280)",
+					"oklch(38% 0.038 280)",
+					"oklch(50% 0.05 280)",
+					"oklch(62% 0.058 280)",
+					"oklch(74% 0.046 280)",
+					"oklch(85% 0.035 280)",
+					"oklch(95% 0.025 280)"
+				]
+			},
+			"cream-paper": {
+				"role": "neutral",
+				"displayName": "Cream Paper",
+				"canonical": "oklch(98% 0.02 95)",
+				"tonalRamp": [
+					"oklch(15% 0.01 95)",
+					"oklch(25% 0.017 95)",
+					"oklch(38% 0.025 95)",
+					"oklch(50% 0.033 95)",
+					"oklch(62% 0.039 95)",
+					"oklch(74% 0.031 95)",
+					"oklch(85% 0.023 95)",
+					"oklch(95% 0.017 95)"
+				]
+			},
+			"warm-sand": {
+				"role": "neutral",
+				"displayName": "Warm Sand",
+				"canonical": "oklch(94% 0.04 95)",
+				"tonalRamp": [
+					"oklch(15% 0.015 95)",
+					"oklch(25% 0.025 95)",
+					"oklch(38% 0.038 95)",
+					"oklch(50% 0.05 95)",
+					"oklch(62% 0.058 95)",
+					"oklch(74% 0.046 95)",
+					"oklch(85% 0.035 95)",
+					"oklch(95% 0.025 95)"
+				]
+			},
+			"toasted-sand": {
+				"role": "neutral",
+				"displayName": "Toasted Sand",
+				"canonical": "oklch(88% 0.06 95)",
+				"tonalRamp": [
+					"oklch(15% 0.015 95)",
+					"oklch(25% 0.025 95)",
+					"oklch(38% 0.038 95)",
+					"oklch(50% 0.05 95)",
+					"oklch(62% 0.058 95)",
+					"oklch(74% 0.046 95)",
+					"oklch(85% 0.035 95)",
+					"oklch(95% 0.025 95)"
+				]
+			},
+			"sky-info": {
+				"role": "info",
+				"displayName": "Sky Info",
+				"canonical": "oklch(74% 0.15 220)",
+				"tonalRamp": [
+					"oklch(15% 0.037 220)",
+					"oklch(25% 0.062 220)",
+					"oklch(38% 0.095 220)",
+					"oklch(50% 0.125 220)",
+					"oklch(62% 0.145 220)",
+					"oklch(74% 0.115 220)",
+					"oklch(85% 0.087 220)",
+					"oklch(95% 0.062 220)"
+				]
+			},
+			"hit-green": {
+				"role": "success",
+				"displayName": "Hit Green",
+				"canonical": "oklch(74% 0.2 150)",
+				"tonalRamp": [
+					"oklch(15% 0.05 150)",
+					"oklch(25% 0.083 150)",
+					"oklch(38% 0.127 150)",
+					"oklch(50% 0.167 150)",
+					"oklch(62% 0.193 150)",
+					"oklch(74% 0.153 150)",
+					"oklch(85% 0.117 150)",
+					"oklch(95% 0.083 150)"
+				]
+			},
+			"marigold-warning": {
+				"role": "warning",
+				"displayName": "Marigold",
+				"canonical": "oklch(80% 0.17 70)",
+				"tonalRamp": [
+					"oklch(15% 0.043 70)",
+					"oklch(25% 0.071 70)",
+					"oklch(38% 0.108 70)",
+					"oklch(50% 0.142 70)",
+					"oklch(62% 0.164 70)",
+					"oklch(74% 0.13 70)",
+					"oklch(85% 0.099 70)",
+					"oklch(95% 0.071 70)"
+				]
+			},
+			"stand-red": {
+				"role": "error",
+				"displayName": "Stand Red",
+				"canonical": "oklch(65% 0.24 25)",
+				"tonalRamp": [
+					"oklch(15% 0.06 25)",
+					"oklch(25% 0.1 25)",
+					"oklch(38% 0.152 25)",
+					"oklch(50% 0.2 25)",
+					"oklch(62% 0.232 25)",
+					"oklch(74% 0.184 25)",
+					"oklch(85% 0.14 25)",
+					"oklch(95% 0.1 25)"
+				]
+			},
+			"grape-chip": {
+				"role": "game",
+				"displayName": "Grape",
+				"canonical": "oklch(60% 0.22 295)",
+				"tonalRamp": [
+					"oklch(15% 0.055 295)",
+					"oklch(25% 0.092 295)",
+					"oklch(38% 0.139 295)",
+					"oklch(50% 0.183 295)",
+					"oklch(62% 0.213 295)",
+					"oklch(74% 0.169 295)",
+					"oklch(85% 0.128 295)",
+					"oklch(95% 0.092 295)"
+				]
+			},
+			"felt-green": {
+				"role": "game",
+				"displayName": "Felt Green",
+				"canonical": "#1fa37a",
+				"tonalRamp": [
+					"oklch(15% 0.04 160)",
+					"oklch(25% 0.067 160)",
+					"oklch(38% 0.101 160)",
+					"oklch(50% 0.133 160)",
+					"oklch(62% 0.155 160)",
+					"oklch(74% 0.123 160)",
+					"oklch(85% 0.093 160)",
+					"oklch(95% 0.067 160)"
+				]
+			},
+			"felt-shadow": {
+				"role": "game",
+				"displayName": "Felt Shadow",
+				"canonical": "#137a5b",
+				"tonalRamp": [
+					"oklch(15% 0.03 165)",
+					"oklch(25% 0.05 165)",
+					"oklch(38% 0.076 165)",
+					"oklch(50% 0.1 165)",
+					"oklch(62% 0.116 165)",
+					"oklch(74% 0.092 165)",
+					"oklch(85% 0.07 165)",
+					"oklch(95% 0.05 165)"
+				]
+			},
+			"felt-print": {
+				"role": "game",
+				"displayName": "Felt Print",
+				"canonical": "#9ff0cf",
+				"tonalRamp": [
+					"oklch(15% 0.025 165)",
+					"oklch(25% 0.042 165)",
+					"oklch(38% 0.063 165)",
+					"oklch(50% 0.083 165)",
+					"oklch(62% 0.097 165)",
+					"oklch(74% 0.077 165)",
+					"oklch(85% 0.058 165)",
+					"oklch(95% 0.042 165)"
+				]
+			},
+			"rail-orange": {
+				"role": "game",
+				"displayName": "Rail Orange",
+				"canonical": "#df6100",
+				"tonalRamp": [
+					"oklch(15% 0.045 48)",
+					"oklch(25% 0.075 48)",
+					"oklch(38% 0.114 48)",
+					"oklch(50% 0.15 48)",
+					"oklch(62% 0.174 48)",
+					"oklch(74% 0.138 48)",
+					"oklch(85% 0.105 48)",
+					"oklch(95% 0.075 48)"
+				]
+			},
+			"card-cream": {
+				"role": "game",
+				"displayName": "Card Cream",
+				"canonical": "#fff8e6",
+				"tonalRamp": [
+					"oklch(15% 0.01 90)",
+					"oklch(25% 0.017 90)",
+					"oklch(38% 0.025 90)",
+					"oklch(50% 0.033 90)",
+					"oklch(62% 0.039 90)",
+					"oklch(74% 0.031 90)",
+					"oklch(85% 0.023 90)",
+					"oklch(95% 0.017 90)"
+				]
+			}
+		},
+		"typographyMeta": {
+			"display": {
+				"displayName": "Display",
+				"purpose": "Page headings and auth card titles."
+			},
+			"headline": {
+				"displayName": "Headline",
+				"purpose": "Table card names, action buttons, the status banner, canvas labels."
+			},
+			"title": {
+				"displayName": "Title",
+				"purpose": "Buttons, nav links, username, panel headings, pills."
+			},
+			"body": {
+				"displayName": "Body",
+				"purpose": "Descriptions, form labels, chat and log; always bold."
+			},
+			"label": {
+				"displayName": "Label",
+				"purpose": "Keyboard hints, subtitles, badge counts."
+			}
+		},
+		"shadows": [
+			{
+				"name": "chunky",
+				"value": "0 6px 0 0 oklch(25% 0.06 280)",
+				"purpose": "Cards and large primary buttons."
+			},
+			{
+				"name": "chunky-sm",
+				"value": "0 3px 0 0 oklch(25% 0.06 280)",
+				"purpose": "Small buttons, pills, chips, floating panels."
+			},
+			{
+				"name": "lifted",
+				"value": "0 5px 0 0 var(--color-neutral)",
+				"purpose": "Action button hover, with translateY(-2px)."
+			},
+			{
+				"name": "pressed",
+				"value": "0 1px 0 0 var(--color-neutral)",
+				"purpose": "Action button active, with translateY(2px)."
+			}
+		],
+		"motion": [
+			{
+				"name": "press",
+				"value": "transform 0.1s, box-shadow 0.1s",
+				"purpose": "Button lift and press."
+			},
+			{
+				"name": "chip-tilt",
+				"value": "transform 0.12s",
+				"purpose": "Chip lift and tilt on hover."
+			},
+			{
+				"name": "tint",
+				"value": "background-color 0.15s",
+				"purpose": "Nav and toggle hover tints."
+			},
+			{
+				"name": "countdown-tick",
+				"value": "transform 0.2s linear",
+				"purpose": "Countdown bar glides in step with the tick."
+			},
+			{
+				"name": "scene-ease",
+				"value": "outCubic (scene/tween.ts)",
+				"purpose": "Default easing for card deal, flip and clear tweens."
+			}
+		],
+		"breakpoints": [
+			{
+				"name": "xs-phone",
+				"value": "480px"
+			},
+			{
+				"name": "phone",
+				"value": "767px or max-height 500px"
+			},
+			{
+				"name": "compact",
+				"value": "900px"
+			},
+			{
+				"name": "table-compact",
+				"value": "1000px or max-height 500px"
+			}
+		]
+	},
+	"components": [
+		{
+			"name": "Primary Button",
+			"kind": "button",
+			"refersTo": "button-primary",
+			"description": "Main call to action: Join table, Sign in, Place bet.",
+			"html": "<button class=\"ds-btn-primary\">Join table</button>",
+			"css": ".ds-btn-primary{height:2.5rem;padding:0 1.25rem;border:3px solid var(--color-neutral);border-radius:var(--radius-field);background:var(--color-primary);color:var(--color-primary-content);box-shadow:0 3px 0 0 oklch(25% 0.06 280);font-family:'Lilita One',system-ui,sans-serif;font-size:1.1rem;letter-spacing:.02em;cursor:pointer;transition:transform .1s,box-shadow .1s,filter .1s}.ds-btn-primary:hover{filter:brightness(1.06);transform:translateY(-2px);box-shadow:0 5px 0 0 oklch(25% 0.06 280)}.ds-btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 0 oklch(25% 0.06 280)}.ds-btn-primary:focus-visible{outline:3px solid var(--color-secondary);outline-offset:3px}"
+		},
+		{
+			"name": "Neutral Pill Button",
+			"kind": "button",
+			"refersTo": "button-secondary",
+			"description": "Dark ink pill used for Log out and back.",
+			"html": "<button class=\"ds-btn-ink\">Log out</button>",
+			"css": ".ds-btn-ink{height:2.25rem;padding:0 .9rem;border:3px solid var(--color-neutral);border-radius:999px;background:var(--color-neutral);color:var(--color-neutral-content);font-family:'Lilita One',system-ui,sans-serif;font-size:1rem;cursor:pointer;transition:filter .15s}.ds-btn-ink:hover{filter:brightness(1.25)}.ds-btn-ink:focus-visible{outline:3px solid var(--color-accent);outline-offset:3px}"
+		},
+		{
+			"name": "Table Action Buttons",
+			"kind": "custom",
+			"refersTo": "move-hit",
+			"description": "Hit, Stand, Double, Split: big color-coded keys with keyboard hints.",
+			"html": "<div class=\"ds-moves\"><button class=\"ds-move ds-hit\">Hit<kbd>H</kbd></button><button class=\"ds-move ds-stand\">Stand<kbd>S</kbd></button><button class=\"ds-move ds-double\">Double<kbd>D</kbd></button><button class=\"ds-move ds-split\" disabled>Split<kbd>P</kbd></button></div>",
+			"css": ".ds-moves{display:grid;grid-template-columns:repeat(4,8.5rem);gap:.65rem}.ds-move{position:relative;height:3.75rem;border:3px solid var(--color-neutral);border-radius:var(--radius-field);box-shadow:0 3px 0 0 oklch(25% 0.06 280);font-family:'Lilita One',system-ui,sans-serif;font-size:1.5rem;letter-spacing:.03em;cursor:pointer;transition:transform .1s,box-shadow .1s,filter .1s}.ds-move kbd{position:absolute;top:.25rem;right:.45rem;font-family:'Nunito Variable',system-ui,sans-serif;font-size:.7rem;opacity:.65}.ds-move:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-2px);box-shadow:0 5px 0 0 oklch(25% 0.06 280)}.ds-move:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 0 oklch(25% 0.06 280)}.ds-move:focus-visible{outline:3px solid var(--color-neutral);outline-offset:3px}.ds-move:disabled{border-color:color-mix(in oklch,var(--color-neutral) 30%,transparent);background:var(--color-base-300);color:color-mix(in oklch,var(--color-base-content) 40%,transparent);box-shadow:none;cursor:not-allowed}.ds-hit{background:var(--color-success);color:var(--color-success-content)}.ds-stand{background:var(--color-error);color:var(--color-error-content)}.ds-double{background:var(--color-accent);color:var(--color-accent-content)}.ds-split{background:var(--color-secondary);color:var(--color-secondary-content)}"
+		},
+		{
+			"name": "Chips",
+			"kind": "custom",
+			"refersTo": "chip-button",
+			"description": "Bet chips coded by value, with a white inner ring.",
+			"html": "<div class=\"ds-chips\"><button class=\"ds-chip ds-chip-5\">5</button><button class=\"ds-chip ds-chip-25\">25</button><button class=\"ds-chip ds-chip-100\">100</button><button class=\"ds-chip ds-chip-500\">500</button></div>",
+			"css": ".ds-chips{display:flex;gap:.6rem}.ds-chip{--chip:var(--color-error);width:3.6rem;height:3.6rem;border:4px solid var(--color-neutral);border-radius:50%;background:radial-gradient(circle,var(--chip) 52%,white 53% 60%,var(--chip) 61%);box-shadow:0 3px 0 0 oklch(25% 0.06 280);color:white;font-family:'Lilita One',system-ui,sans-serif;font-size:1.1rem;text-shadow:0 2px 0 var(--color-neutral);cursor:pointer;transition:transform .12s}.ds-chip-25{--chip:var(--color-success)}.ds-chip-100{--chip:var(--color-secondary)}.ds-chip-500{--chip:oklch(60% 0.22 295)}.ds-chip:hover{transform:translateY(-4px) rotate(-8deg)}.ds-chip:active{transform:translateY(1px)}.ds-chip:focus-visible{outline:3px solid var(--color-neutral);outline-offset:3px}"
+		},
+		{
+			"name": "Status Banner",
+			"kind": "chip",
+			"refersTo": "status-banner",
+			"description": "The one-sentence 'what is happening now' pill at the top of the table.",
+			"html": "<p class=\"ds-banner\">Pick an open seat to play</p>",
+			"css": ".ds-banner{display:inline-block;margin:0;padding:.35rem 1.1rem;border:3px solid var(--color-neutral);border-radius:999px;background:var(--color-accent);color:var(--color-accent-content);box-shadow:0 3px 0 0 oklch(25% 0.06 280);font-family:'Lilita One',system-ui,sans-serif;font-size:1.5rem;white-space:nowrap}"
+		},
+		{
+			"name": "Table Card",
+			"kind": "card",
+			"refersTo": "card",
+			"description": "Lobby card: cream face, ink outline, chunky shadow.",
+			"html": "<article class=\"ds-card\"><h2>Lucky Sevens</h2><span class=\"ds-badge\">$5 – $500</span><p>0 / 6 players</p></article>",
+			"css": ".ds-card{display:flex;flex-direction:column;gap:.75rem;width:18rem;padding:1.5rem;border:3px solid var(--color-neutral);border-radius:var(--radius-box);background:var(--color-base-100);color:var(--color-base-content);box-shadow:0 6px 0 0 oklch(25% 0.06 280);font-family:'Nunito Variable',system-ui,sans-serif;font-weight:700}.ds-card h2{margin:0;font-family:'Lilita One',system-ui,sans-serif;font-size:1.5rem;font-weight:400;letter-spacing:.025em}.ds-card p{margin:0}.ds-badge{align-self:flex-start;padding:.2rem .75rem;border-radius:999px;background:var(--color-secondary);color:var(--color-secondary-content)}"
+		},
+		{
+			"name": "Text Input",
+			"kind": "input",
+			"refersTo": "input",
+			"description": "Large form field on cream.",
+			"html": "<label class=\"ds-field\">Username<input class=\"ds-input\" autocomplete=\"username\"></label>",
+			"css": ".ds-field{display:flex;flex-direction:column;gap:.35rem;width:20rem;font-family:'Nunito Variable',system-ui,sans-serif;font-weight:700;color:var(--color-base-content)}.ds-input{height:3rem;padding:0 1rem;border:3px solid color-mix(in oklch,var(--color-neutral) 25%,transparent);border-radius:var(--radius-field);background:var(--color-base-100);color:inherit;font:inherit}.ds-input:focus-visible{outline:3px solid var(--color-neutral);outline-offset:2px}"
+		},
+		{
+			"name": "App Bar",
+			"kind": "nav",
+			"refersTo": "app-bar",
+			"description": "Orange top bar with brand, pill nav and account group.",
+			"html": "<header class=\"ds-bar\"><span class=\"ds-brand\">♠ Blackjack Party</span><nav><a class=\"ds-nav active\" href=\"#\">Lobby</a><a class=\"ds-nav\" href=\"#\">Tables</a></nav></header>",
+			"css": ".ds-bar{display:flex;align-items:center;gap:1.5rem;min-height:3.75rem;padding:.5rem 1.25rem;border-bottom:3px solid var(--color-neutral);background:var(--color-primary);color:var(--color-primary-content)}.ds-brand{font-family:'Lilita One',system-ui,sans-serif;font-size:1.5rem;text-shadow:0 3px 0 var(--color-neutral)}.ds-bar nav{display:flex;gap:.35rem}.ds-nav{padding:.35rem 1rem;border:2px solid transparent;border-radius:999px;color:inherit;text-decoration:none;font-family:'Lilita One',system-ui,sans-serif;font-size:1.1rem;transition:background-color .15s}.ds-nav:hover{background:color-mix(in oklch,var(--color-primary-content) 15%,transparent)}.ds-nav.active{border-color:var(--color-neutral);background:var(--color-base-100);color:var(--color-base-content)}.ds-nav:focus-visible{outline:3px solid var(--color-neutral);outline-offset:2px}"
+		}
+	],
+	"narrative": {
+		"northStar": "Game Night Arcade",
+		"overview": "**Creative North Star: \"Game Night Arcade\"**\n\nBlackjack Party looks like a friendly board game crossed with an arcade cabinet. Every surface is a thick, toy-like object: a cream or candy-colored face, a 3px night-ink outline, and a hard offset shadow with no blur that makes it sit up off the page. The table itself is a big, flat felt-green stage with an orange rail, drawn in the same outlined style, so the Angular controls around it and the PixiJS scene read as one world.\n\nColor is bright and plentiful but always has a job. Each table action owns a color (Hit green, Stand red, Double lemon, Split blue). Chips are coded by value. Results are coded by outcome. A shared ink color holds it all together. Type is loud where it labels the game (Lilita One for headings, buttons, pills and every word on the felt) and plain where it explains (Nunito, set bold throughout so it holds up next to the chunky display face).\n\nDensity is generous. Controls are large, easy to hit and easy to read across a room or on a landscape phone. Playfulness lives in shape, color and motion, never in hiding the game state.",
+		"keyCharacteristics": [
+			"3px night-ink outlines on every raised element, matched by 4–8px ink strokes in the canvas",
+			"Hard offset drop shadows (6px or 3px straight down, no blur) instead of soft elevation",
+			"Big radii and pill shapes: nothing is sharp-cornered",
+			"One color per meaning: actions, chip values and hand results each have a fixed color",
+			"A warm sand page with large soft color blobs and a faint dot grid behind the content"
+		],
+		"rules": [
+			{
+				"name": "The One Meaning Rule",
+				"body": "A game color always means the same thing everywhere: Hit is always green, Stand always red, $100 is always blue, in the HUD and on the felt. Never reuse an action or chip color for decoration.",
+				"section": "colors"
+			},
+			{
+				"name": "The Theme File Rule",
+				"body": "UI colors are defined only in `theme.css` and the canvas palette only in `palette.ts`. Components use semantic names (`primary`, `neutral`, `--color-felt`), never raw values.",
+				"section": "colors"
+			},
+			{
+				"name": "The Display Speaks for the Game Rule",
+				"body": "Anything a player acts on or watches (buttons, pills, banners, totals, results) is set in Lilita One. Explanations and conversation stay in Nunito.",
+				"section": "typography"
+			},
+			{
+				"name": "The Always Bold Rule",
+				"body": "Body text is bold by default (`font-bold` on `body`). Don't set regular-weight running text next to the display face.",
+				"section": "typography"
+			},
+			{
+				"name": "The Always Chunky Rule",
+				"body": "Every raised surface gets the 3px ink border plus a hard offset shadow. No soft or blurred shadows and no glass effects on surfaces. The one existing exception is the collapsed chat/log toggle, which is see-through on purpose so it stays out of the way over the felt.",
+				"section": "elevation"
+			},
+			{
+				"name": "The Flat When Disabled Rule",
+				"body": "Disabled controls lose their shadow and outline strength and get a solid toasted sand face. They sink; they never just fade out.",
+				"section": "elevation"
+			}
+		],
+		"dos": [
+			"Do give every raised element the 3px night-ink border and one of the two hard shadows (`chunky` / `chunky-sm`).",
+			"Do keep each game color tied to one meaning: Hit green, Stand red, Double lemon, Split blue; chips $5 red, $25 green, $100 blue, $500 grape.",
+			"Do set anything actionable or game-state in Lilita One, and keep explanatory text in bold Nunito.",
+			"Do add new colors only in `theme.css`, and mirror any change the canvas needs in `palette.ts`.",
+			"Do give disabled controls a solid toasted sand face so they stay readable over the felt.",
+			"Do use pills and circles for status, badges, chips and avatars, and 0.9–1.4rem corners for everything else."
+		],
+		"donts": [
+			"Don't use soft or blurred box shadows, glassmorphism or gradient surfaces on controls and cards.",
+			"Don't use sharp corners or hairline (1px) borders on raised elements.",
+			"Don't reuse an action, chip or result color for decoration.",
+			"Don't hard-code color values in components; use the semantic theme names.",
+			"Don't name component classes after DaisyUI components (`title`, `status`); use names like `table-title` or `status-bar`."
+		]
+	}
+}

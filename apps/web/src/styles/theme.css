@@ -36,11 +36,16 @@
 	--noise: 0;
 }
 
-@theme {
+@theme static {
 	--font-display: 'Lilita One', system-ui, sans-serif;
 	--font-sans: 'Nunito Variable', system-ui, sans-serif;
 	--color-felt: oklch(58% 0.16 160);
 	--color-felt-dark: oklch(42% 0.12 165);
+	--color-felt-print: oklch(90% 0.08 165);
+	/* The room around the table, below the rail. */
+	--color-floor: oklch(27% 0.07 280);
+	/* The tiled suit print on the page background. */
+	--color-pattern: oklch(88% 0.07 85 / 0.7);
 	--color-log-player: oklch(50% 0.17 255);
 	--color-log-dealer: oklch(50% 0.2 25);
 	--color-log-money: oklch(50% 0.14 150);

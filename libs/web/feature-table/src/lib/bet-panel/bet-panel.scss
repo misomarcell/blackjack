@@ -53,8 +53,9 @@
 
 .chip-tool {
 	--chip: var(--color-neutral);
-	font-size: 1.35rem;
-	text-shadow: none;
+	--icon-size: 1.35rem;
+	display: grid;
+	place-items: center;
 }
 
 .chip-placeholder {

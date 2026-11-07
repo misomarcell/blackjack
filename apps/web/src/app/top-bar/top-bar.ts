@@ -1,14 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { apiErrorMessage, AuthStore, PageTitle } from '@blackjack/web/data-access';
-import { BalanceDisplay } from '@blackjack/web/ui';
+import { BalanceDisplay, Icon } from '@blackjack/web/ui';
 
 /** Smallest chip; below it a player can top up for free. */
 const MIN_CHIP = 5;
 
 @Component({
 	selector: 'bj-top-bar',
-	imports: [RouterLink, RouterLinkActive, BalanceDisplay],
+	imports: [RouterLink, RouterLinkActive, BalanceDisplay, Icon],
 	templateUrl: './top-bar.html',
 	styleUrl: './top-bar.scss',
 	host: { '[class.with-page]': 'pageTitle.current() !== null' },

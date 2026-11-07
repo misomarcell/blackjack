@@ -1,10 +1,8 @@
 import { effect, Service, signal } from '@angular/core';
 import type { HandResult } from '@blackjack/shared/blackjack';
 import type { SceneSounds } from '../scene/sounds';
-import { cardSlide, chipClick, resultSounds, turnChime } from './effects';
-import { JazzLoop } from './jazz';
-
-type Effect = (ctx: BaseAudioContext, out: AudioNode, at: number) => void;
+import { MusicPlayer } from './music-player';
+import { type EffectName, RESULT_EFFECTS, SoundEffects } from './sound-effects';
 
 const SOUND_KEY = 'bj-sound';
 const MUSIC_KEY = 'bj-music';
@@ -28,7 +26,7 @@ function saveSetting(key: string, on: boolean): void {
 
 /**
  * Sound effects and background music for the table. Browsers only allow audio after the player
- * interacts with the page, so the audio context starts on the first click or key press.
+ * interacts with the page, so everything starts on the first click or key press at a table.
  */
 @Service()
 export class TableAudio implements SceneSounds {
@@ -36,9 +34,11 @@ export class TableAudio implements SceneSounds {
 	readonly musicOn = signal(readSetting(MUSIC_KEY));
 
 	private ctx: AudioContext | null = null;
-	private effectsOut: GainNode | null = null;
-	private jazz: JazzLoop | null = null;
+	private effects: SoundEffects | null = null;
+	private music: MusicPlayer | null = null;
 	private atTable = false;
+	/** True once the player has interacted, so playback is allowed. */
+	private unlocked = false;
 	private readonly unlock = (): void => void this.resume();
 
 	constructor() {
@@ -53,9 +53,7 @@ export class TableAudio implements SceneSounds {
 	enterTable(): void {
 		this.atTable = true;
 		UNLOCK_EVENTS.forEach((type) => document.addEventListener(type, this.unlock));
-		if (this.ctx) {
-			void this.resume();
-		}
+		this.syncMusic();
 	}
 
 	leaveTable(): void {
@@ -65,52 +63,44 @@ export class TableAudio implements SceneSounds {
 	}
 
 	card(): void {
-		this.play(cardSlide);
+		this.play('card');
 	}
 
 	chip(): void {
-		this.play(chipClick);
+		this.play('chip');
 	}
 
 	result(result: HandResult): void {
-		this.play(resultSounds[result]);
+		this.play(RESULT_EFFECTS[result]);
 	}
 
 	yourTurn(): void {
-		this.play(turnChime);
+		this.play('turn');
 	}
 
-	private play(sound: Effect): void {
-		if (this.soundOn() && this.ctx?.state === 'running' && this.effectsOut) {
-			sound(this.ctx, this.effectsOut, this.ctx.currentTime);
+	private play(name: EffectName): void {
+		if (this.soundOn()) {
+			this.effects?.play(name);
 		}
 	}
 
 	private async resume(): Promise<void> {
-		this.ctx ??= this.createContext();
+		this.unlocked = true;
+		this.ctx ??= new AudioContext();
+		this.effects ??= new SoundEffects(this.ctx);
+		this.syncMusic();
 		if (this.ctx.state !== 'running') {
 			await this.ctx.resume().catch(() => undefined);
 		}
-		this.syncMusic();
-	}
-
-	private createContext(): AudioContext {
-		const ctx = new AudioContext();
-		const master = ctx.createDynamicsCompressor();
-		master.connect(ctx.destination);
-		this.effectsOut = ctx.createGain();
-		this.effectsOut.gain.value = 0.8;
-		this.effectsOut.connect(master);
-		this.jazz = new JazzLoop(ctx, master);
-		return ctx;
+		await this.effects.load();
 	}
 
 	private syncMusic(): void {
-		const wanted = this.atTable && this.musicOn() && this.ctx?.state === 'running';
-		if (wanted) {
-			this.jazz?.start();
-		} else if (this.jazz?.playing) {
-			this.jazz.stop();
+		if (this.atTable && this.musicOn() && this.unlocked) {
+			this.music ??= new MusicPlayer();
+			this.music.play();
+		} else if (this.music?.playing) {
+			this.music.pause();
 		}
 	}
 }

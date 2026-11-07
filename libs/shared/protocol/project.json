@@ -1,0 +1,13 @@
+{
+	"name": "shared-protocol",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/shared/protocol/src",
+	"projectType": "library",
+	"tags": ["scope:shared", "type:util"],
+	"targets": {
+		"typecheck": {
+			"command": "tsc --noEmit -p {projectRoot}/tsconfig.json",
+			"cache": true
+		}
+	}
+}

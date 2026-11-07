@@ -1,0 +1,26 @@
+{
+	"name": "server",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/server/src",
+	"projectType": "application",
+	"tags": ["scope:server", "type:app"],
+	"targets": {
+		"serve": {
+			"command": "bun --watch apps/server/src/main.ts",
+			"continuous": true
+		},
+		"build": {
+			"command": "bun build apps/server/src/main.ts --target=bun --outdir=dist/apps/server",
+			"outputs": ["{workspaceRoot}/dist/apps/server"],
+			"cache": true
+		},
+		"test": {
+			"command": "bun test {projectRoot}",
+			"cache": true
+		},
+		"typecheck": {
+			"command": "tsc --noEmit -p {projectRoot}/tsconfig.json",
+			"cache": true
+		}
+	}
+}

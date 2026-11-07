@@ -4,7 +4,7 @@ import { handTotal } from './hand';
 type RankedCard = Readonly<{ rank: Rank }>;
 
 /** A player may split up to three times, ending with at most four hands. */
-export const MAX_HANDS = 4;
+const MAX_HANDS = 4;
 
 export function canSplit(cards: readonly RankedCard[], handCount: number): boolean {
 	const [first, second] = cards;

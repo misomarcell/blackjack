@@ -16,6 +16,8 @@ export class BetPanel {
 	readonly maxBet = input.required<number>();
 	/** The stake of the viewer's previous round, 0 when there is none. */
 	readonly lastBet = input(0);
+	/** Some seat has at least the minimum down, so the bets can be placed. */
+	readonly canPlace = input.required<boolean>();
 
 	readonly chip = output<number>();
 	readonly clear = output();

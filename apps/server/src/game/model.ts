@@ -80,8 +80,13 @@ export function playingSeats(state: TableState): Seat[] {
 	return state.seats.filter((seat) => seat.hands.length > 0);
 }
 
-export function seatOfUser(state: TableState, userId: number): Seat | undefined {
-	return state.seats.find((seat) => seat.player?.userId === userId);
+export function seatsOfUser(state: TableState, userId: number): Seat[] {
+	return state.seats.filter((seat) => seat.player?.userId === userId);
+}
+
+/** How many different people sit at the table (one player can hold several seats). */
+export function playerCount(state: TableState): number {
+	return new Set(occupiedSeats(state).map((seat) => seat.player?.userId)).size;
 }
 
 /** Total money a seat has on the table right now, used for refunds. */

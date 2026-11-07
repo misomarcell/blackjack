@@ -10,8 +10,9 @@
 			<li class="opacity-60">Say hi to the table!</li>
 		}
 	</ol>
+	<!-- The label sits outside the join, so the input is its first item and gets the rounded left edge. -->
+	<label for="chat-input" class="sr-only">Message</label>
 	<form [formRoot]="chatForm" class="join w-full">
-		<label for="chat-input" class="sr-only">Message</label>
 		<input
 			id="chat-input"
 			class="input input-sm join-item w-full"

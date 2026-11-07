@@ -78,11 +78,10 @@ export class TableScene {
 	}
 
 	render(table: TableView, viewerId: number | null): void {
-		const viewerSeated = table.seats.some((seat) => seat.player?.userId === viewerId);
 		const betting = table.phase === 'idle' || table.phase === 'betting';
 		table.seats.forEach((seat) => {
 			this.seats[seat.index]?.update(seat, {
-				viewerSeated,
+				canSit: viewerId !== null,
 				isViewer: isViewerSeat(seat, viewerId),
 				activeHand: table.turn?.seat === seat.index ? table.turn.hand : null,
 				showReady: betting && seat.ready,

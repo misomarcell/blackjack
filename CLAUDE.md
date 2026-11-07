@@ -34,11 +34,11 @@ README.md has the full feature list, layout and deployment steps; read it first.
 - Keep code simple and readable. Small named functions, a one-line doc comment on anything non-obvious, no
   clever abstractions.
 - Angular:
-  - Components are standalone, with separate `.ts`, `.html` and `.scss` files (no inline templates or styles).
-  - Use `input()`, `output()`, signals, `computed`, `effect` and `@if`/`@for` control flow.
-  - Services use `@Service()`, or `@Service({ autoProvided: false })` plus `providers: [...]` when one instance per
-    screen is needed. Inject with `inject()`.
-  - The app is zoneless and OnPush is the default, so don't add zone.js.
+    - Components are standalone, with separate `.ts`, `.html` and `.scss` files (no inline templates or styles).
+    - Use `input()`, `output()`, signals, `computed`, `effect` and `@if`/`@for` control flow.
+    - Services use `@Service()`, or `@Service({ autoProvided: false })` plus `providers: [...]` when one instance per
+      screen is needed. Inject with `inject()`.
+    - The app is zoneless and OnPush is the default, so don't add zone.js.
 - Forms use Signal Forms (`form()`, `[formField]`, `[formRoot]`, validators in the schema). Don't set `name` on a
   `[formField]` input: Signal Forms sets it, and the compiler errors otherwise. Keep `autocomplete` attributes.
 - Styling uses Tailwind + DaisyUI classes in templates. Colors and fonts live only in `apps/web/src/styles/theme.css`.

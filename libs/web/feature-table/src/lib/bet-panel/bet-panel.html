@@ -37,11 +37,6 @@
 		<span class="chip chip-tool chip-placeholder" aria-hidden="true"></span>
 	}
 </div>
-<button
-	type="button"
-	class="btn btn-primary chunky-sm place"
-	[disabled]="bet() < minBet()"
-	(click)="ready.emit()"
->
+<button type="button" class="btn btn-primary chunky-sm place" [disabled]="!canPlace()" (click)="ready.emit()">
 	Place bet
 </button>

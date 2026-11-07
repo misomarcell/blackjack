@@ -41,6 +41,10 @@
 	box-shadow: var(--shadow-chunky);
 }
 
+.untimed {
+	padding-bottom: 0.6rem;
+}
+
 /* The countdown runs along the card's bottom edge, edge to edge like a toast's timeout bar. */
 .hud-timer {
 	display: flex;

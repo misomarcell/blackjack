@@ -1,5 +1,5 @@
 import type { Betting, BettingContext } from './betting';
-import { clearSeat, type Seat, seatOfUser } from './model';
+import { clearSeat, type Seat, seatsOfUser } from './model';
 import { who } from './table-log';
 
 interface SeatedUser {
@@ -20,9 +20,6 @@ export class Seating {
 		const seat = state.seats[index];
 		if (!seat || seat.player) {
 			return 'That seat is taken';
-		}
-		if (seatOfUser(state, user.id)) {
-			return 'You already have a seat here';
 		}
 		seat.player = { userId: user.id, username: user.username, connected: true };
 		this.ctx.log.add(who(seat), ' sits down');
@@ -51,17 +48,20 @@ export class Seating {
 		return null;
 	}
 
+	/** Applies to every seat the user holds. Seats out of the round are freed at once on disconnect. */
 	async setConnected(userId: number, connected: boolean): Promise<void> {
-		const seat = seatOfUser(this.ctx.state, userId);
-		if (!seat?.player) {
-			return;
+		const seats = seatsOfUser(this.ctx.state, userId);
+		for (const seat of seats) {
+			if (seat.player) {
+				seat.player.connected = connected;
+			}
+			if (!connected && seat.hands.length === 0) {
+				await this.leave(seat);
+			}
 		}
-		seat.player.connected = connected;
-		if (!connected && seat.hands.length === 0) {
-			await this.leave(seat);
-			return;
+		if (seats.length > 0) {
+			this.ctx.broadcast();
 		}
-		this.ctx.broadcast();
 	}
 
 	/** Drops players who left or disconnected during the round that just ended. */

@@ -4,6 +4,7 @@ import type {
 	ClientMessage,
 	HandView,
 	LogEntry,
+	SeatView,
 	TableServerMessage,
 	TableView,
 } from '@blackjack/shared/protocol';
@@ -36,19 +37,26 @@ export class TableSession {
 	readonly lastBet = signal(0);
 	private lastBetRound = 0;
 
-	readonly mySeat = computed(() => {
+	/** Every seat the viewer holds (a player can sit in several). */
+	readonly mySeats = computed<SeatView[]>(() => {
 		const userId = this.auth.user()?.id;
-		return this.table()?.seats.find((seat) => seat.player?.userId === userId) ?? null;
+		return this.table()?.seats.filter((seat) => seat.player?.userId === userId) ?? [];
+	});
+
+	/** The viewer's seat whose hand is in turn, if any. */
+	readonly myTurnSeat = computed<SeatView | null>(() => {
+		const table = this.table();
+		if (table?.phase !== 'playing' || !table.turn) {
+			return null;
+		}
+		const turnSeat = table.turn.seat;
+		return this.mySeats().find((seat) => seat.index === turnSeat) ?? null;
 	});
 
 	/** The hand the viewer has to act on right now, if any. */
 	readonly myTurnHand = computed<HandView | null>(() => {
-		const table = this.table();
-		const seat = this.mySeat();
-		if (!table || !seat || table.phase !== 'playing' || table.turn?.seat !== seat.index) {
-			return null;
-		}
-		return seat.hands[table.turn.hand] ?? null;
+		const hand = this.table()?.turn?.hand ?? 0;
+		return this.myTurnSeat()?.hands[hand] ?? null;
 	});
 
 	constructor() {
@@ -95,10 +103,10 @@ export class TableSession {
 		);
 	}
 
-	/** The stake of the viewer's first hand, as dealt (before any double or split). */
+	/** The stake of the viewer's first dealt hand, as dealt (before any double or split). */
 	private rememberBet(): void {
 		const round = this.table()?.round ?? 0;
-		const stake = this.mySeat()?.hands[0]?.bet;
+		const stake = this.mySeats().find((seat) => seat.hands.length > 0)?.hands[0]?.bet;
 		if (stake && round !== this.lastBetRound) {
 			this.lastBetRound = round;
 			this.lastBet.set(stake);

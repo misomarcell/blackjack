@@ -1,0 +1,35 @@
+/* Global element defaults and the few reusable game-style utilities. */
+@layer base {
+	html,
+	body {
+		min-height: 100dvh;
+	}
+
+	body {
+		@apply bg-base-200 font-sans font-bold text-base-content;
+	}
+
+	h1,
+	h2,
+	h3 {
+		@apply font-display tracking-wide;
+	}
+}
+
+@utility chunky {
+	@apply border-[3px] border-neutral shadow-chunky;
+}
+
+@utility chunky-sm {
+	@apply border-[3px] border-neutral shadow-chunky-sm;
+}
+
+/* MANDATORY dialog scroll containment (modern-web-guidance: dialog). */
+dialog:modal {
+	overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+	overflow: hidden;
+	overscroll-behavior: contain;
+}

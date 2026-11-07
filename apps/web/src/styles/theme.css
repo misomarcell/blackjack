@@ -1,0 +1,46 @@
+/* Bright, playful game theme. All colors live here; components only use semantic names. */
+@plugin 'daisyui/theme' {
+	name: 'arcade';
+	default: true;
+	prefersdark: false;
+	color-scheme: light;
+
+	--color-base-100: oklch(98% 0.02 95);
+	--color-base-200: oklch(94% 0.04 95);
+	--color-base-300: oklch(88% 0.06 95);
+	--color-base-content: oklch(25% 0.06 280);
+	--color-primary: oklch(68% 0.25 350);
+	--color-primary-content: oklch(99% 0 0);
+	--color-secondary: oklch(72% 0.17 230);
+	--color-secondary-content: oklch(99% 0 0);
+	--color-accent: oklch(86% 0.18 95);
+	--color-accent-content: oklch(25% 0.06 280);
+	--color-neutral: oklch(30% 0.08 280);
+	--color-neutral-content: oklch(98% 0.01 95);
+	--color-info: oklch(74% 0.15 220);
+	--color-info-content: oklch(20% 0.05 240);
+	--color-success: oklch(74% 0.2 150);
+	--color-success-content: oklch(20% 0.05 150);
+	--color-warning: oklch(80% 0.17 70);
+	--color-warning-content: oklch(25% 0.06 70);
+	--color-error: oklch(65% 0.24 25);
+	--color-error-content: oklch(99% 0 0);
+
+	--radius-selector: 1rem;
+	--radius-field: 0.9rem;
+	--radius-box: 1.4rem;
+	--size-selector: 0.3rem;
+	--size-field: 0.3rem;
+	--border: 3px;
+	--depth: 1;
+	--noise: 0;
+}
+
+@theme {
+	--font-display: 'Lilita One', system-ui, sans-serif;
+	--font-sans: 'Nunito Variable', system-ui, sans-serif;
+	--color-felt: oklch(58% 0.16 160);
+	--color-felt-dark: oklch(42% 0.12 165);
+	--shadow-chunky: 0 6px 0 0 oklch(25% 0.06 280);
+	--shadow-chunky-sm: 0 3px 0 0 oklch(25% 0.06 280);
+}

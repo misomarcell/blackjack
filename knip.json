@@ -1,0 +1,23 @@
+{
+	"$schema": "https://unpkg.com/knip@6/schema.json",
+	"workspaces": {
+		".": {
+			"entry": ["apps/web/src/main.ts", "apps/server/src/main.ts", "**/*.test.ts"],
+			"project": ["apps/**/*.ts", "libs/**/*.ts"]
+		}
+	},
+	"ignoreDependencies": [
+		"@angular/cli",
+		"@angular/language-service",
+		"@nx/js",
+		"angular-eslint",
+		"daisyui",
+		"@fontsource/lilita-one",
+		"@fontsource-variable/nunito"
+	],
+	"rules": {
+		"types": "error",
+		"exports": "error",
+		"duplicates": "error"
+	}
+}

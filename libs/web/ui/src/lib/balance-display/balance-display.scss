@@ -10,17 +10,10 @@
 	font-size: 1.25rem;
 	font-variant-numeric: tabular-nums;
 	box-shadow: var(--shadow-chunky-sm);
-	transition:
-		background-color 0.2s,
-		transform 0.2s;
+	transition: transform 0.3s;
 }
 
+/* A small bump while winnings count up; the colors stay put. */
 :host(.rising) {
-	background: var(--color-success);
-	transform: scale(1.08);
-}
-
-:host(.falling) {
-	background: var(--color-error);
-	color: var(--color-error-content);
+	transform: scale(1.06);
 }

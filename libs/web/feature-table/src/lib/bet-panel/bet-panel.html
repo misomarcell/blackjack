@@ -13,13 +13,24 @@
 	}
 </div>
 <div class="bet-row">
-	<div class="bet-amount">
-		<span class="sr-only">Your bet</span>
-		<output aria-live="polite">{{ dollars(bet()) }}</output>
-		@if (bet() > 0) {
-			<button type="button" class="clear" aria-label="Clear bet" (click)="clear.emit()">✕</button>
-		}
-	</div>
+	@if (showRepeat()) {
+		<button
+			type="button"
+			class="btn btn-secondary chunky-sm repeat"
+			[disabled]="!canRepeat()"
+			(click)="repeat()"
+		>
+			<span aria-hidden="true">↻</span> Repeat {{ dollars(lastBet()) }}
+		</button>
+	} @else {
+		<div class="bet-amount">
+			<span class="sr-only">Your bet</span>
+			<output aria-live="polite">{{ dollars(bet()) }}</output>
+			@if (bet() > 0) {
+				<button type="button" class="clear" aria-label="Clear bet" (click)="clear.emit()">✕</button>
+			}
+		</div>
+	}
 	<button
 		type="button"
 		class="btn btn-primary chunky-sm place"

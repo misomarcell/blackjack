@@ -57,13 +57,16 @@
 	position: absolute;
 	top: -0.3rem;
 	right: -0.3rem;
-	min-width: 1.15rem;
-	padding: 0 0.25rem;
-	border-radius: 999px;
+	display: grid;
+	place-items: center;
+	width: 1.3rem;
+	height: 1.3rem;
+	border: 2px solid var(--color-neutral);
+	border-radius: 50%;
 	background: var(--color-primary);
 	color: var(--color-primary-content);
-	font-size: 0.7rem;
-	line-height: 1.15rem;
+	font-size: 0.62rem;
+	line-height: 1;
 }
 
 @media (max-height: 500px) {

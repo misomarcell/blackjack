@@ -10,6 +10,28 @@
 
 <div class="actions">
 	<bj-countdown [timer]="table().timer" [receivedAt]="receivedAt()" />
+	<button
+		type="button"
+		class="btn btn-sm btn-circle chunky-sm audio-toggle"
+		[class.off]="!audio.soundOn()"
+		[attr.aria-pressed]="audio.soundOn()"
+		aria-label="Sound effects"
+		[attr.title]="audio.soundOn() ? 'Sound effects on' : 'Sound effects off'"
+		(click)="audio.soundOn.set(!audio.soundOn())"
+	>
+		{{ audio.soundOn() ? '🔊' : '🔇' }}
+	</button>
+	<button
+		type="button"
+		class="btn btn-sm btn-circle chunky-sm audio-toggle"
+		[class.off]="!audio.musicOn()"
+		[attr.aria-pressed]="audio.musicOn()"
+		aria-label="Music"
+		[attr.title]="audio.musicOn() ? 'Music on' : 'Music off'"
+		(click)="audio.musicOn.set(!audio.musicOn())"
+	>
+		🎵
+	</button>
 	<button type="button" class="btn btn-sm btn-secondary chunky-sm" (click)="share()">
 		{{ copied() ? 'Copied!' : 'Share link' }}
 	</button>

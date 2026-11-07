@@ -2,16 +2,15 @@ import { Component, computed, effect, input, signal, untracked } from '@angular/
 import { countUp } from '../count-up';
 import { formatDollars } from '../format';
 
-const COUNT_MS = 900;
+const COUNT_MS = 1600;
 
-/** A dollar balance that counts up or down to its new value and flashes the direction. */
+/** A dollar balance that counts up or down, in whole dollars, to its new value. */
 @Component({
 	selector: 'bj-balance-display',
 	templateUrl: './balance-display.html',
 	styleUrl: './balance-display.scss',
 	host: {
 		'[class.rising]': "trend() === 'up'",
-		'[class.falling]': "trend() === 'down'",
 	},
 })
 export class BalanceDisplay {
@@ -30,7 +29,10 @@ export class BalanceDisplay {
 				return;
 			}
 			this.trend.set(target > from ? 'up' : 'down');
-			const cancel = countUp(from, target, COUNT_MS, (value) => this.shown.set(value));
+			// Whole dollars while counting; the exact amount (cents and all) once it lands.
+			const cancel = countUp(from, target, COUNT_MS, (value) =>
+				this.shown.set(value === target ? value : Math.round(value)),
+			);
 			const settle = setTimeout(() => this.trend.set(null), COUNT_MS);
 			onCleanup(() => {
 				cancel();

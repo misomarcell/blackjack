@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 import type { Card, Rank } from '@blackjack/shared/blackjack';
-import type { TableServerMessage, TableView } from '@blackjack/shared/protocol';
+import type { LogEntry, TableServerMessage, TableView } from '@blackjack/shared/protocol';
 import { gameConfig } from '../config';
 import type { CardSource, Wallet } from './model';
+import type { LogStore } from './table-log';
 import { TableRoom, type TableConnection } from './table-room';
 
 const fastConfig = {
@@ -89,6 +90,15 @@ async function reached(connection: Spy, phase: TableView['phase']): Promise<Tabl
 	return states(connection).findLast((state) => state.phase === phase) as TableView;
 }
 
+/** Keeps log lines in memory with increasing ids, like the database would. */
+function memoryLog(): LogStore {
+	const entries: LogEntry[] = [];
+	return {
+		add: async (_tableId, parts) => entries.push({ id: entries.length + 1, parts }),
+		recent: async () => [...entries],
+	};
+}
+
 let room: TableRoom;
 let wallet: MemoryWallet;
 
@@ -101,6 +111,7 @@ function setup(ranks: Rank[]): void {
 			config: fastConfig,
 			shoe: new StackedShoe(ranks),
 			chat: { add: async () => 1, recent: async () => [] },
+			log: memoryLog(),
 			onSeatsChanged: () => undefined,
 		},
 	);
@@ -208,6 +219,7 @@ describe('TableRoom', () => {
 		await room.handle(alice, { type: 'action', action: 'hit' });
 		await room.handle(alice, { type: 'action', action: 'stand' });
 		await reached(alice, 'settled');
+		await room.log.flushed();
 
 		expect(logLines(alice)).toEqual([
 			'player1 sits down',
@@ -220,6 +232,29 @@ describe('TableRoom', () => {
 			'Dealer busts with 22',
 			'player1 wins $25 with 17',
 		]);
+	});
+
+	it('sends saved log lines to players who join later', async () => {
+		setup([]);
+		const alice = player(1);
+		await seatAndBet(alice, 0, 25);
+		await room.log.flushed();
+
+		const bob = player(2);
+		await room.join(bob);
+		const history = bob.messages.find((message) => message.type === 'log-history');
+		expect(history).toEqual({
+			type: 'log-history',
+			entries: [
+				{
+					id: 1,
+					parts: [
+						{ tone: 'player', text: 'player1' },
+						{ tone: 'text', text: ' sits down' },
+					],
+				},
+			],
+		});
 	});
 
 	it('refunds bets when the table closes', async () => {

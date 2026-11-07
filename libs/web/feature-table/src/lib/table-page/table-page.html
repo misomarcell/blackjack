@@ -32,6 +32,7 @@
 						[balance]="auth.balance()"
 						[minBet]="table.minBet"
 						[maxBet]="table.maxBet"
+						[lastBet]="session.lastBet()"
 						(chip)="send({ type: 'bet', amount: $event })"
 						(clear)="send({ type: 'clear-bet' })"
 						(ready)="send({ type: 'ready' })"

@@ -14,7 +14,7 @@ export function countUp(
 	const start = performance.now();
 	let frame = requestAnimationFrame(function step(now: number) {
 		const progress = Math.min(1, (now - start) / durationMs);
-		onFrame(from + (to - from) * easeOutCubic(progress));
+		onFrame(progress < 1 ? from + (to - from) * easeOutCubic(progress) : to);
 		if (progress < 1) {
 			frame = requestAnimationFrame(step);
 		}

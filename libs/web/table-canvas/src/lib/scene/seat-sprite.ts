@@ -3,9 +3,11 @@ import { formatDollars } from '@blackjack/web/ui';
 import { Container, Graphics, Text } from 'pixi.js';
 import { chipStack } from './chips';
 import { handLabel } from './hand-labels';
+import { HandPointer } from './hand-pointer';
 import { handOrigin, handScale, type Point, seatPosition } from './layout';
 import { colors, textStyles } from './palette';
 import { pill } from './pill';
+import type { SceneSounds } from './sounds';
 import { ease, type Tweener } from './tween';
 
 const SPOT_RADIUS = 58;
@@ -21,39 +23,54 @@ export interface SeatContext {
 
 /** A seat: betting spot, chips, player name and the labels above each hand. Cards live in the card layer. */
 export class SeatSprite extends Container {
+	private readonly seatSpot = new Container();
 	private readonly spot = new Graphics();
 	private readonly turnRing = new Graphics();
 	private readonly bet = new Container();
 	private readonly nameplate = new Container();
 	private readonly labels = new Container();
 	private readonly shownLabels = new Map<number, string>();
+	private readonly pointer = new HandPointer();
+	/** Seats, names and labels grow on small screens so they stay readable. */
+	private uiScale = 1;
+	/** -1 until the first snapshot, so joining a table plays no chip sounds. */
+	private shownBet = -1;
+	private shownTurn: number | null = null;
 
 	constructor(
 		private readonly index: number,
 		private readonly tweener: Tweener,
+		private readonly sounds: SceneSounds,
 		onPick: (index: number) => void,
 	) {
 		super();
 		this.turnRing.circle(0, 0, SPOT_RADIUS + 12).stroke({ width: 8, color: colors.yellow });
 		this.turnRing.visible = false;
-		const seatSpot = new Container();
-		seatSpot.position = seatPosition(index);
-		seatSpot.addChild(this.turnRing, this.spot, this.bet, this.nameplate);
+		this.seatSpot.position = seatPosition(index);
+		this.seatSpot.addChild(this.turnRing, this.spot, this.bet, this.nameplate);
 		this.nameplate.y = SPOT_RADIUS + 26;
-		this.addChild(seatSpot, this.labels);
+		this.addChild(this.seatSpot, this.labels, this.pointer);
 		this.spot.on('pointertap', () => onPick(this.index));
+	}
+
+	setUiScale(scale: number): void {
+		this.uiScale = scale;
+		this.seatSpot.scale.set(scale);
+		this.pointer.scale.set(scale);
+		this.labels.children.forEach((badge) => badge.scale.set(scale));
 	}
 
 	update(seat: SeatView, context: SeatContext): void {
 		this.drawSpot(seat, context);
 		this.drawBet(seat);
 		this.drawNameplate(seat, context);
-		// The viewer's own turn is shown on the action buttons instead.
+		// Others see a steady ring on whoever is playing; the viewer's own turn lights up the action buttons.
 		this.turnRing.visible = context.activeHand !== null && !context.isViewer;
+		this.announceTurn(context);
 	}
 
-	/** Hand totals and results. The scene calls this once the cards they describe have landed. */
-	updateLabels(seat: SeatView, activeHand: number | null): void {
+	/** Hand totals, results and the split-hand pointer, once the cards they describe have landed. */
+	updateLabels(seat: SeatView, activeHand: number | null, isViewer: boolean): void {
 		this.labels.children.forEach((child) => this.tweener.cancel(child.scale));
 		this.labels.removeChildren().forEach((child) => child.destroy({ children: true }));
 		if (seat.hands.length === 0) {
@@ -66,17 +83,37 @@ export class SeatSprite extends Container {
 			const label = handLabel(hand, activeHand === index);
 			const badge = pill(label.text, label.fill, label.textColor);
 			badge.position = this.labelPosition(index, seat.hands.length, hand.cards.length);
+			badge.scale.set(this.uiScale);
 			this.labels.addChild(badge);
-			this.popIfNew(index, label.text, badge);
+			if (this.popIfNew(index, label.text, badge) && isViewer && hand.result) {
+				this.sounds.result(hand.result);
+			}
 		});
+		this.placePointer(seat, activeHand, isViewer);
 	}
 
-	/** Gentle glow on the seat whose turn it is. Called every frame. */
+	/** Called every frame. */
 	pulse(time: number): void {
-		if (this.turnRing.visible) {
-			this.turnRing.alpha = 0.55 + 0.45 * Math.sin(time / 180);
-			this.turnRing.scale.set(1 + 0.04 * Math.sin(time / 180));
+		this.pointer.bob(time);
+	}
+
+	/** Only split seats need to show which hand is up. */
+	private placePointer(seat: SeatView, activeHand: number | null, isViewer: boolean): void {
+		const hand = activeHand === null ? undefined : seat.hands[activeHand];
+		if (activeHand === null || !hand || seat.hands.length < 2) {
+			this.pointer.hide();
+			return;
 		}
+		const label = this.labelPosition(activeHand, seat.hands.length, hand.cards.length);
+		this.pointer.show({ x: label.x, y: label.y - 24 * this.uiScale }, isViewer);
+	}
+
+	private announceTurn(context: SeatContext): void {
+		const turn = context.isViewer ? context.activeHand : null;
+		if (turn !== null && turn !== this.shownTurn) {
+			this.sounds.yourTurn();
+		}
+		this.shownTurn = turn;
 	}
 
 	private drawSpot(seat: SeatView, context: SeatContext): void {
@@ -100,6 +137,10 @@ export class SeatSprite extends Container {
 	private drawBet(seat: SeatView): void {
 		this.bet.removeChildren().forEach((child) => child.destroy({ children: true }));
 		const amount = seat.bet + seat.hands.reduce((sum, hand) => sum + hand.bet, 0);
+		if (this.shownBet >= 0 && amount > this.shownBet) {
+			this.sounds.chip();
+		}
+		this.shownBet = amount;
 		if (amount <= 0) {
 			return;
 		}
@@ -136,12 +177,15 @@ export class SeatSprite extends Container {
 		};
 	}
 
-	private popIfNew(hand: number, text: string, badge: Container): void {
+	/** Pops a label that changed. Returns whether it was new. */
+	private popIfNew(hand: number, text: string, badge: Container): boolean {
 		if (this.shownLabels.get(hand) === text) {
-			return;
+			return false;
 		}
 		this.shownLabels.set(hand, text);
-		badge.scale.set(0.2);
-		void this.tweener.to(badge.scale, { x: 1, y: 1 }, { duration: 320, ease: ease.outBack });
+		const size = this.uiScale;
+		badge.scale.set(0.2 * size);
+		void this.tweener.to(badge.scale, { x: size, y: size }, { duration: 320, ease: ease.outBack });
+		return true;
 	}
 }

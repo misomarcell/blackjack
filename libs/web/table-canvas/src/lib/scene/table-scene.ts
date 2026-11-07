@@ -6,6 +6,7 @@ import { Felt } from './felt';
 import { DEALER, STAGE } from './layout';
 import { colors } from './palette';
 import { pill } from './pill';
+import { RoundSound } from './round-sound';
 import { SeatSprite } from './seat-sprite';
 import type { SceneSounds } from './sounds';
 import { Tweener } from './tween';
@@ -32,6 +33,7 @@ export class TableScene {
 	private labelTimer: ReturnType<typeof setTimeout> | undefined;
 	private readonly dealerTitle = pill('DEALER', colors.ink);
 	private uiScale = 1;
+	private readonly roundSound: RoundSound;
 
 	private constructor(
 		private readonly app: Application,
@@ -40,6 +42,7 @@ export class TableScene {
 	) {
 		this.tweener = new Tweener(app.ticker);
 		this.cards = new CardLayer(this.tweener, sounds);
+		this.roundSound = new RoundSound(sounds);
 		this.seats = Array.from(
 			{ length: SEAT_COUNT },
 			(_, index) => new SeatSprite(index, this.tweener, sounds, onSeatPicked),
@@ -77,7 +80,8 @@ export class TableScene {
 		return new TableScene(app, sounds, onSeatPicked);
 	}
 
-	render(table: TableView, viewerId: number | null): void {
+	/** `focusSeat` is the viewer's seat taking chips right now, highlighted like a seat in turn. */
+	render(table: TableView, viewerId: number | null, focusSeat: number | null): void {
 		const betting = table.phase === 'idle' || table.phase === 'betting';
 		table.seats.forEach((seat) => {
 			this.seats[seat.index]?.update(seat, {
@@ -85,6 +89,7 @@ export class TableScene {
 				isViewer: isViewerSeat(seat, viewerId),
 				activeHand: table.turn?.seat === seat.index ? table.turn.hand : null,
 				showReady: betting && seat.ready,
+				focused: betting && seat.index === focusSeat,
 			});
 		});
 		this.cards.sync(cardTargets(table));
@@ -106,6 +111,7 @@ export class TableScene {
 				this.seats[seat.index]?.updateLabels(seat, activeHand, isViewerSeat(seat, viewerId));
 			});
 			this.drawDealerLabels(table);
+			this.roundSound.play(table, viewerId);
 		};
 		const wait = this.cards.remainingMs;
 		if (wait > 0) {

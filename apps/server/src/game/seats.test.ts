@@ -43,6 +43,20 @@ describe('TableRoom seats', () => {
 		expect(wallet.balances.get(1)).toBe(1050);
 	});
 
+	it('waits for every seat, and lets a seat without chips sit the round out', async () => {
+		setup([]);
+		const alice = player(1);
+		await seatAndBet(room, alice, 0, 25);
+		await room.handle(alice, { type: 'sit', seat: 3 });
+		await room.handle(alice, { type: 'ready', seat: 0 });
+		expect(lastState(alice).phase).not.toBe('playing');
+
+		await room.handle(alice, { type: 'ready', seat: 3 });
+		const playing = await reached(alice, 'playing');
+		expect(playing.seats[0]?.hands).toHaveLength(1);
+		expect(playing.seats[3]?.hands).toHaveLength(0);
+	});
+
 	it('only accepts moves for seats the player holds', async () => {
 		setup([]);
 		const alice = player(1);

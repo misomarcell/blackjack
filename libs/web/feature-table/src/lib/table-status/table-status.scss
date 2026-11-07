@@ -48,3 +48,18 @@
 		display: none;
 	}
 }
+
+/* Phones: the app bar shows the table name and back button instead (keep in sync with top-bar.scss). */
+@media (max-width: 767px), (max-height: 500px) {
+	:host {
+		grid-template-columns: 1fr auto;
+	}
+
+	.table-title {
+		display: none;
+	}
+
+	.banner {
+		justify-self: start;
+	}
+}

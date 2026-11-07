@@ -4,6 +4,13 @@ import type { HandView, PlayerAction } from '@blackjack/shared/protocol';
 
 const SHORTCUTS: Record<string, PlayerAction> = { h: 'hit', s: 'stand', d: 'double', p: 'split' };
 
+interface Move {
+	action: PlayerAction;
+	label: string;
+	key: string;
+	enabled: boolean;
+}
+
 /** Hit / Stand / Double / Split for the hand in turn. Keyboard: H, S, D, P. */
 @Component({
 	selector: 'bj-action-bar',
@@ -23,6 +30,12 @@ export class ActionBar {
 	protected readonly splitAllowed = computed(
 		() => this.affordable() && canSplit(this.ranks(), this.handCount()),
 	);
+	protected readonly moves = computed<Move[]>(() => [
+		{ action: 'hit', label: 'Hit', key: 'H', enabled: true },
+		{ action: 'stand', label: 'Stand', key: 'S', enabled: true },
+		{ action: 'double', label: 'Double', key: 'D', enabled: this.doubleAllowed() },
+		{ action: 'split', label: 'Split', key: 'P', enabled: this.splitAllowed() },
+	]);
 
 	protected onKey(event: KeyboardEvent): void {
 		const action = SHORTCUTS[event.key.toLowerCase()];

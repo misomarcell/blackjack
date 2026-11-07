@@ -3,6 +3,7 @@ import type {
 	ChatMessage,
 	ClientMessage,
 	HandView,
+	LogEntry,
 	TableServerMessage,
 	TableView,
 } from '@blackjack/shared/protocol';
@@ -10,6 +11,13 @@ import { AuthStore } from './auth.store';
 import { LiveSocket } from './live-socket';
 
 const CHAT_LIMIT = 100;
+const LOG_LIMIT = 100;
+/** Log lines wait until the cards they describe have landed on screen, so they never spoil a card. */
+const LOG_DELAY_MS = 700;
+
+type ServerHandlers = {
+	[Type in TableServerMessage['type']]: (message: Extract<TableServerMessage, { type: Type }>) => void;
+};
 
 /** One player's live connection to a table. Provide it on the table page. */
 @Service({ autoProvided: false })
@@ -21,6 +29,7 @@ export class TableSession {
 	/** When the last snapshot arrived, so countdowns can tick locally. */
 	readonly receivedAt = signal(0);
 	readonly chat = signal<ChatMessage[]>([]);
+	readonly log = signal<LogEntry[]>([]);
 	readonly error = signal<{ message: string } | null>(null);
 	readonly closed = signal(false);
 
@@ -55,27 +64,30 @@ export class TableSession {
 		this.socket?.send(message);
 	}
 
+	/** What each server message does to the session. */
+	private readonly handlers: ServerHandlers = {
+		state: ({ table }) => {
+			this.table.set(table);
+			this.receivedAt.set(performance.now());
+		},
+		chat: ({ message }) => this.chat.update((messages) => [...messages, message].slice(-CHAT_LIMIT)),
+		'chat-history': ({ messages }) => this.chat.set(messages),
+		log: ({ entry }) => {
+			setTimeout(
+				() => this.log.update((entries) => [...entries, entry].slice(-LOG_LIMIT)),
+				LOG_DELAY_MS,
+			);
+		},
+		'log-history': ({ entries }) => this.log.set(entries),
+		balance: ({ balance }) => this.auth.setBalance(balance),
+		error: ({ message }) => this.error.set({ message }),
+		closed: () => {
+			this.closed.set(true);
+			this.socket?.close();
+		},
+	};
+
 	private receive(message: TableServerMessage): void {
-		switch (message.type) {
-			case 'state':
-				this.table.set(message.table);
-				this.receivedAt.set(performance.now());
-				break;
-			case 'chat':
-				this.chat.update((messages) => [...messages, message.message].slice(-CHAT_LIMIT));
-				break;
-			case 'chat-history':
-				this.chat.set(message.messages);
-				break;
-			case 'balance':
-				this.auth.setBalance(message.balance);
-				break;
-			case 'error':
-				this.error.set({ message: message.message });
-				break;
-			case 'closed':
-				this.closed.set(true);
-				this.socket?.close();
-		}
+		(this.handlers[message.type] as (message: TableServerMessage) => void)(message);
 	}
 }

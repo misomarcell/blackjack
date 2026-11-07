@@ -5,8 +5,8 @@ export const colors = {
 	ink: 0x262047,
 	felt: 0x1fa37a,
 	feltDark: 0x137a5b,
-	rail: 0xff4fa3,
-	railDark: 0xc22a78,
+	rail: 0xdf6100,
+	railDark: 0xb03f00,
 	cream: 0xfff8e6,
 	yellow: 0xffd23f,
 	sky: 0x2bb6f5,
@@ -26,6 +26,12 @@ export const textStyles = {
 	}),
 	small: new TextStyle({ fontFamily: display, fontSize: 20, fill: colors.ink }),
 	pill: new TextStyle({ fontFamily: display, fontSize: 22, fill: colors.white }),
+	chip: new TextStyle({
+		fontFamily: display,
+		fontSize: 17,
+		fill: colors.white,
+		stroke: { color: colors.ink, width: 4 },
+	}),
 	rank: new TextStyle({ fontFamily: display, fontSize: 30, fill: colors.ink }),
 	feltTitle: new TextStyle({
 		fontFamily: display,

@@ -9,7 +9,7 @@
 	--color-base-200: oklch(94% 0.04 95);
 	--color-base-300: oklch(88% 0.06 95);
 	--color-base-content: oklch(25% 0.06 280);
-	--color-primary: oklch(68% 0.25 350);
+	--color-primary: oklch(64% 0.18 48);
 	--color-primary-content: oklch(99% 0 0);
 	--color-secondary: oklch(72% 0.17 230);
 	--color-secondary-content: oklch(99% 0 0);
@@ -41,6 +41,10 @@
 	--font-sans: 'Nunito Variable', system-ui, sans-serif;
 	--color-felt: oklch(58% 0.16 160);
 	--color-felt-dark: oklch(42% 0.12 165);
+	--color-log-player: oklch(50% 0.17 255);
+	--color-log-dealer: oklch(50% 0.2 25);
+	--color-log-money: oklch(50% 0.14 150);
+	--color-log-value: oklch(55% 0.17 55);
 	--shadow-chunky: 0 6px 0 0 oklch(25% 0.06 280);
 	--shadow-chunky-sm: 0 3px 0 0 oklch(25% 0.06 280);
 }

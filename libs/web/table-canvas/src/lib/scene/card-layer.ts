@@ -30,10 +30,17 @@ interface Placement {
 export class CardLayer extends Container {
 	private readonly sprites = new Map<string, CardSprite>();
 	private readonly placements = new WeakMap<CardSprite, Placement>();
+	/** When the last running deal, flip or move finishes (performance.now() time). */
+	private settledAt = 0;
 
 	constructor(private readonly tweener: Tweener) {
 		super();
 		this.sortableChildren = true;
+	}
+
+	/** How long until every card on the table has landed and shows its final side. */
+	get remainingMs(): number {
+		return Math.max(0, this.settledAt - performance.now());
 	}
 
 	sync(targets: CardTarget[]): void {
@@ -89,6 +96,7 @@ export class CardLayer extends Container {
 		timing: { duration: number; delay?: number },
 	): Promise<void> {
 		this.placements.set(sprite, { x: target.x, y: target.y, scale: target.scale });
+		this.busyFor(timing.duration + (timing.delay ?? 0) + (target.card.faceUp ? FLIP_MS : 0));
 		void this.tweener.to(sprite.scale, { x: target.scale, y: target.scale }, timing);
 		return this.tweener.to(sprite, { x: target.x, y: target.y, rotation: 0 }, timing);
 	}
@@ -96,10 +104,15 @@ export class CardLayer extends Container {
 	/** Squashes the card edge-on, swaps the side, and opens it up again. */
 	private async flip(sprite: CardSprite, target: CardTarget, delay: number): Promise<void> {
 		sprite.intendedFaceUp = target.card.faceUp;
+		this.busyFor(delay + FLIP_MS);
 		const half = { duration: FLIP_MS / 2, ease: ease.inOutQuad };
 		await this.tweener.to(sprite.scale, { x: 0 }, { ...half, delay });
 		sprite.showSide(target.card);
 		await this.tweener.to(sprite.scale, { x: target.scale }, half);
+	}
+
+	private busyFor(ms: number): void {
+		this.settledAt = Math.max(this.settledAt, performance.now() + ms);
 	}
 
 	private discardMissing(keep: Set<string>): void {

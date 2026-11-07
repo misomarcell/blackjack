@@ -12,17 +12,22 @@
 		</button>
 	}
 </div>
-<div class="flex items-center gap-2">
-	<span class="font-display text-lg">Bet {{ dollars(bet()) }}</span>
-	<button type="button" class="btn btn-sm" [disabled]="bet() === 0" (click)="clear.emit()">Clear</button>
+<div class="bet-row">
+	<div class="bet-amount">
+		<span class="sr-only">Your bet</span>
+		<output aria-live="polite">{{ dollars(bet()) }}</output>
+		@if (bet() > 0) {
+			<button type="button" class="clear" aria-label="Clear bet" (click)="clear.emit()">✕</button>
+		}
+	</div>
 	<button
 		type="button"
-		class="btn btn-primary chunky-sm"
+		class="btn btn-primary chunky-sm place"
 		[disabled]="bet() < minBet()"
 		[attr.aria-describedby]="bet() < minBet() ? 'min-bet-hint' : null"
 		(click)="ready.emit()"
 	>
-		Deal me in
+		Place bet
 	</button>
 </div>
 @if (bet() < minBet()) {

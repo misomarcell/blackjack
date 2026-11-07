@@ -17,6 +17,7 @@ import {
 } from './model';
 import { Round, RoundAborted, type RoundContext } from './round';
 import { Seating } from './seating';
+import { TableLog } from './table-log';
 import { toTableView } from './view';
 
 export type TableConnection = Connection<TableServerMessage>;
@@ -47,6 +48,7 @@ type SeatHandlers = {
 export class TableRoom implements RoundContext {
 	readonly state: TableState;
 	readonly countdown = new Countdown();
+	readonly log = new TableLog((entry) => this.sendAll({ type: 'log', entry }));
 	readonly shoe: CardSource;
 	readonly wallet: Wallet;
 	readonly config: GameConfig;
@@ -75,6 +77,7 @@ export class TableRoom implements RoundContext {
 		this.connections.add(connection);
 		await this.seating.setConnected(connection.user.id, true);
 		connection.send({ type: 'state', table: toTableView(this.state, this.countdown.view()) });
+		connection.send({ type: 'log-history', entries: this.log.recent() });
 		connection.send({ type: 'chat-history', messages: await this.deps.chat.recent(this.state.table.id) });
 	}
 

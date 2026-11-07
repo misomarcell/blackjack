@@ -65,6 +65,13 @@ function states(connection: Spy): TableView[] {
 	return connection.messages.flatMap((message) => (message.type === 'state' ? [message.table] : []));
 }
 
+/** The table log as plain lines, e.g. "player1 hits on 12". */
+function logLines(connection: Spy): string[] {
+	return connection.messages.flatMap((message) =>
+		message.type === 'log' ? [message.entry.parts.map((part) => part.text).join('')] : [],
+	);
+}
+
 function lastState(connection: Spy): TableView {
 	return states(connection).at(-1) as TableView;
 }
@@ -189,6 +196,30 @@ describe('TableRoom', () => {
 
 		expect(settled.seats[0]?.hands[0]?.result).toBe('lose');
 		expect(wallet.balances.get(1)).toBe(1000);
+	});
+
+	it('logs bets, moves, dealer hits and results', async () => {
+		setup(['10', '6', '2', '6', '5', 'K']);
+		const alice = player(1);
+		await seatAndBet(alice, 0, 25);
+		await room.handle(alice, { type: 'ready' });
+		await reached(alice, 'playing');
+
+		await room.handle(alice, { type: 'action', action: 'hit' });
+		await room.handle(alice, { type: 'action', action: 'stand' });
+		await reached(alice, 'settled');
+
+		expect(logLines(alice)).toEqual([
+			'player1 sits down',
+			'player1 bets $25',
+			'Round 1 is dealt',
+			'player1 hits on 12',
+			'player1 stands on 17',
+			'Dealer turns over 12',
+			'Dealer hits on 12',
+			'Dealer busts with 22',
+			'player1 wins $25 with 17',
+		]);
 	});
 
 	it('refunds bets when the table closes', async () => {

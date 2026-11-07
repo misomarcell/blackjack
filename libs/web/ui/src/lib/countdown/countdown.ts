@@ -3,7 +3,7 @@ import type { TimerView } from '@blackjack/shared/protocol';
 
 const TICK_MS = 200;
 
-/** A ring countdown driven by a server timer snapshot and ticking locally between snapshots. */
+/** A draining progress bar driven by a server timer snapshot and ticking locally between snapshots. */
 @Component({
 	selector: 'bj-countdown',
 	templateUrl: './countdown.html',

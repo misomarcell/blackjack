@@ -19,41 +19,46 @@
 			<bj-table-status
 				class="status-bar"
 				[table]="table"
-				[receivedAt]="session.receivedAt()"
 				[viewerId]="viewerId()"
 				(leaveSeat)="send({ type: 'leave-seat' })"
 			/>
 
 			<div class="controls">
-				@if (canBet()) {
-					<bj-bet-panel
-						class="hud"
-						[bet]="session.mySeat()?.bet ?? 0"
-						[balance]="auth.balance()"
-						[minBet]="table.minBet"
-						[maxBet]="table.maxBet"
-						[lastBet]="session.lastBet()"
-						(chip)="send({ type: 'bet', amount: $event })"
-						(clear)="send({ type: 'clear-bet' })"
-						(ready)="send({ type: 'ready' })"
-					/>
-				} @else if (waitingForOthers()) {
-					<p class="hud font-display text-lg">You're in! Waiting for the others…</p>
-				} @else if (insuranceCost(); as cost) {
-					<bj-insurance-prompt
-						class="hud attention"
-						[cost]="cost"
-						[affordable]="auth.balance() >= cost"
-						(decide)="send({ type: 'insurance', accept: $event })"
-					/>
-				} @else if (session.myTurnHand(); as hand) {
-					<bj-action-bar
-						class="hud attention"
-						[hand]="hand"
-						[handCount]="session.mySeat()?.hands?.length ?? 1"
-						[balance]="auth.balance()"
-						(act)="send({ type: 'action', action: $event })"
-					/>
+				@if (hudShown()) {
+					<div class="hud" [class.attention]="needsMyMove()">
+						@if (canBet()) {
+							<bj-bet-panel
+								[bet]="session.mySeat()?.bet ?? 0"
+								[balance]="auth.balance()"
+								[minBet]="table.minBet"
+								[maxBet]="table.maxBet"
+								[lastBet]="session.lastBet()"
+								(chip)="send({ type: 'bet', amount: $event })"
+								(clear)="send({ type: 'clear-bet' })"
+								(ready)="send({ type: 'ready' })"
+							/>
+						} @else if (waitingForOthers()) {
+							<p class="font-display text-lg">You're in! Waiting for the others…</p>
+						} @else if (insuranceCost(); as cost) {
+							<bj-insurance-prompt
+								[cost]="cost"
+								[affordable]="auth.balance() >= cost"
+								(decide)="send({ type: 'insurance', accept: $event })"
+							/>
+						} @else if (session.myTurnHand(); as hand) {
+							<bj-action-bar
+								[hand]="hand"
+								[handCount]="session.mySeat()?.hands?.length ?? 1"
+								[balance]="auth.balance()"
+								(act)="send({ type: 'action', action: $event })"
+							/>
+						}
+						<bj-countdown
+							class="hud-timer"
+							[timer]="table.timer"
+							[receivedAt]="session.receivedAt()"
+						/>
+					</div>
 				}
 			</div>
 		} @else {

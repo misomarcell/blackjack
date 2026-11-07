@@ -1,11 +1,11 @@
 @if (timer()) {
 	<div
-		class="ring"
-		[class.urgent]="urgent()"
-		[style.--progress]="progress()"
+		class="track"
 		role="timer"
+		[class.urgent]="urgent()"
 		[attr.aria-label]="seconds() + ' seconds left'"
+		[attr.title]="seconds() + 's'"
 	>
-		<span>{{ seconds() }}</span>
+		<div class="fill" [style.transform]="'scaleX(' + progress() + ')'"></div>
 	</div>
 }

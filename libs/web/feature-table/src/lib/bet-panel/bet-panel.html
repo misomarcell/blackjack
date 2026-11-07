@@ -11,36 +11,37 @@
 			{{ value }}
 		</button>
 	}
-</div>
-<div class="bet-row">
-	@if (showRepeat()) {
+	<!-- One chip-shaped slot: clear the chips that are down, or put last round's bet back. -->
+	@if (bet() > 0) {
 		<button
 			type="button"
-			class="btn btn-secondary chunky-sm repeat"
+			class="chip chip-tool"
+			aria-label="Clear bet"
+			title="Clear bet"
+			(click)="clear.emit()"
+		>
+			✕
+		</button>
+	} @else if (showRepeat()) {
+		<button
+			type="button"
+			class="chip chip-tool"
 			[disabled]="!canRepeat()"
+			[attr.aria-label]="'Repeat last bet of ' + dollars(lastBet())"
+			[attr.title]="'Repeat ' + dollars(lastBet())"
 			(click)="repeat()"
 		>
-			<span aria-hidden="true">↻</span> Repeat {{ dollars(lastBet()) }}
+			↻
 		</button>
 	} @else {
-		<div class="bet-amount">
-			<span class="sr-only">Your bet</span>
-			<output aria-live="polite">{{ dollars(bet()) }}</output>
-			@if (bet() > 0) {
-				<button type="button" class="clear" aria-label="Clear bet" (click)="clear.emit()">✕</button>
-			}
-		</div>
+		<span class="chip chip-tool chip-placeholder" aria-hidden="true"></span>
 	}
-	<button
-		type="button"
-		class="btn btn-primary chunky-sm place"
-		[disabled]="bet() < minBet()"
-		[attr.aria-describedby]="bet() < minBet() ? 'min-bet-hint' : null"
-		(click)="ready.emit()"
-	>
-		Place bet
-	</button>
 </div>
-@if (bet() < minBet()) {
-	<p id="min-bet-hint" class="text-xs">Minimum bet {{ dollars(minBet()) }}</p>
-}
+<button
+	type="button"
+	class="btn btn-primary chunky-sm place"
+	[disabled]="bet() < minBet()"
+	(click)="ready.emit()"
+>
+	Place bet
+</button>

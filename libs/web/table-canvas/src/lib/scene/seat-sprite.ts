@@ -21,8 +21,12 @@ export interface SeatContext {
 	showReady: boolean;
 }
 
-/** A seat: betting spot, chips, player name and the labels above each hand. Cards live in the card layer. */
+/**
+ * A seat: betting spot, chips and player name. The hand labels and split pointer live in `overlay`,
+ * which the scene draws above the card layer so cards never hide a total.
+ */
 export class SeatSprite extends Container {
+	readonly overlay = new Container();
 	private readonly seatSpot = new Container();
 	private readonly spot = new Graphics();
 	private readonly turnRing = new Graphics();
@@ -49,7 +53,8 @@ export class SeatSprite extends Container {
 		this.seatSpot.position = seatPosition(index);
 		this.seatSpot.addChild(this.turnRing, this.spot, this.bet, this.nameplate);
 		this.nameplate.y = SPOT_RADIUS + 26;
-		this.addChild(this.seatSpot, this.labels, this.pointer);
+		this.addChild(this.seatSpot);
+		this.overlay.addChild(this.labels, this.pointer);
 		this.spot.on('pointertap', () => onPick(this.index));
 	}
 

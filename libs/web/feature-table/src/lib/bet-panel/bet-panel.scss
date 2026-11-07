@@ -51,63 +51,25 @@
 	--chip: oklch(60% 0.22 295);
 }
 
-.bet-row {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
+.chip-tool {
+	--chip: var(--color-neutral);
+	font-size: 1.35rem;
+	text-shadow: none;
 }
 
-.bet-amount {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.35rem;
-	min-width: 6.5rem;
-	height: 2.5rem;
-	padding: 0 0.35rem 0 0.9rem;
-	border: 3px solid var(--color-neutral);
-	border-radius: 999px;
-	background: var(--color-base-100);
-	font-family: var(--font-display);
-	font-size: 1.2rem;
-	font-variant-numeric: tabular-nums;
-}
-
-.clear {
-	display: grid;
-	place-items: center;
-	width: 1.6rem;
-	height: 1.6rem;
-	border-radius: 50%;
-	background: var(--color-neutral);
-	color: var(--color-neutral-content);
-	font-size: 0.8rem;
-	cursor: pointer;
-
-	&:hover {
-		background: var(--color-error);
-		color: var(--color-error-content);
-	}
-}
-
-.repeat {
-	height: 2.5rem;
-	padding-inline: 1rem;
-	font-family: var(--font-display);
-	font-size: 1.05rem;
-	white-space: nowrap;
+.chip-placeholder {
+	visibility: hidden;
 }
 
 .place {
+	align-self: stretch;
 	height: 2.5rem;
-	padding-inline: 1.4rem;
 	font-family: var(--font-display);
 	font-size: 1.1rem;
 	letter-spacing: 0.02em;
 }
 
 /* Disabled buttons keep a solid face so they stay readable over the felt. */
-.repeat:disabled,
 .place:disabled {
 	border-color: color-mix(in oklch, var(--color-neutral) 35%, transparent);
 	background: var(--color-base-300);
@@ -116,8 +78,6 @@
 }
 
 @media (max-height: 500px) {
-	.bet-amount,
-	.repeat,
 	.place {
 		height: 2.1rem;
 	}
@@ -126,5 +86,9 @@
 		width: 2.8rem;
 		height: 2.8rem;
 		font-size: 0.9rem;
+	}
+
+	.chip-tool {
+		font-size: 1.1rem;
 	}
 }

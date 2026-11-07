@@ -1,0 +1,46 @@
+<section class="panel chunky" aria-labelledby="chat-title">
+	<header class="flex items-center justify-between gap-2">
+		<h2 id="chat-title" class="text-lg">Table chat</h2>
+		@if (unread() > 0) {
+			<span class="unread badge badge-primary">{{ unread() }} new</span>
+		}
+		<button
+			type="button"
+			class="btn btn-xs btn-ghost"
+			[attr.aria-expanded]="open()"
+			aria-controls="chat-body"
+			(click)="open.set(!open())"
+		>
+			{{ open() ? 'Hide' : 'Show' }}
+		</button>
+	</header>
+
+	<div id="chat-body" [hidden]="!open()">
+		<ol #log class="log" aria-live="polite" aria-label="Messages">
+			@for (message of messages(); track message.id) {
+				<li>
+					<time class="opacity-60" [attr.datetime]="message.sentAt">{{
+						time(message.sentAt)
+					}}</time>
+					<strong class="text-primary">{{ message.username }}</strong>
+					<span class="font-semibold">{{ message.text }}</span>
+				</li>
+			} @empty {
+				<li class="opacity-60">Say hi to the table!</li>
+			}
+		</ol>
+		<form [formRoot]="chatForm" class="join w-full">
+			<label for="chat-input" class="sr-only">Message</label>
+			<input
+				id="chat-input"
+				class="input input-sm join-item w-full"
+				type="text"
+				autocomplete="off"
+				enterkeyhint="send"
+				placeholder="Type a message…"
+				[formField]="chatForm.text"
+			/>
+			<button type="submit" class="btn btn-sm btn-primary join-item">Send</button>
+		</form>
+	</div>
+</section>

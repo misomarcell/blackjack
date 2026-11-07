@@ -1,0 +1,19 @@
+<div class="table-title">
+	<a routerLink="/lobby" class="btn btn-sm btn-circle btn-neutral" aria-label="Back to lobby">←</a>
+	<div class="leading-tight">
+		<h1 class="text-lg md:text-2xl">{{ table().name }}</h1>
+		<p class="text-xs md:text-sm">{{ limits() }}</p>
+	</div>
+</div>
+
+<p class="banner" aria-live="polite">{{ message() }}</p>
+
+<div class="actions">
+	<bj-countdown [timer]="table().timer" [receivedAt]="receivedAt()" />
+	<button type="button" class="btn btn-sm btn-secondary chunky-sm" (click)="share()">
+		{{ copied() ? 'Copied!' : 'Share link' }}
+	</button>
+	@if (seated()) {
+		<button type="button" class="btn btn-sm chunky-sm" (click)="leaveSeat.emit()">Stand up</button>
+	}
+</div>

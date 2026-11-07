@@ -1,0 +1,12 @@
+<p class="font-display text-lg">Insure your hand for {{ dollars(cost()) }}?</p>
+<div class="flex gap-2">
+	<button
+		type="button"
+		class="btn btn-accent chunky-sm"
+		[disabled]="!affordable()"
+		(click)="decide.emit(true)"
+	>
+		Yes, insure
+	</button>
+	<button type="button" class="btn chunky-sm" (click)="decide.emit(false)">No thanks</button>
+</div>

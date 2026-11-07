@@ -1,0 +1,30 @@
+<div class="chips" role="group" aria-label="Add chips">
+	@for (value of chips; track value) {
+		<button
+			type="button"
+			class="chip"
+			[class]="'chip-' + value"
+			[disabled]="!canAdd(value)"
+			[attr.aria-label]="'Bet ' + dollars(value)"
+			(click)="chip.emit(value)"
+		>
+			{{ value }}
+		</button>
+	}
+</div>
+<div class="flex items-center gap-2">
+	<span class="font-display text-lg">Bet {{ dollars(bet()) }}</span>
+	<button type="button" class="btn btn-sm" [disabled]="bet() === 0" (click)="clear.emit()">Clear</button>
+	<button
+		type="button"
+		class="btn btn-primary chunky-sm"
+		[disabled]="bet() < minBet()"
+		[attr.aria-describedby]="bet() < minBet() ? 'min-bet-hint' : null"
+		(click)="ready.emit()"
+	>
+		Deal me in
+	</button>
+</div>
+@if (bet() < minBet()) {
+	<p id="min-bet-hint" class="text-xs">Minimum bet {{ dollars(minBet()) }}</p>
+}

@@ -1,0 +1,18 @@
+:host {
+	display: block;
+}
+
+kbd {
+	color: var(--color-base-content);
+}
+
+@media (max-height: 500px) {
+	.btn-lg {
+		--size: 2.5rem;
+		font-size: 1rem;
+	}
+
+	kbd {
+		display: none;
+	}
+}

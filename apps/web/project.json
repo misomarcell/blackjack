@@ -25,7 +25,8 @@
 					"node_modules/@fontsource/lilita-one/index.css",
 					"node_modules/@fontsource-variable/nunito/index.css",
 					"apps/web/src/styles.css"
-				]
+				],
+				"allowedCommonJsDependencies": ["@xmldom/xmldom"]
 			},
 			"configurations": {
 				"production": {

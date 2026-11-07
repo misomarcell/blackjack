@@ -1,0 +1,24 @@
+<div class="flex gap-2" role="group" aria-label="Your move">
+	<button type="button" class="btn btn-lg btn-success chunky" (click)="act.emit('hit')">
+		Hit <kbd class="kbd kbd-sm">H</kbd>
+	</button>
+	<button type="button" class="btn btn-lg btn-error chunky" (click)="act.emit('stand')">
+		Stand <kbd class="kbd kbd-sm">S</kbd>
+	</button>
+	<button
+		type="button"
+		class="btn btn-lg btn-accent chunky"
+		[disabled]="!doubleAllowed()"
+		(click)="act.emit('double')"
+	>
+		Double <kbd class="kbd kbd-sm">D</kbd>
+	</button>
+	<button
+		type="button"
+		class="btn btn-lg btn-secondary chunky"
+		[disabled]="!splitAllowed()"
+		(click)="act.emit('split')"
+	>
+		Split <kbd class="kbd kbd-sm">P</kbd>
+	</button>
+</div>

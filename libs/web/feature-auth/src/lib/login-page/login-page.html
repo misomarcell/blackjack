@@ -1,0 +1,65 @@
+<main class="grid min-h-dvh place-items-center p-4">
+	<section class="card chunky w-full max-w-sm bg-base-100" aria-labelledby="login-title">
+		<div class="card-body gap-3">
+			<p class="logo" aria-hidden="true">♠ ♥ ♣ ♦</p>
+			<h1 id="login-title" class="text-center text-4xl text-primary">Blackjack Party</h1>
+			<p class="text-center">Sign in to grab a seat.</p>
+
+			<form [formRoot]="loginForm" class="flex flex-col gap-1">
+				<label class="label font-bold" for="username">Username</label>
+				<input
+					id="username"
+					class="input input-lg w-full"
+					type="text"
+					autocomplete="username"
+					autocapitalize="none"
+					autocorrect="off"
+					spellcheck="false"
+					enterkeyhint="next"
+					[formField]="loginForm.username"
+				/>
+				<bj-field-error [field]="loginForm.username" />
+
+				<label class="label font-bold" for="current-password">Password</label>
+				<div class="join w-full">
+					<input
+						id="current-password"
+						class="input input-lg join-item w-full"
+						[type]="showPassword() ? 'text' : 'password'"
+						autocomplete="current-password"
+						enterkeyhint="done"
+						[formField]="loginForm.password"
+					/>
+					<button
+						type="button"
+						class="btn btn-lg join-item"
+						[attr.aria-pressed]="showPassword()"
+						(click)="showPassword.set(!showPassword())"
+					>
+						{{ showPassword() ? 'Hide' : 'Show' }}
+					</button>
+				</div>
+				<bj-field-error [field]="loginForm.password" />
+
+				@if (loginForm().errors()[0]; as error) {
+					<p class="alert alert-error" role="alert">{{ error.message }}</p>
+				}
+
+				<button
+					type="submit"
+					class="btn btn-primary btn-lg chunky mt-2"
+					[disabled]="loginForm().submitting()"
+				>
+					Sign in
+				</button>
+			</form>
+
+			<p class="text-center">
+				New here?
+				<a class="link link-secondary" routerLink="/register" queryParamsHandling="preserve"
+					>Create an account</a
+				>
+			</p>
+		</div>
+	</section>
+</main>

@@ -1,0 +1,46 @@
+:host {
+	display: inline-block;
+}
+
+.ring {
+	--size: 3.25rem;
+	--fill: var(--color-secondary);
+	display: grid;
+	place-items: center;
+	width: var(--size);
+	height: var(--size);
+	border: 3px solid var(--color-neutral);
+	border-radius: 50%;
+	background: conic-gradient(var(--fill) calc(var(--progress) * 360deg), var(--color-base-100) 0);
+	box-shadow: var(--shadow-chunky-sm);
+	transition: --fill 0.3s;
+
+	span {
+		display: grid;
+		place-items: center;
+		width: 72%;
+		height: 72%;
+		border-radius: 50%;
+		background: var(--color-base-100);
+		font-family: var(--font-display);
+		font-size: 1.3rem;
+		color: var(--color-base-content);
+	}
+}
+
+.ring.urgent {
+	--fill: var(--color-error);
+	animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	50% {
+		transform: scale(1.08);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ring.urgent {
+		animation: none;
+	}
+}

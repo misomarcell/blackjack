@@ -1,0 +1,8 @@
+{
+	"name": "web-feature-table",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/web/feature-table/src",
+	"projectType": "library",
+	"prefix": "bj",
+	"tags": ["scope:web", "type:feature"]
+}

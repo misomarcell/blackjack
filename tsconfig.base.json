@@ -19,7 +19,14 @@
 		"skipDefaultLibCheck": true,
 		"paths": {
 			"@blackjack/shared/blackjack": ["./libs/shared/blackjack/src/index.ts"],
-			"@blackjack/shared/protocol": ["./libs/shared/protocol/src/index.ts"]
+			"@blackjack/shared/protocol": ["./libs/shared/protocol/src/index.ts"],
+			"@blackjack/web/data-access": ["./libs/web/data-access/src/index.ts"],
+			"@blackjack/web/ui": ["./libs/web/ui/src/index.ts"],
+			"@blackjack/web/table-canvas": ["./libs/web/table-canvas/src/index.ts"],
+			"@blackjack/web/feature-auth": ["./libs/web/feature-auth/src/index.ts"],
+			"@blackjack/web/feature-lobby": ["./libs/web/feature-lobby/src/index.ts"],
+			"@blackjack/web/feature-admin": ["./libs/web/feature-admin/src/index.ts"],
+			"@blackjack/web/feature-table": ["./libs/web/feature-table/src/index.ts"]
 		}
 	},
 	"exclude": ["node_modules", "tmp"]

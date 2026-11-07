@@ -1,0 +1,61 @@
+<main class="mx-auto flex max-w-5xl flex-col gap-5 p-4 md:p-8">
+	<header class="flex flex-wrap items-center justify-between gap-3">
+		<h1 class="text-4xl">Manage tables</h1>
+		<button type="button" class="btn btn-primary chunky-sm" (click)="form.open()">+ New table</button>
+	</header>
+
+	@if (error(); as message) {
+		<p class="alert alert-error" role="alert">{{ message }}</p>
+	}
+
+	<div class="chunky overflow-x-auto rounded-box bg-base-100">
+		<table class="table table-zebra">
+			<thead>
+				<tr>
+					<th scope="col">Name</th>
+					<th scope="col">Limits</th>
+					<th scope="col">Players</th>
+					<th scope="col">Link</th>
+					<th scope="col"><span class="sr-only">Actions</span></th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (table of feed.tables() ?? []; track table.id) {
+					<tr>
+						<th scope="row">{{ table.name }}</th>
+						<td>{{ dollars(table.minBet) }} – {{ dollars(table.maxBet) }}</td>
+						<td>{{ table.players }} / {{ table.seats }}</td>
+						<td>
+							<a class="link link-secondary" [routerLink]="['/table', table.id]"
+								>/table/{{ table.id }}</a
+							>
+						</td>
+						<td class="flex justify-end gap-2">
+							<button type="button" class="btn btn-sm" (click)="form.open(table)">Edit</button>
+							<button type="button" class="btn btn-sm btn-error" (click)="askDelete(table)">
+								Delete
+							</button>
+						</td>
+					</tr>
+				} @empty {
+					<tr>
+						<td colspan="5">No tables yet.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</main>
+
+<bj-table-form-dialog #form />
+
+<dialog #confirmDelete class="modal" aria-labelledby="delete-title" (close)="onConfirmClosed(confirmDelete)">
+	<div class="modal-box chunky">
+		<h2 id="delete-title" class="text-2xl">Delete {{ pendingDelete()?.name }}?</h2>
+		<p class="py-3">Players at the table get their bets back and are sent to the lobby.</p>
+		<form method="dialog" class="modal-action">
+			<button type="submit" class="btn" value="cancel" autofocus>Keep it</button>
+			<button type="submit" class="btn btn-error" value="delete">Delete table</button>
+		</form>
+	</div>
+</dialog>

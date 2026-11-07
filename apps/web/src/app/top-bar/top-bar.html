@@ -1,0 +1,18 @@
+<header class="navbar gap-2 border-b-[3px] border-neutral bg-primary px-3 text-primary-content">
+	<a routerLink="/lobby" class="brand flex-none">♠ Blackjack Party</a>
+	<nav class="flex flex-1 gap-1" aria-label="Main">
+		<a routerLink="/lobby" routerLinkActive="btn-active" class="btn btn-ghost btn-sm">Lobby</a>
+		@if (auth.isAdmin()) {
+			<a routerLink="/admin" routerLinkActive="btn-active" class="btn btn-ghost btn-sm">Tables</a>
+		}
+	</nav>
+	@if (broke()) {
+		<button type="button" class="btn btn-accent btn-sm chunky-sm" (click)="refill()">Free refill</button>
+	}
+	@if (refillError(); as error) {
+		<span class="text-sm" role="alert">{{ error }}</span>
+	}
+	<bj-balance-display [amount]="auth.balance()" />
+	<span class="hidden font-display sm:inline">{{ auth.user()?.username }}</span>
+	<button type="button" class="btn btn-neutral btn-sm" (click)="logout()">Log out</button>
+</header>

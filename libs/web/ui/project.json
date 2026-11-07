@@ -1,0 +1,8 @@
+{
+	"name": "web-ui",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/web/ui/src",
+	"projectType": "library",
+	"prefix": "bj",
+	"tags": ["scope:web", "type:ui"]
+}

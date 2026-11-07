@@ -1,0 +1,8 @@
+{
+	"name": "web-feature-lobby",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/web/feature-lobby/src",
+	"projectType": "library",
+	"prefix": "bj",
+	"tags": ["scope:web", "type:feature"]
+}

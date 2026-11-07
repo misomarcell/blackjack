@@ -1,4 +1,11 @@
 :host {
-	display: block;
-	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	height: 100dvh;
+}
+
+.page {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
 }

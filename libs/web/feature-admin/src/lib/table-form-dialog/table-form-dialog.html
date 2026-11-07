@@ -1,0 +1,55 @@
+<dialog #dialog class="modal" aria-labelledby="table-form-title" closedby="any">
+	<div class="modal-box chunky">
+		<h2 id="table-form-title" class="text-2xl">{{ editingId() ? 'Edit table' : 'New table' }}</h2>
+		<form [formRoot]="tableForm" class="mt-4 flex flex-col gap-1">
+			<label class="label font-bold" for="table-name">Name</label>
+			<input
+				id="table-name"
+				class="input w-full"
+				type="text"
+				autocomplete="off"
+				autofocus
+				[formField]="tableForm.name"
+			/>
+			<bj-field-error [field]="tableForm.name" />
+
+			<div class="grid grid-cols-2 gap-3">
+				<div>
+					<label class="label font-bold" for="min-bet">Min bet ($)</label>
+					<input
+						id="min-bet"
+						class="input w-full"
+						type="number"
+						inputmode="numeric"
+						autocomplete="off"
+						[formField]="tableForm.minBet"
+					/>
+					<bj-field-error [field]="tableForm.minBet" />
+				</div>
+				<div>
+					<label class="label font-bold" for="max-bet">Max bet ($)</label>
+					<input
+						id="max-bet"
+						class="input w-full"
+						type="number"
+						inputmode="numeric"
+						autocomplete="off"
+						[formField]="tableForm.maxBet"
+					/>
+					<bj-field-error [field]="tableForm.maxBet" />
+				</div>
+			</div>
+
+			@if (tableForm().errors()[0]; as error) {
+				<p class="alert alert-error" role="alert">{{ error.message }}</p>
+			}
+
+			<div class="modal-action">
+				<button type="button" class="btn" (click)="close()">Cancel</button>
+				<button type="submit" class="btn btn-primary chunky-sm" [disabled]="tableForm().submitting()">
+					{{ editingId() ? 'Save changes' : 'Create table' }}
+				</button>
+			</div>
+		</form>
+	</div>
+</dialog>

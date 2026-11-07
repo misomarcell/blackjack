@@ -1,1 +1,6 @@
-<router-outlet />
+@if (auth.signedIn()) {
+	<bj-top-bar />
+}
+<div class="page">
+	<router-outlet />
+</div>

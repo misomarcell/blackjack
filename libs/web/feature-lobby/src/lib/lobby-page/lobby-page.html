@@ -1,0 +1,39 @@
+<main class="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-8">
+	<header>
+		<h1 class="text-4xl md:text-5xl">Pick a table</h1>
+		<p>Every table has six seats and a computer dealer. Share a table's link to play with friends.</p>
+	</header>
+
+	@if (feed.tables(); as tables) {
+		<ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Tables">
+			@for (table of tables; track table.id) {
+				<li class="card chunky bg-base-100">
+					<div class="card-body">
+						<h2 class="card-title text-2xl">{{ table.name }}</h2>
+						<p class="badge badge-secondary badge-lg font-bold">
+							{{ dollars(table.minBet) }} – {{ dollars(table.maxBet) }}
+						</p>
+						<div
+							class="seats"
+							[attr.aria-label]="table.players + ' of ' + table.seats + ' seats taken'"
+						>
+							@for (dot of seatDots(table.seats); track dot) {
+								<span class="seat" [class.taken]="dot < table.players"></span>
+							}
+						</div>
+						<p>{{ table.players }} / {{ table.seats }} players</p>
+						<div class="card-actions justify-end">
+							<a class="btn btn-primary chunky-sm" [routerLink]="['/table', table.id]">
+								{{ table.players < table.seats ? 'Join table' : 'Watch' }}
+							</a>
+						</div>
+					</div>
+				</li>
+			} @empty {
+				<li class="alert">No tables yet. An admin can create one.</li>
+			}
+		</ul>
+	} @else {
+		<p class="flex items-center gap-2"><span class="loading loading-dots"></span> Finding tables…</p>
+	}
+</main>

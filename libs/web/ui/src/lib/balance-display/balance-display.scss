@@ -1,0 +1,26 @@
+:host {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.25rem 0.9rem;
+	border: 3px solid var(--color-neutral);
+	border-radius: 999px;
+	background: var(--color-accent);
+	color: var(--color-accent-content);
+	font-family: var(--font-display);
+	font-size: 1.25rem;
+	font-variant-numeric: tabular-nums;
+	box-shadow: var(--shadow-chunky-sm);
+	transition:
+		background-color 0.2s,
+		transform 0.2s;
+}
+
+:host(.rising) {
+	background: var(--color-success);
+	transform: scale(1.08);
+}
+
+:host(.falling) {
+	background: var(--color-error);
+	color: var(--color-error-content);
+}

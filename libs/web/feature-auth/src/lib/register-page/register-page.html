@@ -1,0 +1,74 @@
+<main class="grid min-h-dvh place-items-center p-4">
+	<section class="card chunky w-full max-w-sm bg-base-100" aria-labelledby="register-title">
+		<div class="card-body gap-3">
+			<h1 id="register-title" class="text-center text-4xl text-primary">Join the party</h1>
+			<p class="text-center">You start with a stack of free chips.</p>
+
+			<form [formRoot]="registerForm" class="flex flex-col gap-1">
+				<label class="label font-bold" for="username">Username</label>
+				<input
+					id="username"
+					class="input input-lg w-full"
+					type="text"
+					autocomplete="username"
+					autocapitalize="none"
+					autocorrect="off"
+					spellcheck="false"
+					enterkeyhint="next"
+					[formField]="registerForm.username"
+				/>
+				<bj-field-error [field]="registerForm.username" />
+
+				<label class="label font-bold" for="email">E-mail</label>
+				<input
+					id="email"
+					class="input input-lg w-full"
+					type="email"
+					autocomplete="email"
+					spellcheck="false"
+					enterkeyhint="next"
+					[formField]="registerForm.email"
+				/>
+				<bj-field-error [field]="registerForm.email" />
+
+				<label class="label font-bold" for="new-password">Password</label>
+				<div class="join w-full">
+					<input
+						id="new-password"
+						class="input input-lg join-item w-full"
+						[type]="showPassword() ? 'text' : 'password'"
+						autocomplete="new-password"
+						enterkeyhint="done"
+						[formField]="registerForm.password"
+					/>
+					<button
+						type="button"
+						class="btn btn-lg join-item"
+						[attr.aria-pressed]="showPassword()"
+						(click)="showPassword.set(!showPassword())"
+					>
+						{{ showPassword() ? 'Hide' : 'Show' }}
+					</button>
+				</div>
+				<bj-field-error [field]="registerForm.password" />
+
+				@if (registerForm().errors()[0]; as error) {
+					<p class="alert alert-error" role="alert">{{ error.message }}</p>
+				}
+
+				<button
+					type="submit"
+					class="btn btn-primary btn-lg chunky mt-2"
+					[disabled]="registerForm().submitting()"
+				>
+					Create account
+				</button>
+			</form>
+
+			<p class="text-center">
+				Already playing?
+				<a class="link link-secondary" routerLink="/login" queryParamsHandling="preserve">Sign in</a>
+			</p>
+		</div>
+	</section>
+</main>

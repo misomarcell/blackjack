@@ -1,0 +1,13 @@
+{
+	"extends": "../../../tsconfig.base.json",
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"module": "preserve"
+	},
+	"angularCompilerOptions": {
+		"strictInjectionParameters": true,
+		"strictInputAccessModifiers": true,
+		"strictTemplates": true
+	},
+	"include": ["src/**/*.ts"]
+}

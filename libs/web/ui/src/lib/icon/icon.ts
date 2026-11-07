@@ -4,6 +4,7 @@ import { Component, computed, input } from '@angular/core';
 const paths = {
 	back: 'M19 12H5M11 18l-6-6 6-6',
 	chat: 'M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z',
+	'chevron-down': 'M6 9l6 6 6-6',
 	close: 'M6 6l12 12M18 6 6 18',
 	edit: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
 	link: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',

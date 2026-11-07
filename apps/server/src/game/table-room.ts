@@ -11,7 +11,6 @@ import {
 	moneyOnTable,
 	occupiedSeats,
 	type Seat,
-	seatOfUser,
 	type TableState,
 	type Wallet,
 } from './model';
@@ -132,8 +131,10 @@ export class TableRoom implements RoundContext {
 		if (message.type === 'sit') {
 			return this.seating.sit(connection.user, message.seat);
 		}
-		const seat = seatOfUser(this.state, connection.user.id);
-		return seat ? this.handleSeatMessage(seat, message) : 'Take a seat first';
+		const seat = this.state.seats[message.seat];
+		return seat?.player?.userId === connection.user.id
+			? this.handleSeatMessage(seat, message)
+			: 'That is not your seat';
 	}
 
 	/** What each seated-player message does. */

@@ -22,8 +22,8 @@ export class TableLog {
 	readonly entries = input.required<LogEntry[]>();
 
 	private readonly list = viewChild<ElementRef<HTMLElement>>('list');
-	/** Open by default only where there is room for both panels. */
-	protected readonly open = signal(matchMedia('(min-height: 900px)').matches);
+	/** Starts collapsed; the unread badge tells when something happened. */
+	protected readonly open = signal(false);
 	/** Lines after this id count as unread while the panel is collapsed. */
 	private readonly seenId = signal(0);
 	protected readonly unread = computed(() => {

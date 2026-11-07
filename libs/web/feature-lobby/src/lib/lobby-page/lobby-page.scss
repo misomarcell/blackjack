@@ -31,11 +31,18 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 0.35rem;
+	/* Room for the rail, which is drawn as a shadow and takes no space. */
+	margin-bottom: calc(0.6rem + 3px);
 	padding: 1.25rem 1rem 2rem;
-	border-bottom: 0.6rem solid var(--color-primary);
 	border-radius: 0 0 50% 50% / 0 0 2.25rem 2.25rem;
 	background: var(--color-felt);
-	box-shadow: 0 3px 0 0 var(--color-neutral);
+	/*
+	 * The orange rail and its dark edge are spread shadows: they follow the curve at the same thickness
+	 * everywhere (a bottom border would taper towards the corners). The card clips the top and sides.
+	 */
+	box-shadow:
+		0 0 0 0.6rem var(--color-primary),
+		0 0 0 calc(0.6rem + 3px) var(--color-neutral);
 	color: var(--color-base-100);
 	text-align: center;
 }

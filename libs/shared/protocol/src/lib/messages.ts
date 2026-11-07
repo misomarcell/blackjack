@@ -24,15 +24,15 @@ export interface LogEntry {
 	parts: LogPart[];
 }
 
-/** Messages a client sends over a table socket. */
+/** Messages a client sends over a table socket. A player can hold several seats, so seat messages name one. */
 export type ClientMessage =
 	| { type: 'sit'; seat: number }
-	| { type: 'leave-seat' }
-	| { type: 'bet'; amount: number }
-	| { type: 'clear-bet' }
-	| { type: 'ready' }
-	| { type: 'action'; action: PlayerAction }
-	| { type: 'insurance'; accept: boolean }
+	| { type: 'leave-seat'; seat: number }
+	| { type: 'bet'; seat: number; amount: number }
+	| { type: 'clear-bet'; seat: number }
+	| { type: 'ready'; seat: number }
+	| { type: 'action'; seat: number; action: PlayerAction }
+	| { type: 'insurance'; seat: number; accept: boolean }
 	| { type: 'chat'; text: string };
 
 /** Messages the server sends over a table socket. */

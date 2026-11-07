@@ -1,7 +1,7 @@
 import { CHIP_VALUES } from '@blackjack/shared/protocol';
 import type { GameConfig } from '../config';
 import type { Countdown } from './countdown';
-import { newHand, occupiedSeats, type Seat, type TableState, type Wallet } from './model';
+import { newHand, occupiedSeats, playerCount, type Seat, type TableState, type Wallet } from './model';
 import { money, type TableLog, who } from './table-log';
 
 export interface BettingContext {
@@ -17,7 +17,8 @@ export interface BettingContext {
  * Chips, the Ready button and the betting countdowns:
  * - the first Ready at an idle table starts a short countdown so others can join in,
  * - after each round everyone gets a longer betting window,
- * - the round starts early as soon as every seated player is ready.
+ * - the round starts early as soon as every seated player is ready,
+ * - a player alone at the table gets no countdown at all and can take as long as they like.
  */
 export class Betting {
 	constructor(
@@ -73,32 +74,29 @@ export class Betting {
 
 	/** Re-checks the countdown and early start after a Ready click or a seat change. */
 	evaluate(): void {
-		const { state, countdown, config } = this.ctx;
+		const { state, config } = this.ctx;
 		if (!this.open) {
 			return;
 		}
-		const seated = occupiedSeats(state);
-		if (seated.length > 0 && seated.every((seat) => seat.ready)) {
+		const wasIdle = state.phase === 'idle';
+		if (this.everyoneReady()) {
 			this.startRound();
 			return;
 		}
-		if (seated.length === 0) {
-			countdown.cancel();
+		if (occupiedSeats(state).length === 0) {
 			state.phase = 'idle';
-		} else if (state.phase === 'idle' && seated.some((seat) => seat.ready)) {
+		} else if (state.phase === 'idle' && occupiedSeats(state).some((seat) => seat.ready)) {
 			state.phase = 'betting';
-			countdown.start(config.firstBetMs, this.startRound);
 		}
+		this.updateCountdown(wasIdle ? config.firstBetMs : config.bettingMs);
 		this.ctx.broadcast();
 	}
 
 	/** Opens the betting window after a round, or goes idle when nobody is seated. */
 	openNextRound(): void {
-		const { state, countdown, config } = this.ctx;
+		const { state } = this.ctx;
 		state.phase = occupiedSeats(state).length > 0 ? 'betting' : 'idle';
-		if (state.phase === 'betting') {
-			countdown.start(config.bettingMs, this.startRound);
-		}
+		this.updateCountdown(this.ctx.config.bettingMs);
 		this.ctx.broadcast();
 	}
 
@@ -118,6 +116,32 @@ export class Betting {
 			seat.ready = false;
 		}
 		return players;
+	}
+
+	/** Betting is only timed while two or more people share the table. */
+	private updateCountdown(ms: number): void {
+		const { state, countdown } = this.ctx;
+		if (state.phase !== 'betting' || playerCount(state) < 2) {
+			countdown.cancel();
+		} else if (!countdown.running) {
+			countdown.start(ms, this.startRound);
+		}
+	}
+
+	/**
+	 * Every player has confirmed their bets. A player with several seats is done once a seat is ready
+	 * and none of their other seats holds an unconfirmed stake (empty seats just sit the round out).
+	 */
+	private everyoneReady(): boolean {
+		const { seats, table } = this.ctx.state;
+		const seated = seats.filter((seat) => seat.player !== null);
+		const readyPlayers = new Set(seated.filter((seat) => seat.ready).map((seat) => seat.player?.userId));
+		return (
+			seated.length > 0 &&
+			seated.every(
+				(seat) => seat.ready || (seat.bet < table.minBet && readyPlayers.has(seat.player?.userId)),
+			)
+		);
 	}
 
 	/** Bets can close or the player can leave while the wallet call is in flight. */

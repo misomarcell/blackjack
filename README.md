@@ -81,16 +81,16 @@ The server creates the schema on start and seeds three tables. Register a user n
 
 ### Scripts
 
-| Script                 | What it does                                          |
-| ---------------------- | ----------------------------------------------------- |
-| `bun run dev`          | web + server with live reload                         |
-| `bun run build`        | production builds of all projects                     |
-| `bun run test`         | rules engine and game-flow tests (`bun test`)         |
-| `bun run lint`         | ESLint on every project                               |
-| `bun run typecheck`    | TypeScript checks for server and shared libs          |
-| `bun run format`       | Prettier write (`format:check` to verify)             |
-| `bun run knip`         | unused files, exports and dependencies                |
-| `bun run validate`     | everything above in one go                            |
+| Script              | What it does                                  |
+| ------------------- | --------------------------------------------- |
+| `bun run dev`       | web + server with live reload                 |
+| `bun run build`     | production builds of all projects             |
+| `bun run test`      | rules engine and game-flow tests (`bun test`) |
+| `bun run lint`      | ESLint on every project                       |
+| `bun run typecheck` | TypeScript checks for server and shared libs  |
+| `bun run format`    | Prettier write (`format:check` to verify)     |
+| `bun run knip`      | unused files, exports and dependencies        |
+| `bun run validate`  | everything above in one go                    |
 
 ESLint limits cyclomatic complexity (8), function length (40 lines), statements (15), nesting depth (3),
 parameters (4) and file length (250 lines). Prettier uses tabs and single quotes.
@@ -100,22 +100,22 @@ parameters (4) and file length (250 lines). Prettier uses tabs and single quotes
 1. Install Docker Engine with the Compose plugin and copy this repository to the server.
 2. Create the config and change every secret:
 
-   ```bash
-   cp .env.example .env
-   ```
+    ```bash
+    cp .env.example .env
+    ```
 
-   ```bash
-   sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$(openssl rand -hex 32)/" .env
-   ```
+    ```bash
+    sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$(openssl rand -hex 32)/" .env
+    ```
 
-   Then edit `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` and `ADMIN_USERNAME` in `.env`
-   (use URL-safe passwords: letters, digits, `-` and `_`).
+    Then edit `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` and `ADMIN_USERNAME` in `.env`
+    (use URL-safe passwords: letters, digits, `-` and `_`).
 
 3. Build and start:
 
-   ```bash
-   docker compose up -d --build
-   ```
+    ```bash
+    docker compose up -d --build
+    ```
 
 4. Open `http://<server>:3000`, register the admin user, and share table links with your friends.
 
@@ -135,19 +135,19 @@ forward WebSocket upgrades for `/ws/*`.
 
 ### Configuration
 
-| Variable                                  | Default        | Meaning                                                     |
-| ----------------------------------------- | -------------- | ----------------------------------------------------------- |
-| `APP_PORT`                                | `3000`         | host port of the app                                        |
-| `JWT_SECRET`                              | required       | signs session cookies                                       |
-| `ADMIN_USERNAME`                          | `admin`        | registering with this name grants admin rights             |
-| `STARTING_BALANCE`                        | `1000`         | dollars for new players and for refills                     |
-| `COOKIE_SECURE`                           | `false`        | send cookies only over HTTPS                                |
-| `FIRST_BET_SECONDS`                       | `10`           | countdown after the first Ready at an idle table            |
-| `BETTING_SECONDS`                         | `45`           | betting window after each round                             |
-| `INSURANCE_SECONDS`                       | `10`           | time to decide on insurance                                 |
-| `TURN_SECONDS`                            | `20`           | time per decision before auto-stand                         |
-| `DEALER_HITS_SOFT_17`                     | `false`        | H17 instead of S17                                          |
-| `DECKS`                                   | `6`            | decks in the shoe                                           |
-| `MYSQL_*`                                 | see example    | database name, user and passwords                           |
-| `ADMINER_PORT` / `ADMINER_BIND`           | `8080` / local | where Adminer listens                                       |
-| `DATABASE_ALLOW_PUBLIC_KEY_RETRIEVAL`     | `true`         | MySQL 8 auth without TLS; fine on the private Compose network |
+| Variable                              | Default        | Meaning                                                       |
+| ------------------------------------- | -------------- | ------------------------------------------------------------- |
+| `APP_PORT`                            | `3000`         | host port of the app                                          |
+| `JWT_SECRET`                          | required       | signs session cookies                                         |
+| `ADMIN_USERNAME`                      | `admin`        | registering with this name grants admin rights                |
+| `STARTING_BALANCE`                    | `1000`         | dollars for new players and for refills                       |
+| `COOKIE_SECURE`                       | `false`        | send cookies only over HTTPS                                  |
+| `FIRST_BET_SECONDS`                   | `10`           | countdown after the first Ready at an idle table              |
+| `BETTING_SECONDS`                     | `45`           | betting window after each round                               |
+| `INSURANCE_SECONDS`                   | `10`           | time to decide on insurance                                   |
+| `TURN_SECONDS`                        | `20`           | time per decision before auto-stand                           |
+| `DEALER_HITS_SOFT_17`                 | `false`        | H17 instead of S17                                            |
+| `DECKS`                               | `6`            | decks in the shoe                                             |
+| `MYSQL_*`                             | see example    | database name, user and passwords                             |
+| `ADMINER_PORT` / `ADMINER_BIND`       | `8080` / local | where Adminer listens                                         |
+| `DATABASE_ALLOW_PUBLIC_KEY_RETRIEVAL` | `true`         | MySQL 8 auth without TLS; fine on the private Compose network |

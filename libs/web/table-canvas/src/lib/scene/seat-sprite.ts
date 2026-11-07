@@ -31,8 +31,8 @@ function paintSpot(spot: Graphics, open: boolean, pickable: boolean, isViewer: b
 }
 
 export interface SeatContext {
-	/** Whether the person looking at the table already has a seat. */
-	viewerSeated: boolean;
+	/** Whether the person looking can take open seats (players may hold several). */
+	canSit: boolean;
 	isViewer: boolean;
 	/** Index of the hand whose turn it is at this seat, if any. */
 	activeHand: number | null;
@@ -141,7 +141,7 @@ export class SeatSprite extends Container {
 
 	private drawSpot(seat: SeatView, context: SeatContext): void {
 		const open = !seat.player;
-		const pickable = open && !context.viewerSeated;
+		const pickable = open && context.canSit;
 		paintSpot(this.spot, open, pickable, context.isViewer);
 		this.spot.eventMode = pickable ? 'static' : 'none';
 		this.spot.cursor = pickable ? 'pointer' : 'default';

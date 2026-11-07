@@ -33,6 +33,10 @@ export class CardLayer extends Container {
 	private readonly placements = new WeakMap<CardSprite, Placement>();
 	/** When the last running deal, flip or move finishes (performance.now() time). */
 	private settledAt = 0;
+	/** When the next deal or flip may start, so a new snapshot never jumps ahead of cards still in flight. */
+	private nextSlotAt = 0;
+	/** Delay of animation slot 0 in the current sync. */
+	private baseDelay = 0;
 
 	constructor(
 		private readonly tweener: Tweener,
@@ -52,11 +56,21 @@ export class CardLayer extends Container {
 		const fresh = targets
 			.filter((target) => !this.sprites.has(target.card.id))
 			.sort((a, b) => a.card.seq - b.card.seq);
+		const now = performance.now();
+		this.baseDelay = Math.max(0, this.nextSlotAt - now);
 		let slot = 0;
 		for (const target of targets) {
 			slot = this.update(target, slot);
 		}
-		fresh.forEach((target) => void this.deal(target, slot++ * STAGGER_MS));
+		fresh.forEach((target) => void this.deal(target, this.slotDelay(slot++)));
+		if (slot > 0) {
+			this.nextSlotAt = now + this.slotDelay(slot);
+		}
+	}
+
+	/** Cards deal and flip one after another, after anything an earlier snapshot already queued. */
+	private slotDelay(slot: number): number {
+		return this.baseDelay + slot * STAGGER_MS;
 	}
 
 	/** Moves or flips a card already on the table. Returns the next free animation slot. */
@@ -73,8 +87,9 @@ export class CardLayer extends Container {
 			this.place(sprite, target, { duration: MOVE_MS });
 		}
 		if (target.card.faceUp !== sprite.intendedFaceUp) {
-			setTimeout(() => this.sounds.card(), slot * STAGGER_MS);
-			void this.flip(sprite, target, slot * STAGGER_MS);
+			const delay = this.slotDelay(slot);
+			setTimeout(() => this.sounds.card(), delay);
+			void this.flip(sprite, target, delay);
 			return slot + 1;
 		}
 		return slot;

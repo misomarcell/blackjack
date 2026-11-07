@@ -31,6 +31,12 @@
 		text-wrap: balance;
 	}
 
+	/* Lilita One only has a regular weight: never let the browser fake a bold on button labels. */
+	button,
+	.btn {
+		font-synthesis-weight: none;
+	}
+
 	::selection {
 		background: var(--color-accent);
 		color: var(--color-accent-content);

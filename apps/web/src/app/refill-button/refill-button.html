@@ -6,13 +6,13 @@
 	<span
 		class="refill-wait"
 		role="timer"
-		[attr.aria-label]="'Next free refill in ' + countdown()"
-		[attr.title]="'Next free refill in ' + countdown()"
+		[attr.aria-label]="'Next balance refill in ' + countdown()"
+		[attr.title]="'Next balance refill in ' + countdown()"
 	>
 		<span class="refill-wait-label">Refill in</span>
 		<span class="refill-wait-time">{{ countdown() }}</span>
 	</span>
-} @else if (canRefill()) {
+} @else {
 	<button
 		type="button"
 		class="btn btn-accent chunky-sm refill"
@@ -20,6 +20,6 @@
 		[attr.title]="'Top up to ' + upTo() + ' (once a day)'"
 		(click)="refill()"
 	>
-		Free refill
+		Refill balance
 	</button>
 }

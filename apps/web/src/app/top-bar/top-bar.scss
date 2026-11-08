@@ -28,6 +28,9 @@
 }
 
 .nav-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
 	padding: 0.35rem 1rem;
 	border: 2px solid transparent;
 	border-radius: 999px;
@@ -104,6 +107,11 @@
 	&:hover {
 		filter: brightness(1.25);
 	}
+}
+
+/* Marks the admin-only pages. */
+.admin-mark {
+	--icon-size: 0.95em;
 }
 
 /* Angular drops the whitespace between the spade and the name, so the gap comes from here. */
@@ -217,17 +225,22 @@
 		flex-wrap: nowrap;
 	}
 
-	.main-nav.foldable {
+	/* Phones fold the admin links into the menu. */
+	.main-nav {
 		display: none;
+	}
+
+	.brand {
+		font-size: 1.2rem;
 	}
 
 	.nav-menu {
 		display: block;
 	}
 
+	/* A screen with its own title (the table) shows that instead of the brand. */
 	:host(.with-page) {
 		.brand,
-		.main-nav,
 		.nav-menu {
 			display: none;
 		}
@@ -254,15 +267,6 @@
 }
 
 @media (max-width: 480px) {
-	.brand {
-		font-size: 1.4rem;
-	}
-
-	/* Narrow phones keep only the spade, so the refill clock, balance and logout still fit. */
-	.brand-name {
-		display: none;
-	}
-
 	.nav-link {
 		padding-inline: 0.6rem;
 		font-size: 1rem;
@@ -278,8 +282,20 @@
 		min-height: 2.9rem;
 		padding-block: 0.25rem;
 	}
+}
+
+/* The narrowest phones: a smaller brand and tighter gaps keep everything on one row. */
+@media (max-width: 360px) {
+	.app-bar {
+		gap: 0.45rem;
+		padding-inline: 0.6rem;
+	}
 
 	.brand {
-		font-size: 1.1rem;
+		font-size: 1.05rem;
+	}
+
+	.account {
+		gap: 0.4rem;
 	}
 }

@@ -86,7 +86,7 @@ export class TableRoom implements RoundContext {
 		return occupiedSeats(this.state).length;
 	}
 
-	/** Money this user has on the table right now: bets, hands in play and insurance. */
+	/** Chips a user has on this table: bets, hands in play and insurance, over all their seats. */
 	moneyOf(userId: number): number {
 		return seatsOfUser(this.state, userId).reduce((sum, seat) => sum + moneyOnTable(seat), 0);
 	}

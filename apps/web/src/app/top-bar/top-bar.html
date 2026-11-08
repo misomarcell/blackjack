@@ -15,21 +15,22 @@
 		</div>
 	}
 
-	<nav class="main-nav" [class.foldable]="auth.isAdmin()" aria-label="Main">
-		<a routerLink="/lobby" routerLinkActive="active" class="nav-link">Lobby</a>
-		@if (auth.isAdmin()) {
+	<!-- Players only ever see the lobby and its tables, so only admins get navigation. -->
+	@if (auth.isAdmin()) {
+		<nav class="main-nav" aria-label="Main">
+			<a routerLink="/lobby" routerLinkActive="active" class="nav-link">Lobby</a>
 			<a
 				routerLink="/admin"
 				routerLinkActive="active"
 				[routerLinkActiveOptions]="{ exact: true }"
 				class="nav-link"
-				>Tables</a
+				><bj-icon name="shield" class="admin-mark" /> Tables</a
 			>
-			<a routerLink="/admin/players" routerLinkActive="active" class="nav-link">Players</a>
-		}
-	</nav>
+			<a routerLink="/admin/players" routerLinkActive="active" class="nav-link"
+				><bj-icon name="shield" class="admin-mark" /> Players</a
+			>
+		</nav>
 
-	@if (auth.isAdmin()) {
 		<!-- Phones: the three links would not fit in one row, so they open from a menu button. -->
 		<details #navMenu class="nav-menu">
 			<summary class="nav-menu-button" aria-label="Menu"><bj-icon name="menu" /></summary>
@@ -47,22 +48,26 @@
 					[routerLinkActiveOptions]="{ exact: true }"
 					class="nav-link"
 					(click)="navMenu.open = false"
-					>Tables</a
+					><bj-icon name="shield" class="admin-mark" /> Tables</a
 				>
 				<a
 					routerLink="/admin/players"
 					routerLinkActive="active"
 					class="nav-link"
 					(click)="navMenu.open = false"
-					>Players</a
+					><bj-icon name="shield" class="admin-mark" /> Players</a
 				>
 			</nav>
 		</details>
 	}
 
 	<div class="account">
-		<bj-refill-button />
-		<bj-balance-display class="bar-item" [amount]="auth.balance()" />
+		<!-- A broke player has nothing to play with: the refill (or its countdown) takes the balance's place. -->
+		@if (auth.broke()) {
+			<bj-refill-button />
+		} @else {
+			<bj-balance-display class="bar-item" [amount]="auth.balance()" />
+		}
 		<span class="separator" aria-hidden="true"></span>
 		<span class="user" [attr.title]="auth.user()?.username">
 			<span class="avatar-initial" aria-hidden="true">{{ initial() }}</span>

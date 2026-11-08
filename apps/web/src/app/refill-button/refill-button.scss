@@ -28,12 +28,8 @@
 	letter-spacing: 0.02em;
 }
 
-/* Phones: just the clock. */
+/* Phones: a slimmer pill. */
 @media (max-width: 767px), (max-height: 500px) {
-	.refill-wait-label {
-		display: none;
-	}
-
 	/* The bar must stay one row: the error is still announced, but not drawn. */
 	.refill-error {
 		position: absolute;
@@ -46,5 +42,12 @@
 
 	.refill-wait {
 		padding-inline: 0.55rem;
+	}
+}
+
+/* The narrowest phones show just the clock; its title and screen-reader label still say what it is. */
+@media (max-width: 360px) {
+	.refill-wait-label {
+		display: none;
 	}
 }

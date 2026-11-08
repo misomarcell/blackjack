@@ -22,7 +22,7 @@ every screen: chips, deals, card flips, turns, payouts and chat.
 - Full rules: 6-deck shoe with cut card, blackjack pays 3:2, dealer stands on all 17s (configurable), dealer
   peeks under aces and tens, insurance pays 2:1, double on any two cards, split pairs up to four hands
   (double after split allowed, split aces get one card), 20 s turn timer that auto-stands.
-- Animated balance that counts up and down, a free refill (up to the starting balance) once every 24 hours, and table chat (stored in MySQL).
+- Animated balance that counts up and down, a balance refill once every 24 hours when you go broke (under $5), and table chat (stored in MySQL).
 - Desktop first, playable on landscape phones. Keyboard shortcuts at the table: **H**it, **S**tand, **D**ouble, s**P**lit.
 
 ## Repository layout

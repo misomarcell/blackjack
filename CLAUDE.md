@@ -55,7 +55,8 @@ README.md has the full feature list, layout and deployment steps; read it first.
   wallet, because the phase can change meanwhile (see `Betting.canStillBet`).
 - One user's socket messages run one at a time (`withUserLock` in `TableRoom.handle`). Server-side code that
   takes money off a seat and credits it must do both under that lock (`refundSeat`), or a player's own message
-  or a refill can see the same chips twice. Refills are refused while the player has chips on any table.
+  or a refill can see the same chips twice. Refills go through `RefillGate`, which refuses them while the player
+  has chips on a table or a table wallet call is still under way.
 - The server sends a strict CSP (no inline scripts, no eval). Pixi runs through `pixi.js/unsafe-eval` (the
   CSP-safe build, despite the name) and Angular's critical-CSS inlining is off because it adds an inline script.
 - Timers use `Countdown` (one visible countdown per table) and `Waiter` (the round awaits player input). Timing

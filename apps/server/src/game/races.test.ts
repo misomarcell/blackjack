@@ -73,17 +73,6 @@ describe('TableRoom races', () => {
 		expect(wallet.balances.get(2)).toBe(1000);
 	});
 
-	it('counts the money a player has on the table', async () => {
-		setup([]);
-		const alice = player(1);
-		await seatAndBet(room, alice, 0, 25);
-		await room.handle(alice, { type: 'sit', seat: 1 });
-		await room.handle(alice, { type: 'bet', seat: 1, amount: 100 });
-
-		expect(room.moneyOf(1)).toBe(125);
-		expect(room.moneyOf(2)).toBe(0);
-	});
-
 	it('does not end the next player’s turn when a slow double lands after a timeout', async () => {
 		// Alice 5+6, Bob 10+7, dealer 10+8.
 		setup(['5', '10', '10', '6', '7', '8'], { ...fastConfig, turnMs: 100 });

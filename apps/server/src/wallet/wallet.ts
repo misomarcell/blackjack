@@ -60,7 +60,7 @@ export async function refill(userId: number): Promise<{ balance: number } | { er
 		return { balance: await publish(userId) };
 	}
 	if ((await refillWaitMs(userId, rule.cooldownHours)) > 0) {
-		return { error: 'You already had your free refill today' };
+		return { error: 'You already refilled your balance today' };
 	}
 	return { error: `Refills are only for players with less than $${BROKE_BELOW}` };
 }

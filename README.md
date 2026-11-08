@@ -119,10 +119,24 @@ parameters (4) and file length (250 lines). Prettier uses tabs and single quotes
     docker compose up -d --build
     ```
 
-4. Open `http://<server>:3000`, register the admin user, and share table links with your friends.
+4. Open `http://<server>:3000` and register the admin user **right away**, before you share the address:
+   until then anyone who guesses `ADMIN_USERNAME` could register it. If that ever happens, change
+   `ADMIN_USERNAME` and restart; admin rights always follow the variable. Then share table links with your friends.
+
+The server refuses to start in production while `JWT_SECRET` or the MySQL passwords still hold the example values.
 
 Update to a new version with `git pull` followed by `docker compose up -d --build`. The database lives in the
 `db-data` volume and survives rebuilds.
+
+### Security notes
+
+- The server is the only authority: clients send intents, every bet and move is validated, and all money moves
+  through atomic MySQL updates. One player's messages are handled one at a time, so fast or duplicated
+  messages cannot pass the table limits or refund chips twice. Refills are refused while the player still
+  has chips on a table.
+- Sign-in attempts, sign-ups, chat lines and socket messages are rate limited per IP or per player.
+- Responses carry a strict Content-Security-Policy and the usual security headers; state-changing requests
+  and WebSocket upgrades must come from the site itself.
 
 ### Adminer (web database manager)
 
@@ -132,19 +146,25 @@ in `.env`. Sign in with server `db`, user `MYSQL_USER` and password `MYSQL_PASSW
 
 ### HTTPS
 
-Put a reverse proxy (Caddy, nginx, Traefik) in front of port 3000 and set `COOKIE_SECURE=true`. The proxy must
-forward WebSocket upgrades for `/ws/*`.
+Put a reverse proxy (Caddy, nginx, Traefik) in front of port 3000 and set `COOKIE_SECURE=true` and
+`TRUST_PROXY=true`. The proxy must forward WebSocket upgrades for `/ws/*` and keep the original `Host` header
+(Caddy does by default; with nginx add `proxy_set_header Host $host;`), because the server refuses requests and
+sockets from pages on other sites. If your proxy cannot keep the header, list the public address in
+`ALLOWED_ORIGINS` (e.g. `https://cards.example.com`). With a proxy in front, bind the app port to localhost
+(`APP_PORT=127.0.0.1:3000`) so clients cannot bypass the proxy and fake `X-Forwarded-For`.
 
 ### Configuration
 
 | Variable                              | Default        | Meaning                                                       |
 | ------------------------------------- | -------------- | ------------------------------------------------------------- |
 | `APP_PORT`                            | `3000`         | host port of the app                                          |
-| `JWT_SECRET`                          | required       | signs session cookies                                         |
+| `JWT_SECRET`                          | required       | signs session cookies (32+ random characters)                 |
 | `ADMIN_USERNAME`                      | `admin`        | registering with this name grants admin rights                |
 | `STARTING_BALANCE`                    | `1000`         | dollars for new players and for refills                       |
 | `REFILL_COOLDOWN_HOURS`               | `24`           | hours a player waits between two free refills                 |
 | `COOKIE_SECURE`                       | `false`        | send cookies only over HTTPS                                  |
+| `TRUST_PROXY`                         | `false`        | read client IP and host from the proxy's `X-Forwarded-*`      |
+| `ALLOWED_ORIGINS`                     | empty          | extra origins (comma separated) allowed to call the API       |
 | `FIRST_BET_SECONDS`                   | `10`           | countdown after the first Ready at an idle table              |
 | `BETTING_SECONDS`                     | `45`           | betting window after each round                               |
 | `INSURANCE_SECONDS`                   | `10`           | time to decide on insurance                                   |

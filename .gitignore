@@ -52,4 +52,8 @@ Thumbs.db
 
 # local env and Angular cache
 .env
+.env.*
+!.env.example
+*.pem
+*.key
 .angular

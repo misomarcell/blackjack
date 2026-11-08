@@ -2,19 +2,24 @@ import { Shoe } from '@blackjack/shared/blackjack';
 import type { ChatMessage, ClientMessage, TableServerMessage } from '@blackjack/shared/protocol';
 import type { GameConfig } from '../config';
 import type { TableRecord } from '../db/tables.repo';
+import { RateLimiter } from '../security/rate-limiter';
+import { withUserLock } from '../security/user-lock';
 import { Betting } from './betting';
 import type { Connection } from './connection';
 import { Countdown } from './countdown';
 import {
 	type CardSource,
+	clearSeat,
 	createTableState,
 	type PlayerStats,
 	moneyOnTable,
 	occupiedSeats,
 	type Seat,
+	seatsOfUser,
 	type TableState,
 	type Wallet,
 } from './model';
+import { refundSeat } from './refund';
 import { Round, RoundAborted, type RoundContext } from './round';
 import { Seating } from './seating';
 import { type LogStore, TableLog } from './table-log';
@@ -36,6 +41,9 @@ export interface RoomDeps {
 	onSeatsChanged: () => void;
 	shoe?: CardSource;
 }
+
+/** Chat flood guard: 5 lines per user every 10 seconds. */
+const chatLimiter = new RateLimiter(5, 10_000);
 
 type SeatMessage = Exclude<ClientMessage, { type: 'sit' } | { type: 'chat' }>;
 type HandlerResult = Promise<string | null> | string | null;
@@ -78,9 +86,14 @@ export class TableRoom implements RoundContext {
 		return occupiedSeats(this.state).length;
 	}
 
+	/** Money this user has on the table right now: bets, hands in play and insurance. */
+	moneyOf(userId: number): number {
+		return seatsOfUser(this.state, userId).reduce((sum, seat) => sum + moneyOnTable(seat), 0);
+	}
+
 	async join(connection: TableConnection): Promise<void> {
 		this.connections.add(connection);
-		await this.seating.setConnected(connection.user.id, true);
+		await withUserLock(connection.user.id, () => this.seating.setConnected(connection.user.id, true));
 		connection.send({ type: 'state', table: toTableView(this.state, this.countdown.view()) });
 		connection.send({ type: 'log-history', entries: await this.log.recent() });
 		connection.send({ type: 'chat-history', messages: await this.deps.chat.recent(this.state.table.id) });
@@ -91,12 +104,13 @@ export class TableRoom implements RoundContext {
 		const userId = connection.user.id;
 		const stillHere = [...this.connections].some((other) => other.user.id === userId);
 		if (!stillHere) {
-			await this.seating.setConnected(userId, false);
+			await withUserLock(userId, () => this.seating.setConnected(userId, false));
 		}
 	}
 
+	/** Messages of one user run one after another, so no two of them interleave around a wallet call. */
 	async handle(connection: TableConnection, message: ClientMessage): Promise<void> {
-		const error = await this.dispatch(connection, message);
+		const error = await withUserLock(connection.user.id, () => this.dispatch(connection, message));
 		if (error) {
 			connection.send({ type: 'error', message: error });
 		}
@@ -129,11 +143,12 @@ export class TableRoom implements RoundContext {
 		this.broadcast();
 	}
 
-	/** The table was deleted: refund everything still in play and tell everyone. */
+	/** The table was deleted: refund everything still in play, empty the seats and tell everyone. */
 	async close(): Promise<void> {
 		this.round?.abort();
 		this.countdown.cancel();
 		await this.refundAll();
+		this.state.seats.forEach(clearSeat);
 		this.sendAll({ type: 'closed' });
 		this.connections.clear();
 	}
@@ -205,11 +220,7 @@ export class TableRoom implements RoundContext {
 	private async refundAll(): Promise<void> {
 		const settled = this.state.phase === 'settled';
 		for (const seat of occupiedSeats(this.state)) {
-			const refund = settled ? seat.bet : moneyOnTable(seat);
-			if (seat.player) {
-				await this.wallet.credit(seat.player.userId, refund);
-			}
-			seat.bet = 0;
+			await refundSeat(seat, this.wallet, () => (settled ? seat.bet : moneyOnTable(seat)));
 		}
 	}
 
@@ -229,6 +240,9 @@ export class TableRoom implements RoundContext {
 		const clean = text.trim();
 		if (!clean) {
 			return null;
+		}
+		if (!chatLimiter.hit(String(connection.user.id))) {
+			return 'Slow down a little';
 		}
 		const id = await this.deps.chat.add(this.state.table.id, connection.user.id, clean);
 		const sentAt = new Date().toISOString();

@@ -70,6 +70,11 @@ export async function openRoom(tableId: string): Promise<TableRoom | null> {
 	return room;
 }
 
+/** Money the user has on any table right now (bets, hands in play, insurance). */
+export function moneyOnTables(userId: number): number {
+	return [...rooms.values()].reduce((sum, room) => sum + room.moneyOf(userId), 0);
+}
+
 export function reconfigureRoom(table: TableRecord): void {
 	rooms.get(table.id)?.configure(table);
 	refreshLobby();

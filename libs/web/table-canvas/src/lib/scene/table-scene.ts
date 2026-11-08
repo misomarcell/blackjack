@@ -22,6 +22,26 @@ function isViewerSeat(seat: SeatView, viewerId: number | null): boolean {
 	return seat.player !== null && seat.player.userId === viewerId;
 }
 
+/** The viewer's seat whose insurance question is open, so its hand can be pointed at like a turn. */
+function insuranceSeat(table: TableView, viewerId: number | null): number | null {
+	if (table.phase !== 'insurance') {
+		return null;
+	}
+	const seat = table.seats.find(
+		(candidate) =>
+			isViewerSeat(candidate, viewerId) && candidate.insurance === null && candidate.hands.length > 0,
+	);
+	return seat?.index ?? null;
+}
+
+/** The hand being decided at a seat: the one in turn, or the hand being insured. */
+function decidingHand(table: TableView, seat: SeatView, insuring: number | null): number | null {
+	if (table.turn?.seat === seat.index) {
+		return table.turn.hand;
+	}
+	return seat.index === insuring ? 0 : null;
+}
+
 /** The whole PixiJS table. Angular feeds it snapshots through `render`; it never talks to the server. */
 export class TableScene {
 	private readonly world = new Container();
@@ -83,13 +103,14 @@ export class TableScene {
 	/** `focusSeat` is the viewer's seat taking chips right now, highlighted like a seat in turn. */
 	render(table: TableView, viewerId: number | null, focusSeat: number | null): void {
 		const betting = table.phase === 'idle' || table.phase === 'betting';
+		const insuring = insuranceSeat(table, viewerId);
 		table.seats.forEach((seat) => {
 			this.seats[seat.index]?.update(seat, {
 				canSit: viewerId !== null,
 				isViewer: isViewerSeat(seat, viewerId),
 				activeHand: table.turn?.seat === seat.index ? table.turn.hand : null,
 				showReady: betting && seat.ready,
-				focused: betting && seat.index === focusSeat,
+				focused: (betting && seat.index === focusSeat) || seat.index === insuring,
 			});
 		});
 		this.cards.sync(cardTargets(table));
@@ -105,9 +126,10 @@ export class TableScene {
 	/** Totals and results appear only once the cards behind them have landed, so they never spoil a card. */
 	private scheduleLabels(table: TableView, viewerId: number | null): void {
 		clearTimeout(this.labelTimer);
+		const insuring = insuranceSeat(table, viewerId);
 		const draw = (): void => {
 			table.seats.forEach((seat) => {
-				const activeHand = table.turn?.seat === seat.index ? table.turn.hand : null;
+				const activeHand = decidingHand(table, seat, insuring);
 				this.seats[seat.index]?.updateLabels(seat, activeHand, isViewerSeat(seat, viewerId));
 			});
 			this.drawDealerLabels(table);

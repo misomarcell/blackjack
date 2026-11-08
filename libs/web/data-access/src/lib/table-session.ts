@@ -33,8 +33,8 @@ export class TableSession {
 	readonly log = signal<LogEntry[]>([]);
 	readonly error = signal<{ message: string } | null>(null);
 	readonly closed = signal(false);
-	/** What the viewer bet in their last round, for the "repeat bet" button. */
-	readonly lastBet = signal(0);
+	/** What each of the viewer's seats staked last round (0 = sat out), for the repeat buttons. */
+	readonly lastBets = signal<ReadonlyMap<number, number>>(new Map());
 	private lastBetRound = 0;
 
 	/** Every seat the viewer holds (a player can sit in several). */
@@ -79,7 +79,7 @@ export class TableSession {
 	private readonly handlers: ServerHandlers = {
 		state: ({ table }) => {
 			this.table.set(table);
-			this.rememberBet();
+			this.rememberBets();
 			this.receivedAt.set(performance.now());
 		},
 		chat: ({ message }) => this.chat.update((messages) => [...messages, message].slice(-CHAT_LIMIT)),
@@ -103,14 +103,15 @@ export class TableSession {
 		);
 	}
 
-	/** The stake of the viewer's first dealt hand, as dealt (before any double or split). */
-	private rememberBet(): void {
+	/** Each seat's stake as dealt (before any double or split), once per round the viewer played. */
+	private rememberBets(): void {
 		const round = this.table()?.round ?? 0;
-		const stake = this.mySeats().find((seat) => seat.hands.length > 0)?.hands[0]?.bet;
-		if (stake && round !== this.lastBetRound) {
-			this.lastBetRound = round;
-			this.lastBet.set(stake);
+		const seats = this.mySeats();
+		if (round === this.lastBetRound || !seats.some((seat) => seat.hands.length > 0)) {
+			return;
 		}
+		this.lastBetRound = round;
+		this.lastBets.set(new Map(seats.map((seat) => [seat.index, seat.hands[0]?.bet ?? 0])));
 	}
 
 	private receive(message: TableServerMessage): void {

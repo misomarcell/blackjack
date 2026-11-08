@@ -178,6 +178,14 @@ export class Round {
 		this.startTurnTimer(seat, hand);
 		this.ctx.broadcast();
 		await this.wait();
+		await this.letLastCardLand();
+	}
+
+	/** The hand is over: clear the turn, and give its last card time to land before anyone else's. */
+	private async letLastCardLand(): Promise<void> {
+		this.ctx.state.turn = null;
+		this.ctx.broadcast();
+		await this.pause(2 * this.ctx.config.dealMs);
 	}
 
 	/** Turns the hole card over, then draws one card at a time so every client sees each hit. */

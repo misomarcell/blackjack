@@ -1,6 +1,6 @@
 import { Component, computed, DestroyRef, effect, inject, input, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import type { ClientMessage, PlayerAction, SeatView } from '@blackjack/shared/protocol';
+import type { ClientMessage, PlayerAction } from '@blackjack/shared/protocol';
 import {
 	AuthStore,
 	PageTitle,
@@ -14,6 +14,7 @@ import { ActionBar } from '../action-bar/action-bar';
 import { BetPanel } from '../bet-panel/bet-panel';
 import { ChatPanel } from '../chat-panel/chat-panel';
 import { InsurancePrompt } from '../insurance-prompt/insurance-prompt';
+import { RepeatAll, type SeatBet } from '../repeat-all/repeat-all';
 import { TableLog } from '../table-log/table-log';
 import { TableStatus } from '../table-status/table-status';
 
@@ -29,6 +30,7 @@ const TOAST_MS = 2500;
 		BetPanel,
 		ActionBar,
 		InsurancePrompt,
+		RepeatAll,
 		TableLog,
 		ChatPanel,
 		Countdown,
@@ -80,12 +82,10 @@ export class TablePage {
 		return hand ? hand.bet / 2 : null;
 	});
 
-	/** Names the seat in prompts, but only when the viewer holds more than one. */
-	protected seatLabel(seat: SeatView | null): string {
-		const seats = this.session.mySeats();
-		const position = seats.findIndex((mine) => mine.index === seat?.index);
-		return position >= 0 && seats.length > 1 ? `Seat ${position + 1} of ${seats.length}` : '';
-	}
+	/** The viewer's seats still waiting for a bet, for "repeat all and deal". */
+	protected readonly openSeats = computed(() =>
+		this.bettingOpen() ? this.session.mySeats().filter((seat) => !seat.ready) : [],
+	);
 
 	/** Whether the bottom card has anything to show (bets, waiting, insurance or moves). */
 	protected readonly hudShown = computed(
@@ -150,6 +150,11 @@ export class TablePage {
 		if (seat) {
 			this.send({ type: 'ready', seat: seat.index });
 		}
+	}
+
+	/** Puts last round's stake back on every open seat and confirms them, all in one click. */
+	protected repeatAll(bets: SeatBet[]): void {
+		bets.forEach(({ seat, amount }) => this.send({ type: 'rebet', seat, amount }));
 	}
 
 	protected leaveSeats(): void {

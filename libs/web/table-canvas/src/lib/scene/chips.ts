@@ -6,10 +6,10 @@ type ChipValue = (typeof CHIP_VALUES)[number];
 
 /** Taller stacks are cut off, so a big bet never towers over the cards. */
 const MAX_PER_STACK = 9;
-const CHIP_RADIUS = 21;
-const CHIP_THICKNESS = 6;
+const CHIP_RADIUS = 27;
+const CHIP_THICKNESS = 5;
 /** How flat the chip faces look: the felt is seen from above at an angle. */
-const TILT = 0.6;
+const TILT = 0.8;
 
 /** Chip colors, matching the chip buttons in the Angular betting panel. */
 const chipColors: Record<ChipValue, number> = {
@@ -23,19 +23,19 @@ const chipColors: Record<ChipValue, number> = {
 const STACK_SPOTS: Record<number, [number, number][]> = {
 	1: [[0, 0]],
 	2: [
-		[-21, 4],
-		[21, -2],
+		[-27, 5],
+		[27, -3],
 	],
 	3: [
-		[-23, 10],
-		[23, 8],
-		[0, -14],
+		[-28, 12],
+		[28, 10],
+		[0, -17],
 	],
 	4: [
-		[-22, 12],
-		[22, 12],
-		[-21, -14],
-		[21, -14],
+		[-27, 15],
+		[27, 15],
+		[-26, -17],
+		[26, -17],
 	],
 };
 

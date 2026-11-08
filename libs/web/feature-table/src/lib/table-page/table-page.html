@@ -25,6 +25,15 @@
 			/>
 
 			<div class="controls">
+				@if (openSeats().length > 0) {
+					<bj-repeat-all
+						class="repeat-all"
+						[seats]="openSeats()"
+						[lastBets]="session.lastBets()"
+						[balance]="auth.balance()"
+						(repeat)="repeatAll($event)"
+					/>
+				}
 				@if (hudShown()) {
 					<div class="hud" [class.attention]="needsMyMove()" [class.untimed]="!table.timer">
 						@if (betSeat(); as seat) {
@@ -33,8 +42,7 @@
 								[balance]="auth.balance()"
 								[minBet]="table.minBet"
 								[maxBet]="table.maxBet"
-								[lastBet]="session.lastBet()"
-								[seatLabel]="seatLabel(seat)"
+								[lastBet]="session.lastBets().get(seat.index) ?? 0"
 								[canSitOut]="session.mySeats().length > 1"
 								(chip)="send({ type: 'bet', seat: seat.index, amount: $event })"
 								(clear)="send({ type: 'clear-bet', seat: seat.index })"
@@ -45,7 +53,6 @@
 						} @else if (insuranceSeat(); as seat) {
 							<bj-insurance-prompt
 								[cost]="insuranceCost() ?? 0"
-								[seatLabel]="seatLabel(seat)"
 								[affordable]="auth.balance() >= (insuranceCost() ?? 0)"
 								(decide)="send({ type: 'insurance', seat: seat.index, accept: $event })"
 							/>
@@ -54,7 +61,6 @@
 								[hand]="hand"
 								[handCount]="session.myTurnSeat()?.hands?.length ?? 1"
 								[balance]="auth.balance()"
-								[seatLabel]="seatLabel(session.myTurnSeat())"
 								(act)="act($event)"
 							/>
 						}

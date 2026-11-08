@@ -8,6 +8,7 @@ const clientMessageSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('leave-seat'), seat }),
 	z.object({ type: z.literal('bet'), seat, amount: z.number() }),
 	z.object({ type: z.literal('clear-bet'), seat }),
+	z.object({ type: z.literal('rebet'), seat, amount: z.number().int().nonnegative() }),
 	z.object({ type: z.literal('ready'), seat }),
 	z.object({ type: z.literal('action'), seat, action: z.enum(['hit', 'stand', 'double', 'split']) }),
 	z.object({ type: z.literal('insurance'), seat, accept: z.boolean() }),

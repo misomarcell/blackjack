@@ -16,8 +16,6 @@ export class BetPanel {
 	readonly maxBet = input.required<number>();
 	/** The stake of the viewer's previous round, 0 when there is none. */
 	readonly lastBet = input(0);
-	/** "Seat 2 of 3" when the viewer holds several seats, otherwise empty. */
-	readonly seatLabel = input('');
 	/** With several seats, a seat can skip the round: "Place bet" with no chips becomes "Sit out". */
 	readonly canSitOut = input(false);
 

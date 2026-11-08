@@ -1,6 +1,3 @@
-@if (seatLabel()) {
-	<p class="font-display seat-label">{{ seatLabel() }}</p>
-}
 <div class="moves" role="group" aria-label="Your move">
 	@for (move of moves(); track move.action) {
 		<button

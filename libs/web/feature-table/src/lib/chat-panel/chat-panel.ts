@@ -2,8 +2,10 @@ import {
 	afterRenderEffect,
 	Component,
 	computed,
+	DestroyRef,
 	effect,
 	type ElementRef,
+	inject,
 	input,
 	output,
 	signal,
@@ -25,8 +27,14 @@ export class ChatPanel {
 	readonly send = output<string>();
 
 	private readonly log = viewChild<ElementRef<HTMLElement>>('log');
-	/** Starts collapsed on shorter screens so it does not cover the seats. */
-	protected readonly open = signal(matchMedia('(min-height: 820px)').matches);
+	/**
+	 * Collapsed on shorter screens so it does not cover the seats. Portrait phones give the chat its own row
+	 * below the table, so it is open there. Rotating the phone applies the new screen's default again.
+	 */
+	private readonly roomy = matchMedia(
+		'(min-height: 820px), (max-width: 767px) and (orientation: portrait)',
+	);
+	protected readonly open = signal(this.roomy.matches);
 	/** Messages sent after this moment count as unread while the panel is collapsed. */
 	private readonly seenAt = signal(Date.now());
 	protected readonly unread = computed(() => {
@@ -55,6 +63,9 @@ export class ChatPanel {
 	);
 
 	constructor() {
+		const applyDefault = (event: MediaQueryListEvent): void => this.open.set(event.matches);
+		this.roomy.addEventListener('change', applyDefault);
+		inject(DestroyRef).onDestroy(() => this.roomy.removeEventListener('change', applyDefault));
 		effect(() => {
 			this.messages();
 			if (this.open()) {

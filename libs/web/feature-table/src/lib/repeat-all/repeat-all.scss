@@ -11,6 +11,32 @@
 	letter-spacing: 0.02em;
 }
 
+/* Wide screens: a tall key beside the controls card (the table page places it), its label on two lines. */
+@media (min-width: 1001px) and (min-height: 501px) {
+	:host {
+		height: 100%;
+	}
+
+	.repeat-button {
+		flex-direction: column;
+		gap: 0.2rem;
+		height: 100%;
+		padding-block: 0.5rem;
+		line-height: 1.15;
+		white-space: normal;
+		--icon-size: 1.4rem;
+	}
+
+	/* The amount gets its own line instead of a dot. */
+	.repeat-label {
+		text-wrap: balance;
+	}
+
+	.repeat-sep {
+		display: none;
+	}
+}
+
 @media (max-width: 767px), (max-height: 500px) {
 	.repeat-button {
 		height: 2.6rem;

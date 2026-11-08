@@ -48,7 +48,7 @@
 }
 
 .chip-500 {
-	--chip: oklch(60% 0.22 295);
+	--chip: var(--color-chip-500);
 }
 
 .chip-tool {
@@ -76,6 +76,19 @@
 	background: var(--color-base-300);
 	color: color-mix(in oklch, var(--color-base-content) 45%, transparent);
 	box-shadow: none;
+}
+
+/* Narrow portrait phones: the five chip slots shrink with the screen so the row always fits. */
+@media (max-width: 767px) and (orientation: portrait) {
+	.chips {
+		gap: min(0.6rem, 2vw);
+	}
+
+	.chip {
+		width: min(3.6rem, 14.5vw);
+		height: min(3.6rem, 14.5vw);
+		font-size: min(1.1rem, 4.4vw);
+	}
 }
 
 /* Landscape phones: chips and "Place bet" share one full-width row to save height. */

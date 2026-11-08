@@ -12,6 +12,7 @@ let nextId = 0;
 	templateUrl: './floating-panel.html',
 	styleUrl: './floating-panel.scss',
 	imports: [Icon],
+	host: { '[class.is-open]': 'open()' },
 })
 export class FloatingPanel {
 	readonly heading = input.required<string>();

@@ -1,10 +1,16 @@
+/* A column, so a parent that stretches the host (the portrait chat) can make the open panel fill it. */
 :host {
-	display: block;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	min-height: 0;
 }
 
 .panel {
 	display: flex;
+	flex: 1 1 auto;
 	flex-direction: column;
+	min-height: 0;
 	gap: 0.35rem;
 	width: var(--panel-width, 20rem);
 	padding: 0.5rem 0.7rem 0.6rem;

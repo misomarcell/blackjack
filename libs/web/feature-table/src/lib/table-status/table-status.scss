@@ -1,6 +1,7 @@
+/* The side columns never shrink below their content; a long banner gives way instead of covering them. */
 :host {
 	display: grid;
-	grid-template-columns: 1fr auto 1fr;
+	grid-template-columns: 1fr minmax(0, auto) 1fr;
 	align-items: start;
 	gap: 0.5rem;
 	pointer-events: none;
@@ -34,6 +35,8 @@
 	font-family: var(--font-display);
 	font-size: clamp(1rem, 0.7rem + 1vw, 1.5rem);
 	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .actions {
@@ -64,13 +67,18 @@
  * move into the menu, and the status is printed faintly on the felt like the table rules.
  */
 @media (max-width: 767px), (max-height: 500px) {
+	/* Two columns: the status centers in the room left of the menu button, so it never runs under it. */
+	:host {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
 	.table-title,
 	.actions {
 		display: none;
 	}
 
 	.banner {
-		grid-column: 2;
+		grid-column: 1;
 		align-self: start;
 		padding: 0.1rem 0 0;
 		line-height: 1.2;
@@ -78,15 +86,16 @@
 		background: none;
 		box-shadow: none;
 		color: color-mix(in oklch, var(--color-felt-print) 80%, transparent);
-		font-size: 1.05rem;
-		letter-spacing: 0.06em;
+		font-size: clamp(0.8rem, 3.5vw, 1.05rem);
+		letter-spacing: 0.04em;
+		text-align: center;
 		text-transform: uppercase;
 		pointer-events: none;
 	}
 
 	.table-menu {
 		display: block;
-		grid-column: 3;
+		grid-column: 2;
 		justify-self: end;
 	}
 }

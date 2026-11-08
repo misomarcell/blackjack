@@ -7,7 +7,8 @@
 
 .choices {
 	display: grid;
-	grid-template-columns: repeat(2, 8.5rem);
+	/* Shrinks below 8.5rem a side only when a narrow phone has no room for more. */
+	grid-template-columns: repeat(2, minmax(0, 8.5rem));
 	gap: 0.5rem;
 }
 

@@ -44,6 +44,8 @@
 	--color-felt-print: oklch(90% 0.08 165);
 	/* The room around the table, below the rail. */
 	--color-floor: oklch(27% 0.07 280);
+	/* The $500 chip, and nothing else (the One Meaning Rule). */
+	--color-chip-500: oklch(60% 0.22 295);
 	/* The tiled suit print on the page background. */
 	--color-pattern: oklch(88% 0.07 85 / 0.7);
 	--color-log-player: oklch(50% 0.17 255);

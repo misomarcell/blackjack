@@ -103,8 +103,10 @@
 		gap: 0.5rem;
 	}
 
+	/* The label shrinks with narrow portrait screens so "Double" keeps its padding inside the button. */
 	.move {
 		height: 3.4rem;
-		font-size: 1.35rem;
+		padding-inline: 0.25rem;
+		font-size: min(1.35rem, 4.8vw);
 	}
 }

@@ -95,6 +95,20 @@
 	}
 }
 
+/*
+ * Wide screens: "Repeat all & deal" hangs off the right of the controls card as a tall key instead of
+ * stacking on top of it, so the controls stay low and never cover the middle seats' names.
+ */
+@media (min-width: 1001px) and (min-height: 501px) {
+	.controls:has(.hud) .repeat-all {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: calc(100% + 0.75rem);
+		width: 9.5rem;
+	}
+}
+
 /* Table log above the chat in the bottom-left corner. */
 .side {
 	--panel-width: min(22rem, 32vw);
@@ -131,6 +145,8 @@
 	.screen {
 		display: grid;
 		grid-template-areas: 'table' 'dock';
+		/* The column never grows past the screen, whatever the controls would like. */
+		grid-template-columns: minmax(0, 1fr);
 		grid-template-rows: minmax(0, 1fr) auto;
 		background: var(--color-floor);
 	}
@@ -233,13 +249,26 @@
 		aspect-ratio: 3 / 2;
 	}
 
+	/* The chat fills exactly what is left between the table and the controls, whatever the dock holds. */
 	.side {
 		--panel-width: 100%;
-		/* What is left between the 3:2 table and the docked controls, minus the panel's own chrome. */
-		--chat-height: clamp(2.5rem, 100dvh - 66.67vw - 22rem, 14rem);
+		--chat-height: 0px;
+		/* On the smallest phones the message list may fold away entirely, leaving the input usable. */
+		--chat-min-height: 0px;
 		grid-area: chat;
+		align-self: stretch;
 		justify-self: stretch;
 		align-items: stretch;
-		margin: 0.5rem 0.75rem 0;
+		min-height: 0;
+		margin: 0.5rem 0.75rem 0.75rem;
+	}
+
+	bj-chat-panel {
+		flex: 1 1 auto;
+	}
+
+	/* The chat's bottom margin already separates it from the controls. */
+	.controls {
+		padding-top: 0;
 	}
 }

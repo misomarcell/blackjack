@@ -7,6 +7,7 @@
 		(click)="repeat.emit(bets())"
 	>
 		<bj-icon name="repeat" />
-		Repeat all &amp; deal · {{ dollars(total()) }}
+		<span class="repeat-label">Repeat all &amp; deal</span><span class="repeat-sep"> · </span
+		><span>{{ dollars(total()) }}</span>
 	</button>
 }

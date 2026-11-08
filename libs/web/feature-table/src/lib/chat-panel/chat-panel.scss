@@ -1,8 +1,19 @@
+/* A column that pins the collapsed button to the bottom and lets the open panel grow when stretched. */
 :host {
-	display: block;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	min-height: 0;
 }
 
+bj-floating-panel.is-open {
+	flex: 1 1 auto;
+}
+
+/* Grows into any room its parent gives it; `--chat-height: 0px` means "fill whatever is left". */
 .lines {
+	flex: 1 1 auto;
+	min-height: var(--chat-min-height, 2.5rem);
 	height: var(--chat-height, clamp(4rem, 20dvh - 3rem, 8rem));
 	overflow-y: auto;
 	overscroll-behavior: contain;

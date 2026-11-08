@@ -1,5 +1,7 @@
 import { SEAT_COUNT, type SeatView, type TableView } from '@blackjack/shared/protocol';
 import { Application, Container } from 'pixi.js';
+// Shader code without eval(), so the server's Content-Security-Policy can forbid 'unsafe-eval'.
+import 'pixi.js/unsafe-eval';
 import { CardLayer } from './card-layer';
 import { cardTargets } from './card-targets';
 import { Felt } from './felt';

@@ -17,6 +17,18 @@ const envSchema = z.object({
 	ADMIN_USERNAME: z.string().default('admin'),
 	STARTING_BALANCE: z.coerce.number().positive().default(1000),
 	COOKIE_SECURE: z.stringbool().default(false),
+	/** Behind a reverse proxy: take the client IP and host from its X-Forwarded-* headers. */
+	TRUST_PROXY: z.stringbool().default(false),
+	/** Extra origins (comma separated, e.g. `https://cards.example.com`) allowed to call the API. */
+	ALLOWED_ORIGINS: z
+		.string()
+		.default('')
+		.transform((value) =>
+			value
+				.split(',')
+				.map((origin) => origin.trim())
+				.filter(Boolean),
+		),
 	STATIC_DIR: z.string().default('dist/apps/web/browser'),
 	FIRST_BET_SECONDS: seconds(10),
 	BETTING_SECONDS: seconds(45),
@@ -29,8 +41,16 @@ const envSchema = z.object({
 
 const env = envSchema.parse(Bun.env);
 
-if (env.NODE_ENV === 'production' && env.JWT_SECRET.startsWith('dev-only')) {
-	throw new Error('JWT_SECRET must be set in production');
+/** Values from the docs and `.env.example` that must never reach a public server. */
+const placeholderSecret = /dev-only|change-me/;
+
+if (env.NODE_ENV === 'production') {
+	if (placeholderSecret.test(env.JWT_SECRET) || env.JWT_SECRET.length < 32) {
+		throw new Error('Set JWT_SECRET to a long random string (openssl rand -hex 32) in production');
+	}
+	if (placeholderSecret.test(env.DATABASE_URL)) {
+		throw new Error('Change the example MySQL passwords in .env before running in production');
+	}
 }
 
 export const config = {
@@ -43,6 +63,8 @@ export const config = {
 	/** Hours between two free refills. */
 	refillCooldownHours: env.REFILL_COOLDOWN_HOURS,
 	cookieSecure: env.COOKIE_SECURE,
+	trustProxy: env.TRUST_PROXY,
+	allowedOrigins: env.ALLOWED_ORIGINS,
 	staticDir: env.STATIC_DIR,
 };
 

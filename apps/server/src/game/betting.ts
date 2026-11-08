@@ -1,6 +1,7 @@
 import { CHIP_VALUES } from '@blackjack/shared/protocol';
 import type { GameConfig } from '../config';
 import type { Countdown } from './countdown';
+import { refundSeat } from './refund';
 import { newHand, occupiedSeats, playerCount, type Seat, type TableState, type Wallet } from './model';
 import { money, type TableLog, who } from './table-log';
 
@@ -138,10 +139,10 @@ export class Betting {
 				seat.hands = [newHand([], seat.bet)];
 				this.ctx.log.add(who(seat), ' bets ', money(seat.bet));
 				players++;
-			} else if (seat.bet > 0 && seat.player) {
-				await wallet.credit(seat.player.userId, seat.bet);
+				seat.bet = 0;
+			} else if (seat.bet > 0) {
+				await refundSeat(seat, wallet, () => seat.bet);
 			}
-			seat.bet = 0;
 			seat.ready = false;
 		}
 		return players;

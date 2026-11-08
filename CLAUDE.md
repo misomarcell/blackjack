@@ -20,6 +20,7 @@ README.md has the full feature list, layout and deployment steps; read it first.
 - `apps/server/src/game`: the server-authoritative game. `TableRoom` handles sockets and dispatch, `Betting` handles chips,
   Ready and countdowns, `Seating` handles sit, leave and disconnects, `Round` runs deal → insurance → turns → dealer →
   settle, and `view.ts` projects state into the client snapshot.
+- `apps/server/src/security`: per-user lock, rate limiter, same-origin check and client IP helper.
 - `libs/web/data-access`: services (`AuthStore`, `TableSession`, `LobbyFeed`, `TablesApi`) and guards
 - `libs/web/ui`: small reusable presentational components
 - `libs/web/table-canvas`: `<blackjack-table>` and its PixiJS scene
@@ -52,6 +53,12 @@ README.md has the full feature list, layout and deployment steps; read it first.
   `TableView` snapshot. Never send the hidden hole card (face-down cards have `rank`/`suit` null).
 - All money moves through the `Wallet` (atomic debit/credit in MySQL). Re-check state after any `await` on the
   wallet, because the phase can change meanwhile (see `Betting.canStillBet`).
+- One user's socket messages run one at a time (`withUserLock` in `TableRoom.handle`). Server-side code that
+  takes money off a seat and credits it must do both under that lock (`refundSeat`), or a player's own message
+  or a refill can see the same chips twice. Refills go through `RefillGate`, which refuses them while the player
+  has chips on a table or a table wallet call is still under way.
+- The server sends a strict CSP (no inline scripts, no eval). Pixi runs through `pixi.js/unsafe-eval` (the
+  CSP-safe build, despite the name) and Angular's critical-CSS inlining is off because it adds an inline script.
 - Timers use `Countdown` (one visible countdown per table) and `Waiter` (the round awaits player input). Timing
   comes from `gameConfig` / env vars, never hard-coded.
 - Game tests (`table-room.test.ts`) use `StackedShoe` and `MemoryWallet` with zero delays. Add a test for any rule or

@@ -7,6 +7,7 @@ import type { UserRecord } from '../db/users.repo';
 import type { Connection } from '../game/connection';
 import type { TableRoom } from '../game/table-room';
 import type { AppEnv } from '../http/app-env';
+import { RateLimiter } from '../security/rate-limiter';
 import { parseClientMessage } from './client-message';
 import { joinLobby, leaveLobby, openRoom } from './hub';
 
@@ -21,6 +22,9 @@ function connectionFor<Message>(ws: WSContext, user: UserRecord): Connection<Mes
 		close: () => ws.close(),
 	};
 }
+
+/** Far above what a person clicks (repeat-all on six seats is six messages); floods are dropped. */
+const messageLimiter = new RateLimiter(40, 5_000);
 
 const lobbySocket = upgradeWebSocket((c) => {
 	let connection: Connection<LobbyServerMessage> | null = null;
@@ -43,7 +47,7 @@ const tableSocket = upgradeWebSocket((c) => {
 		},
 		onMessage: (event) => {
 			const message = parseClientMessage(event.data);
-			if (connection && message) {
+			if (connection && message && messageLimiter.hit(String(connection.user.id))) {
 				void room.handle(connection, message);
 			}
 		},

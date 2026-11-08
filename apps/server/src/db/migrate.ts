@@ -1,4 +1,6 @@
+import { config } from '../config';
 import { sql } from './client';
+import { syncAdminFlag } from './users.repo';
 
 const RETRY_DELAY_MS = 2000;
 const MAX_ATTEMPTS = 30;
@@ -91,4 +93,17 @@ export async function migrate(): Promise<void> {
 	}
 	await addMissingColumns();
 	await seedTables();
+	await syncAdminFlag(config.adminUsername);
+	await warnIfAdminUnclaimed();
+}
+
+/** Until the admin registers, anyone who guesses ADMIN_USERNAME could register it and get admin rights. */
+async function warnIfAdminUnclaimed(): Promise<void> {
+	const [row] = await sql`SELECT COUNT(*) AS count FROM users WHERE is_admin = TRUE`;
+	if (Number(row.count) === 0) {
+		console.warn(
+			`No admin yet: register "${config.adminUsername}" now, before sharing the site.`,
+			'Use a hard-to-guess ADMIN_USERNAME on a public server.',
+		);
+	}
 }

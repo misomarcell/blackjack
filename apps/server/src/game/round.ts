@@ -13,6 +13,7 @@ import { type Countdown, Waiter } from './countdown';
 import {
 	type CardSource,
 	type Hand,
+	type PlayerStats,
 	markNatural,
 	needsDealer,
 	playingSeats,
@@ -28,6 +29,7 @@ export interface RoundContext {
 	readonly state: TableState;
 	readonly shoe: CardSource;
 	readonly wallet: Wallet;
+	readonly stats: PlayerStats;
 	readonly config: GameConfig;
 	readonly countdown: Countdown;
 	readonly log: TableLog;
@@ -236,6 +238,7 @@ export class Round {
 		logSettlement(this.ctx.log, seat, this.ctx.state.dealer.cards, dealerNatural);
 		if (seat.player) {
 			await this.ctx.wallet.credit(seat.player.userId, payout);
+			await this.ctx.stats.addHandsPlayed(seat.player.userId, seat.hands.length);
 		}
 	}
 

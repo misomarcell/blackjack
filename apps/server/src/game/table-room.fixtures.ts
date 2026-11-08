@@ -107,12 +107,22 @@ function memoryLog(): LogStore {
 }
 
 /** A fresh room for one test, dealing `ranks` first. */
-export function createRoom(ranks: Rank[]): { room: TableRoom; wallet: MemoryWallet } {
+/** Hands played per user, as the database would count them. */
+export type HandCounts = Map<number, number>;
+
+export function createRoom(ranks: Rank[]): { room: TableRoom; wallet: MemoryWallet; hands: HandCounts } {
 	const wallet = new MemoryWallet();
+	const hands: HandCounts = new Map();
+	const stats = {
+		addHandsPlayed: async (userId: number, count: number) => {
+			hands.set(userId, (hands.get(userId) ?? 0) + count);
+		},
+	};
 	const room = new TableRoom(
 		{ id: 't1', name: 'Test', minBet: 5, maxBet: 500 },
 		{
 			wallet,
+			stats,
 			config: fastConfig,
 			shoe: new StackedShoe(ranks),
 			chat: { add: async () => 1, recent: async () => [] },
@@ -120,7 +130,7 @@ export function createRoom(ranks: Rank[]): { room: TableRoom; wallet: MemoryWall
 			onSeatsChanged: () => undefined,
 		},
 	);
-	return { room, wallet };
+	return { room, wallet, hands };
 }
 
 /** Joins, sits down at `seat` and puts `amount` on it. */

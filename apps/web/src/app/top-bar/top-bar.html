@@ -15,7 +15,7 @@
 		</div>
 	}
 
-	<nav class="main-nav" aria-label="Main">
+	<nav class="main-nav" [class.foldable]="auth.isAdmin()" aria-label="Main">
 		<a routerLink="/lobby" routerLinkActive="active" class="nav-link">Lobby</a>
 		@if (auth.isAdmin()) {
 			<a
@@ -28,6 +28,37 @@
 			<a routerLink="/admin/players" routerLinkActive="active" class="nav-link">Players</a>
 		}
 	</nav>
+
+	@if (auth.isAdmin()) {
+		<!-- Phones: the three links would not fit in one row, so they open from a menu button. -->
+		<details #navMenu class="nav-menu">
+			<summary class="nav-menu-button" aria-label="Menu"><bj-icon name="menu" /></summary>
+			<nav class="nav-menu-list" aria-label="Main">
+				<a
+					routerLink="/lobby"
+					routerLinkActive="active"
+					class="nav-link"
+					(click)="navMenu.open = false"
+					>Lobby</a
+				>
+				<a
+					routerLink="/admin"
+					routerLinkActive="active"
+					[routerLinkActiveOptions]="{ exact: true }"
+					class="nav-link"
+					(click)="navMenu.open = false"
+					>Tables</a
+				>
+				<a
+					routerLink="/admin/players"
+					routerLinkActive="active"
+					class="nav-link"
+					(click)="navMenu.open = false"
+					>Players</a
+				>
+			</nav>
+		</details>
+	}
 
 	<div class="account">
 		<bj-refill-button />

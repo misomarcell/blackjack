@@ -48,6 +48,12 @@ export interface Wallet {
 	credit(userId: number, amount: number): Promise<void>;
 }
 
+/** Player statistics kept outside the game (the database in production). */
+export interface PlayerStats {
+	/** Every settled hand counts, so a split pair counts as two hands. */
+	addHandsPlayed(userId: number, hands: number): Promise<void>;
+}
+
 function emptySeat(index: number): Seat {
 	return { index, player: null, bet: 0, ready: false, insurance: null, hands: [], leaving: false };
 }

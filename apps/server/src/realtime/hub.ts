@@ -2,6 +2,7 @@ import { type LobbyServerMessage, SEAT_COUNT, type TableSummary } from '@blackja
 import { gameConfig } from '../config';
 import { addChatMessage, recentChatMessages } from '../db/chat.repo';
 import { addLogEntry, recentLogEntries } from '../db/log.repo';
+import { addHandsPlayed } from '../db/players.repo';
 import { findTable, listTables, type TableRecord } from '../db/tables.repo';
 import type { Connection } from '../game/connection';
 import { TableRoom } from '../game/table-room';
@@ -59,6 +60,7 @@ export async function openRoom(tableId: string): Promise<TableRoom | null> {
 		rooms.get(tableId) ??
 		new TableRoom(table, {
 			wallet: { debit, credit },
+			stats: { addHandsPlayed },
 			chat: { add: addChatMessage, recent: recentChatMessages },
 			log: { add: addLogEntry, recent: recentLogEntries },
 			config: gameConfig,

@@ -34,25 +34,33 @@ export async function credit(userId: number, amount: number): Promise<void> {
 	await publish(userId);
 }
 
+/** The smallest chip; below this a player is broke and may refill. */
+const BROKE_BELOW = 5;
+
 /** When the user's next free refill is allowed, and how much it gives. */
 export async function refillStatus(userId: number): Promise<RefillStatus> {
 	return {
 		waitMs: await refillWaitMs(userId, config.refillCooldownHours),
 		upTo: config.startingBalance,
+		brokeBelow: BROKE_BELOW,
 	};
 }
 
 /**
- * The free refill: tops the balance up to the starting balance, once per cooldown (24 hours by default).
+ * The free refill for broke players: back to the starting balance, once per cooldown (24 hours by default).
  * Returns the new balance, or why it was refused.
  */
 export async function refill(userId: number): Promise<{ balance: number } | { error: string }> {
-	const { startingBalance, refillCooldownHours } = config;
-	if (await refillBalance(userId, startingBalance, refillCooldownHours)) {
+	const rule = {
+		upTo: config.startingBalance,
+		brokeBelow: BROKE_BELOW,
+		cooldownHours: config.refillCooldownHours,
+	};
+	if (await refillBalance(userId, rule)) {
 		return { balance: await publish(userId) };
 	}
-	if ((await refillWaitMs(userId, refillCooldownHours)) > 0) {
+	if ((await refillWaitMs(userId, rule.cooldownHours)) > 0) {
 		return { error: 'You already had your free refill today' };
 	}
-	return { error: `Refills top you up to $${startingBalance}, and you already have that much` };
+	return { error: `Refills are only for players with less than $${BROKE_BELOW}` };
 }

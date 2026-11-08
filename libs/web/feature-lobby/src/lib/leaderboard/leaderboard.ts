@@ -5,6 +5,7 @@ import { formatDollars } from '@blackjack/web/ui';
 
 /** Balances move with every round, so the board refreshes on its own while the lobby is open. */
 const REFRESH_MS = 30_000;
+const handCount = new Intl.NumberFormat();
 
 /** The richest players, most money on top, with the viewer's own row highlighted. */
 @Component({
@@ -20,6 +21,7 @@ export class Leaderboard {
 	protected readonly failed = signal(false);
 	protected readonly me = computed(() => this.auth.user()?.username ?? null);
 	protected readonly dollars = formatDollars;
+	protected readonly count = (value: number): string => handCount.format(value);
 
 	constructor() {
 		void this.load();

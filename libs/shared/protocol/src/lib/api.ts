@@ -15,6 +15,8 @@ export interface RefillStatus {
 	waitMs: number;
 	/** A refill tops the balance up to this amount. */
 	upTo: number;
+	/** Refills are only for broke players: the balance must be below this. */
+	brokeBelow: number;
 }
 
 /** One row of the lobby leaderboard, richest first. */
@@ -22,6 +24,7 @@ export interface LeaderboardEntry {
 	rank: number;
 	username: string;
 	balance: number;
+	handsPlayed: number;
 }
 
 /** A player as listed on the admin player page. */
@@ -31,6 +34,7 @@ export interface PlayerSummary {
 	email: string;
 	balance: number;
 	isAdmin: boolean;
+	handsPlayed: number;
 	createdAt: string;
 }
 

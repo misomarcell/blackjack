@@ -12,6 +12,7 @@ const schema = [
 		balance DECIMAL(12, 2) NOT NULL,
 		is_admin BOOLEAN NOT NULL DEFAULT FALSE,
 		last_refill_at TIMESTAMP NULL DEFAULT NULL,
+		hands_played INT NOT NULL DEFAULT 0,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	)`,
 	`CREATE TABLE IF NOT EXISTS blackjack_tables (
@@ -65,13 +66,20 @@ async function seedTables(): Promise<void> {
 		('whale', 'High Rollers', 100, 5000)`;
 }
 
-/** Columns added after the first release, for databases created before them. */
+/** Columns added to `users` after the first release, for databases created before them. */
+const addedUserColumns: Record<string, string> = {
+	last_refill_at: 'TIMESTAMP NULL DEFAULT NULL',
+	hands_played: 'INT NOT NULL DEFAULT 0',
+};
+
 async function addMissingColumns(): Promise<void> {
-	const [row] = await sql`
-		SELECT COUNT(*) AS count FROM information_schema.columns
-		WHERE table_schema = DATABASE() AND table_name = 'users' AND column_name = 'last_refill_at'`;
-	if (Number(row.count) === 0) {
-		await sql.unsafe('ALTER TABLE users ADD COLUMN last_refill_at TIMESTAMP NULL DEFAULT NULL');
+	for (const [column, definition] of Object.entries(addedUserColumns)) {
+		const [row] = await sql`
+			SELECT COUNT(*) AS count FROM information_schema.columns
+			WHERE table_schema = DATABASE() AND table_name = 'users' AND column_name = ${column}`;
+		if (Number(row.count) === 0) {
+			await sql.unsafe(`ALTER TABLE users ADD COLUMN ${column} ${definition}`);
+		}
 	}
 }
 

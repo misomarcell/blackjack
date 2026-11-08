@@ -34,6 +34,16 @@
 		display: none;
 	}
 
+	/* The bar must stay one row: the error is still announced, but not drawn. */
+	.refill-error {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
 	.refill-wait {
 		padding-inline: 0.55rem;
 	}

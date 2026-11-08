@@ -11,6 +11,7 @@
 				<tr>
 					<th scope="col" class="rank-col">Rank</th>
 					<th scope="col">Player</th>
+					<th scope="col" class="money-col">Hands</th>
 					<th scope="col" class="money-col">Balance</th>
 				</tr>
 			</thead>
@@ -26,11 +27,12 @@
 								<span class="you-tag">You</span>
 							}
 						</th>
+						<td class="money-col">{{ count(entry.handsPlayed) }}</td>
 						<td class="money-col">{{ dollars(entry.balance) }}</td>
 					</tr>
 				} @empty {
 					<tr>
-						<td colspan="3">No players yet.</td>
+						<td colspan="4">No players yet.</td>
 					</tr>
 				}
 			</tbody>

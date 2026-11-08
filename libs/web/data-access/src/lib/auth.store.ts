@@ -17,6 +17,8 @@ export class AuthStore {
 	readonly refillReadyAt = signal(0);
 	/** How far a refill tops the balance up. */
 	readonly refillUpTo = computed(() => this.current()?.refill.upTo ?? 0);
+	/** Refills are only for broke players, whose balance is below this. */
+	readonly refillBrokeBelow = computed(() => this.current()?.refill.brokeBelow ?? 0);
 
 	/** Restores the session on app start. */
 	async restore(): Promise<void> {

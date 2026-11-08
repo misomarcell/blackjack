@@ -4,6 +4,7 @@ import type { TableRoom } from './table-room';
 import {
 	createRoom,
 	fastConfig,
+	type HandCounts,
 	lastState,
 	type MemoryWallet,
 	player,
@@ -14,9 +15,10 @@ import {
 
 let room: TableRoom;
 let wallet: MemoryWallet;
+let hands: HandCounts;
 
 function setup(ranks: Rank[]): void {
-	({ room, wallet } = createRoom(ranks));
+	({ room, wallet, hands } = createRoom(ranks));
 }
 
 afterEach(() => room.close());
@@ -41,6 +43,22 @@ describe('TableRoom seats', () => {
 		expect(settled.seats[0]?.hands[0]?.result).toBe('win');
 		expect(settled.seats[2]?.hands[0]?.result).toBe('win');
 		expect(wallet.balances.get(1)).toBe(1050);
+	});
+
+	it('counts every settled hand towards hands played, split hands included', async () => {
+		setup(['8', '10', '8', '7', '3', '2']);
+		const alice = player(1);
+		await seatAndBet(room, alice, 0, 25);
+		await room.handle(alice, { type: 'ready', seat: 0 });
+		await reached(alice, 'playing');
+
+		await room.handle(alice, { type: 'action', seat: 0, action: 'split' });
+		await room.handle(alice, { type: 'action', seat: 0, action: 'stand' });
+		await until(() => lastState(alice).turn?.hand === 1);
+		await room.handle(alice, { type: 'action', seat: 0, action: 'stand' });
+		await reached(alice, 'settled');
+
+		expect(hands.get(1)).toBe(2);
 	});
 
 	it('waits for every seat, and lets a seat without chips sit the round out', async () => {

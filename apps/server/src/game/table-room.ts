@@ -8,6 +8,7 @@ import { Countdown } from './countdown';
 import {
 	type CardSource,
 	createTableState,
+	type PlayerStats,
 	moneyOnTable,
 	occupiedSeats,
 	type Seat,
@@ -28,6 +29,7 @@ interface ChatStore {
 
 export interface RoomDeps {
 	wallet: Wallet;
+	stats: PlayerStats;
 	chat: ChatStore;
 	log: LogStore;
 	config: GameConfig;
@@ -51,6 +53,7 @@ export class TableRoom implements RoundContext {
 	readonly log: TableLog;
 	readonly shoe: CardSource;
 	readonly wallet: Wallet;
+	readonly stats: PlayerStats;
 	readonly config: GameConfig;
 	private readonly connections = new Set<TableConnection>();
 	private readonly betting: Betting;
@@ -63,6 +66,7 @@ export class TableRoom implements RoundContext {
 	) {
 		this.state = createTableState(table);
 		this.wallet = deps.wallet;
+		this.stats = deps.stats;
 		this.log = new TableLog(table.id, deps.log, (entry) => this.sendAll({ type: 'log', entry }));
 		this.config = deps.config;
 		this.shoe = deps.shoe ?? new Shoe(deps.config.decks);

@@ -18,6 +18,7 @@ function connectionFor<Message>(ws: WSContext, user: UserRecord): Connection<Mes
 	return {
 		user: { id: user.id, username: user.username },
 		send: (message) => ws.send(JSON.stringify(message)),
+		close: () => ws.close(),
 	};
 }
 

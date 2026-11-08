@@ -14,13 +14,15 @@ every screen: chips, deals, card flips, turns, payouts and chat.
 - Lobby with every table's limits and live player count; each table has a shareable URL (`/table/<id>`).
   Opening a shared link while signed out returns you to that table after signing in.
 - Admins (the user named in `ADMIN_USERNAME`) create, edit and delete tables. Deleting a table refunds all bets.
+- Admins also get a player list where they can remove players.
+- The lobby shows a leaderboard of the richest players.
 - Betting: the first player to press **Deal me in** at an idle table starts a 10 s countdown if others are seated
   (alone, the round starts at once). After each round everybody gets 45 s to bet. The round starts early when
   every seated player is ready.
 - Full rules: 6-deck shoe with cut card, blackjack pays 3:2, dealer stands on all 17s (configurable), dealer
   peeks under aces and tens, insurance pays 2:1, double on any two cards, split pairs up to four hands
   (double after split allowed, split aces get one card), 20 s turn timer that auto-stands.
-- Animated balance that counts up and down, a free refill when you go broke, and table chat (stored in MySQL).
+- Animated balance that counts up and down, a free refill (up to the starting balance) once every 24 hours, and table chat (stored in MySQL).
 - Desktop first, playable on landscape phones. Keyboard shortcuts at the table: **H**it, **S**tand, **D**ouble, s**P**lit.
 
 ## Repository layout
@@ -44,7 +46,7 @@ libs/
   web/table-canvas/       <blackjack-table> component and its PixiJS scene
   web/feature-auth/       login and register pages
   web/feature-lobby/      table catalog
-  web/feature-admin/      table management
+  web/feature-admin/      table and player management
   web/feature-table/      table screen: status bar, bet panel, actions, insurance, chat
 ```
 
@@ -141,6 +143,7 @@ forward WebSocket upgrades for `/ws/*`.
 | `JWT_SECRET`                          | required       | signs session cookies                                         |
 | `ADMIN_USERNAME`                      | `admin`        | registering with this name grants admin rights                |
 | `STARTING_BALANCE`                    | `1000`         | dollars for new players and for refills                       |
+| `REFILL_COOLDOWN_HOURS`               | `24`           | hours a player waits between two free refills                 |
 | `COOKIE_SECURE`                       | `false`        | send cookies only over HTTPS                                  |
 | `FIRST_BET_SECONDS`                   | `10`           | countdown after the first Ready at an idle table              |
 | `BETTING_SECONDS`                     | `45`           | betting window after each round                               |

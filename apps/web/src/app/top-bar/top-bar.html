@@ -1,5 +1,7 @@
 <header class="app-bar">
-	<a routerLink="/lobby" class="brand">♠ Blackjack Party</a>
+	<a routerLink="/lobby" class="brand" aria-label="Blackjack Party"
+		><span aria-hidden="true">♠</span> <span class="brand-name">Blackjack Party</span></a
+	>
 
 	@if (pageTitle.current(); as page) {
 		<div class="page-nav">
@@ -16,19 +18,19 @@
 	<nav class="main-nav" aria-label="Main">
 		<a routerLink="/lobby" routerLinkActive="active" class="nav-link">Lobby</a>
 		@if (auth.isAdmin()) {
-			<a routerLink="/admin" routerLinkActive="active" class="nav-link">Tables</a>
+			<a
+				routerLink="/admin"
+				routerLinkActive="active"
+				[routerLinkActiveOptions]="{ exact: true }"
+				class="nav-link"
+				>Tables</a
+			>
+			<a routerLink="/admin/players" routerLinkActive="active" class="nav-link">Players</a>
 		}
 	</nav>
 
 	<div class="account">
-		@if (refillError(); as error) {
-			<span class="text-sm" role="alert">{{ error }}</span>
-		}
-		@if (broke()) {
-			<button type="button" class="btn btn-accent chunky-sm bar-item" (click)="refill()">
-				Free refill
-			</button>
-		}
+		<bj-refill-button />
 		<bj-balance-display class="bar-item" [amount]="auth.balance()" />
 		<span class="separator" aria-hidden="true"></span>
 		<span class="user" [attr.title]="auth.user()?.username">

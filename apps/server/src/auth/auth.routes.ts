@@ -12,6 +12,7 @@ import {
 } from '../db/users.repo';
 import type { AppEnv } from '../http/app-env';
 import { validationHook } from '../http/validation';
+import { refillStatus } from '../wallet/wallet';
 import { endSession, requireUser, startSession } from './session';
 
 const username = z
@@ -25,9 +26,9 @@ const password = z.string().min(8, 'Password needs at least 8 characters').max(1
 const registerSchema = z.object({ username, password, email: z.email('Enter a valid e-mail').max(254) });
 const loginSchema = z.object({ username: z.string().trim(), password: z.string() });
 
-/** Strips the password hash before a user leaves the server. */
-function publicUser({ passwordHash: _hash, ...user }: UserRecord): User {
-	return user;
+/** Strips the password hash before a user leaves the server, and adds their free refill status. */
+async function publicUser({ passwordHash: _hash, ...user }: UserRecord): Promise<User> {
+	return { ...user, refill: await refillStatus(user.id) };
 }
 
 export const authRoutes = new Hono<AppEnv>()
@@ -45,7 +46,7 @@ export const authRoutes = new Hono<AppEnv>()
 		});
 		await startSession(c, id);
 		const user = await findUserById(id);
-		return c.json(publicUser(user as UserRecord), 201);
+		return c.json(await publicUser(user as UserRecord), 201);
 	})
 	.post('/login', zValidator('json', loginSchema, validationHook), async (c) => {
 		const input = c.req.valid('json');
@@ -55,10 +56,10 @@ export const authRoutes = new Hono<AppEnv>()
 			return c.json({ error: 'Wrong username or password' }, 401);
 		}
 		await startSession(c, user.id);
-		return c.json(publicUser(user));
+		return c.json(await publicUser(user));
 	})
 	.post('/logout', (c) => {
 		endSession(c);
 		return c.body(null, 204);
 	})
-	.get('/me', requireUser, (c) => c.json(publicUser(c.get('user'))));
+	.get('/me', requireUser, async (c) => c.json(await publicUser(c.get('user'))));

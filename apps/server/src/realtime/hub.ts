@@ -73,6 +73,16 @@ export function reconfigureRoom(table: TableRecord): void {
 	refreshLobby();
 }
 
+/** A removed player loses every live connection: the lobby and any table they are at. */
+export function disconnectUser(userId: number): void {
+	rooms.forEach((room) => room.disconnectUser(userId));
+	lobbyConnections.forEach((connection) => {
+		if (connection.user.id === userId) {
+			connection.close();
+		}
+	});
+}
+
 export async function closeRoom(tableId: string): Promise<void> {
 	await rooms.get(tableId)?.close();
 	rooms.delete(tableId);

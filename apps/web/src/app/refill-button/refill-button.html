@@ -1,0 +1,25 @@
+@if (error(); as message) {
+	<span class="refill-error text-sm" role="alert">{{ message }}</span>
+}
+@if (waitMs() > 0) {
+	<!-- A timer role, not a live region: announcing every second would drown out everything else. -->
+	<span
+		class="refill-wait"
+		role="timer"
+		[attr.aria-label]="'Next free refill in ' + countdown()"
+		[attr.title]="'Next free refill in ' + countdown()"
+	>
+		<span class="refill-wait-label">Refill in</span>
+		<span class="refill-wait-time">{{ countdown() }}</span>
+	</span>
+} @else if (canRefill()) {
+	<button
+		type="button"
+		class="btn btn-accent chunky-sm refill"
+		[disabled]="busy()"
+		[attr.title]="'Top up to ' + upTo() + ' (once a day)'"
+		(click)="refill()"
+	>
+		Free refill
+	</button>
+}

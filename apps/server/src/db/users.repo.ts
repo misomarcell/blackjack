@@ -10,7 +10,8 @@ interface UserRow {
 	is_admin: number | boolean;
 }
 
-export interface UserRecord extends User {
+/** A stored user; the refill status is added when the user is sent to the client. */
+export interface UserRecord extends Omit<User, 'refill'> {
 	passwordHash: string;
 }
 
@@ -70,8 +71,4 @@ export async function debitBalance(userId: number, amount: number): Promise<bool
 
 export async function creditBalance(userId: number, amount: number): Promise<void> {
 	await sql`UPDATE users SET balance = balance + ${amount} WHERE id = ${userId}`;
-}
-
-export async function setBalance(userId: number, balance: number): Promise<void> {
-	await sql`UPDATE users SET balance = ${balance} WHERE id = ${userId}`;
 }

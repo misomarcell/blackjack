@@ -1,0 +1,23 @@
+:host {
+	display: block;
+}
+
+.table-sheet {
+	overflow-x: auto;
+	border: 3px solid var(--color-neutral);
+	border-radius: var(--radius-box);
+	background: var(--color-base-100);
+	box-shadow: var(--shadow-chunky);
+
+	thead th {
+		color: var(--color-base-content);
+		font-family: var(--font-display);
+		font-size: 1rem;
+		font-weight: 400;
+		letter-spacing: 0.02em;
+	}
+
+	td {
+		font-variant-numeric: tabular-nums;
+	}
+}

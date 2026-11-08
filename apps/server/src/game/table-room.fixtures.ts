@@ -57,7 +57,12 @@ export class MemoryWallet implements Wallet {
 
 export function player(id: number): TableConnection & { messages: TableServerMessage[] } {
 	const messages: TableServerMessage[] = [];
-	return { user: { id, username: `player${id}` }, messages, send: (message) => messages.push(message) };
+	return {
+		user: { id, username: `player${id}` },
+		messages,
+		send: (message) => messages.push(message),
+		close: () => undefined,
+	};
 }
 
 export interface Spy {

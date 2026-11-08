@@ -102,6 +102,16 @@ export class TableRoom implements RoundContext {
 		this.sendAll({ type: 'state', table: toTableView(this.state, this.countdown.view()) });
 	}
 
+	/** Drops every socket of a removed player; their seats then empty like on any disconnect. */
+	disconnectUser(userId: number): void {
+		this.connections.forEach((connection) => {
+			if (connection.user.id === userId) {
+				connection.send({ type: 'closed' });
+				connection.close();
+			}
+		});
+	}
+
 	notifyBalance(userId: number, balance: number): void {
 		this.connections.forEach((connection) => {
 			if (connection.user.id === userId) {

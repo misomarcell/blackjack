@@ -1,0 +1,40 @@
+:host {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.refill {
+	height: 2.25rem;
+}
+
+/* The countdown is a quiet pill in the app bar: present, but not a call to action. */
+.refill-wait {
+	display: flex;
+	align-items: baseline;
+	gap: 0.35rem;
+	padding: 0.25rem 0.75rem;
+	border: 2px solid color-mix(in oklch, var(--color-primary-content) 45%, transparent);
+	border-radius: 999px;
+	color: var(--color-primary-content);
+	font-size: 0.85rem;
+	white-space: nowrap;
+}
+
+.refill-wait-time {
+	font-family: var(--font-display);
+	font-size: 1rem;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+/* Phones: just the clock. */
+@media (max-width: 767px), (max-height: 500px) {
+	.refill-wait-label {
+		display: none;
+	}
+
+	.refill-wait {
+		padding-inline: 0.55rem;
+	}
+}

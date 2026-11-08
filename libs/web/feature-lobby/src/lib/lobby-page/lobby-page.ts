@@ -2,14 +2,15 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LobbyFeed } from '@blackjack/web/data-access';
 import { formatDollars } from '@blackjack/web/ui';
+import { Leaderboard } from '../leaderboard/leaderboard';
 
 /** How far the middle seats sit below the end seats in a table card. */
 const SEAT_CURVE_REM = 0.9;
 
-/** The table catalog. Player counts update live as people sit down and leave. */
+/** The table catalog (player counts update live as people sit down and leave), then the leaderboard. */
 @Component({
 	selector: 'bj-lobby-page',
-	imports: [RouterLink],
+	imports: [RouterLink, Leaderboard],
 	providers: [LobbyFeed],
 	templateUrl: './lobby-page.html',
 	styleUrl: './lobby-page.scss',

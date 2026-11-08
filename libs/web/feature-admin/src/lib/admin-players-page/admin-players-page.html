@@ -1,0 +1,79 @@
+<main class="mx-auto flex max-w-5xl flex-col gap-8 p-4 md:p-8">
+	<header>
+		<h1 class="text-4xl md:text-5xl">Manage players</h1>
+		<p class="mt-1">Removing a player deletes their account and chat messages, and ends their session.</p>
+	</header>
+
+	@if (error(); as message) {
+		<p class="alert alert-error" role="alert">{{ message }}</p>
+	}
+
+	@if (players(); as list) {
+		<!-- Focusable so keyboard users can scroll the table sideways on small screens. -->
+		<div class="table-sheet" tabindex="0" role="region" aria-labelledby="players-caption">
+			<table class="table table-zebra">
+				<caption id="players-caption" class="sr-only">
+					Registered players
+				</caption>
+				<thead>
+					<tr>
+						<th scope="col">Player</th>
+						<th scope="col">E-mail</th>
+						<th scope="col" class="text-end">Balance</th>
+						<th scope="col">Joined</th>
+						<th scope="col"><span class="sr-only">Actions</span></th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (player of list; track player.id) {
+						<tr>
+							<th scope="row">
+								{{ player.username }}
+								@if (player.isAdmin) {
+									<span class="badge badge-sm badge-secondary">Admin</span>
+								}
+							</th>
+							<td>{{ player.email }}</td>
+							<td class="text-end">{{ dollars(player.balance) }}</td>
+							<td>{{ joined(player) }}</td>
+							<td class="text-end">
+								@if (player.id === myId()) {
+									<span class="text-sm opacity-70">You</span>
+								} @else {
+									<button
+										type="button"
+										class="btn btn-sm btn-error chunky-sm"
+										[attr.aria-label]="'Remove ' + player.username"
+										(click)="askRemove(player)"
+									>
+										<bj-icon name="trash" /> Remove
+									</button>
+								}
+							</td>
+						</tr>
+					} @empty {
+						<tr>
+							<td colspan="5">No players yet.</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	} @else if (!error()) {
+		<p class="flex items-center gap-2"><span class="loading loading-dots"></span> Loading players…</p>
+	}
+</main>
+
+<dialog #confirmRemove class="modal" aria-labelledby="remove-title" (close)="onConfirmClosed(confirmRemove)">
+	<div class="modal-box chunky">
+		<h2 id="remove-title" class="text-2xl">Remove {{ pendingRemove()?.username }}?</h2>
+		<p class="py-3">
+			Their account, balance and chat messages are deleted, and they are signed out. This cannot be
+			undone.
+		</p>
+		<form method="dialog" class="modal-action">
+			<button type="submit" class="btn" value="cancel" autofocus>Keep player</button>
+			<button type="submit" class="btn btn-error" value="remove">Remove player</button>
+		</form>
+	</div>
+</dialog>

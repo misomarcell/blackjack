@@ -193,7 +193,18 @@
 
 @media (max-width: 480px) {
 	.brand {
-		font-size: 1.2rem;
+		font-size: 1.4rem;
+	}
+
+	/* Narrow phones keep only the spade, so the refill clock, balance and logout still fit. */
+	.brand-name {
+		display: none;
+	}
+
+	/* When it still does not fit (admins have more links), the account group moves to a second line. */
+	.app-bar {
+		flex-wrap: wrap;
+		row-gap: 0.4rem;
 	}
 
 	.nav-link {

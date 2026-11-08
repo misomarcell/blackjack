@@ -24,6 +24,7 @@ const envSchema = z.object({
 	TURN_SECONDS: seconds(20),
 	DEALER_HITS_SOFT_17: z.stringbool().default(false),
 	DECKS: z.coerce.number().int().min(1).max(8).default(6),
+	REFILL_COOLDOWN_HOURS: z.coerce.number().positive().default(24),
 });
 
 const env = envSchema.parse(Bun.env);
@@ -39,6 +40,8 @@ export const config = {
 	jwtSecret: env.JWT_SECRET,
 	adminUsername: env.ADMIN_USERNAME,
 	startingBalance: env.STARTING_BALANCE,
+	/** Hours between two free refills. */
+	refillCooldownHours: env.REFILL_COOLDOWN_HOURS,
 	cookieSecure: env.COOKIE_SECURE,
 	staticDir: env.STATIC_DIR,
 };

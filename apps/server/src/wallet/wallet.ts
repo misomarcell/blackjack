@@ -1,12 +1,11 @@
 import { config } from '../config';
-import { creditBalance, debitBalance, getBalance, setBalance } from '../db/users.repo';
+import type { RefillStatus } from '@blackjack/shared/protocol';
+import { refillBalance, refillWaitMs } from '../db/players.repo';
+import { creditBalance, debitBalance, getBalance } from '../db/users.repo';
 
 type BalanceListener = (userId: number, balance: number) => void;
 
 const listeners = new Set<BalanceListener>();
-
-/** The smallest chip; below this a player is considered broke and may refill. */
-const BROKE_BELOW = 5;
 
 /** Lets realtime rooms push fresh balances to every socket of the user. */
 export function onBalanceChange(listener: BalanceListener): void {
@@ -35,11 +34,25 @@ export async function credit(userId: number, amount: number): Promise<void> {
 	await publish(userId);
 }
 
-/** Free top-up back to the starting balance for players who went broke. */
-export async function refill(userId: number): Promise<number | null> {
-	if ((await getBalance(userId)) >= BROKE_BELOW) {
-		return null;
+/** When the user's next free refill is allowed, and how much it gives. */
+export async function refillStatus(userId: number): Promise<RefillStatus> {
+	return {
+		waitMs: await refillWaitMs(userId, config.refillCooldownHours),
+		upTo: config.startingBalance,
+	};
+}
+
+/**
+ * The free refill: tops the balance up to the starting balance, once per cooldown (24 hours by default).
+ * Returns the new balance, or why it was refused.
+ */
+export async function refill(userId: number): Promise<{ balance: number } | { error: string }> {
+	const { startingBalance, refillCooldownHours } = config;
+	if (await refillBalance(userId, startingBalance, refillCooldownHours)) {
+		return { balance: await publish(userId) };
 	}
-	await setBalance(userId, config.startingBalance);
-	return publish(userId);
+	if ((await refillWaitMs(userId, refillCooldownHours)) > 0) {
+		return { error: 'You already had your free refill today' };
+	}
+	return { error: `Refills top you up to $${startingBalance}, and you already have that much` };
 }

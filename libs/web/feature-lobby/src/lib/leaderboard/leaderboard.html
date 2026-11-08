@@ -1,0 +1,43 @@
+<h2 id="leaderboard-title" class="text-3xl md:text-4xl">Leaderboard</h2>
+
+@if (entries(); as list) {
+	<!-- A named, focusable scroll region, so keyboard users can scroll a long board too. -->
+	<div class="board" tabindex="0" role="region" aria-labelledby="leaderboard-title">
+		<table class="board-table">
+			<caption class="sr-only">
+				Players ranked by balance, richest first
+			</caption>
+			<thead>
+				<tr>
+					<th scope="col" class="rank-col">Rank</th>
+					<th scope="col">Player</th>
+					<th scope="col" class="money-col">Balance</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (entry of list; track entry.username) {
+					<tr [class.mine]="entry.username === me()">
+						<td class="rank-col">
+							<span class="rank" [class]="'rank-' + entry.rank">{{ entry.rank }}</span>
+						</td>
+						<th scope="row" class="player">
+							{{ entry.username }}
+							@if (entry.username === me()) {
+								<span class="you-tag">You</span>
+							}
+						</th>
+						<td class="money-col">{{ dollars(entry.balance) }}</td>
+					</tr>
+				} @empty {
+					<tr>
+						<td colspan="3">No players yet.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+} @else if (failed()) {
+	<p role="alert">The leaderboard could not be loaded. It will try again shortly.</p>
+} @else {
+	<p class="flex items-center gap-2"><span class="loading loading-dots"></span> Loading the leaderboard…</p>
+}

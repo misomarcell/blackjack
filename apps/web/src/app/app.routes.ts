@@ -32,6 +32,12 @@ export const appRoutes: Route[] = [
 		canActivate: [authGuard, adminGuard],
 		loadComponent: () => import('@blackjack/web/feature-admin').then((m) => m.AdminTablesPage),
 	},
+	{
+		path: 'admin/players',
+		title: 'Manage players · Blackjack Party',
+		canActivate: [authGuard, adminGuard],
+		loadComponent: () => import('@blackjack/web/feature-admin').then((m) => m.AdminPlayersPage),
+	},
 	{ path: '', pathMatch: 'full', redirectTo: 'lobby' },
 	{ path: '**', redirectTo: 'lobby' },
 ];

@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import { authRoutes } from './auth/auth.routes';
 import { config } from './config';
+import { playerRoutes } from './players/players.routes';
 import { wsRoutes } from './realtime/ws.routes';
 import { tableRoutes } from './tables/tables.routes';
 import { walletRoutes } from './wallet/wallet.routes';
@@ -16,6 +17,7 @@ export const app = new Hono()
 	.route('/api/auth', authRoutes)
 	.route('/api/wallet', walletRoutes)
 	.route('/api/tables', tableRoutes)
+	.route('/api/players', playerRoutes)
 	.all('/api/*', (c) => c.json({ error: 'Not found' }, 404))
 	.route('/ws', wsRoutes)
 	.use('/*', serveStatic({ root: config.staticDir }))

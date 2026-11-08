@@ -11,6 +11,7 @@ const schema = [
 		password_hash VARCHAR(255) NOT NULL,
 		balance DECIMAL(12, 2) NOT NULL,
 		is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+		last_refill_at TIMESTAMP NULL DEFAULT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	)`,
 	`CREATE TABLE IF NOT EXISTS blackjack_tables (
@@ -64,11 +65,22 @@ async function seedTables(): Promise<void> {
 		('whale', 'High Rollers', 100, 5000)`;
 }
 
+/** Columns added after the first release, for databases created before them. */
+async function addMissingColumns(): Promise<void> {
+	const [row] = await sql`
+		SELECT COUNT(*) AS count FROM information_schema.columns
+		WHERE table_schema = DATABASE() AND table_name = 'users' AND column_name = 'last_refill_at'`;
+	if (Number(row.count) === 0) {
+		await sql.unsafe('ALTER TABLE users ADD COLUMN last_refill_at TIMESTAMP NULL DEFAULT NULL');
+	}
+}
+
 /** Creates the schema on first start and seeds a few tables so the lobby is never empty. */
 export async function migrate(): Promise<void> {
 	await waitForDatabase();
 	for (const ddl of schema) {
 		await sql.unsafe(ddl);
 	}
+	await addMissingColumns();
 	await seedTables();
 }

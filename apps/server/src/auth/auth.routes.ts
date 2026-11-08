@@ -8,10 +8,13 @@ import {
 	findUserById,
 	findUserByUsername,
 	isUsernameOrEmailTaken,
+	syncAdminFlag,
 	type UserRecord,
 } from '../db/users.repo';
 import type { AppEnv } from '../http/app-env';
 import { validationHook } from '../http/validation';
+import { RateLimiter } from '../security/rate-limiter';
+import { clientIp } from '../security/request-origin';
 import { refillStatus } from '../wallet/wallet';
 import { endSession, requireUser, startSession } from './session';
 
@@ -24,7 +27,14 @@ const username = z
 const password = z.string().min(8, 'Password needs at least 8 characters').max(128);
 
 const registerSchema = z.object({ username, password, email: z.email('Enter a valid e-mail').max(254) });
-const loginSchema = z.object({ username: z.string().trim(), password: z.string() });
+const loginSchema = z.object({ username: z.string().trim().max(64), password: z.string().max(128) });
+
+const MINUTE = 60_000;
+/** Slows down password guessing: 10 wrong passwords per IP every 15 minutes. */
+const failedLogins = new RateLimiter(10, 15 * MINUTE);
+/** Stops scripted sign-ups (every account starts with free money): 10 accounts per IP per hour. */
+const registrations = new RateLimiter(10, 60 * MINUTE);
+const TOO_MANY = 'Too many attempts, please try again later';
 
 /** Strips the password hash before a user leaves the server, and adds their free refill status. */
 async function publicUser({ passwordHash: _hash, ...user }: UserRecord): Promise<User> {
@@ -34,6 +44,9 @@ async function publicUser({ passwordHash: _hash, ...user }: UserRecord): Promise
 export const authRoutes = new Hono<AppEnv>()
 	.post('/register', zValidator('json', registerSchema, validationHook), async (c) => {
 		const input = c.req.valid('json');
+		if (!registrations.hit(clientIp(c))) {
+			return c.json({ error: TOO_MANY }, 429);
+		}
 		if (await isUsernameOrEmailTaken(input.username, input.email)) {
 			return c.json({ error: 'That username or e-mail is already registered' }, 409);
 		}
@@ -42,17 +55,22 @@ export const authRoutes = new Hono<AppEnv>()
 			email: input.email,
 			passwordHash: await Bun.password.hash(input.password),
 			balance: config.startingBalance,
-			isAdmin: input.username === config.adminUsername,
 		});
+		await syncAdminFlag(config.adminUsername);
 		await startSession(c, id);
 		const user = await findUserById(id);
 		return c.json(await publicUser(user as UserRecord), 201);
 	})
 	.post('/login', zValidator('json', loginSchema, validationHook), async (c) => {
 		const input = c.req.valid('json');
+		const ip = clientIp(c);
+		if (failedLogins.blocked(ip)) {
+			return c.json({ error: TOO_MANY }, 429);
+		}
 		const user = await findUserByUsername(input.username);
 		const valid = user !== null && (await Bun.password.verify(input.password, user.passwordHash));
 		if (!valid) {
+			failedLogins.hit(ip);
 			return c.json({ error: 'Wrong username or password' }, 401);
 		}
 		await startSession(c, user.id);

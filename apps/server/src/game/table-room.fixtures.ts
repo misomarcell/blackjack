@@ -110,7 +110,10 @@ function memoryLog(): LogStore {
 /** Hands played per user, as the database would count them. */
 export type HandCounts = Map<number, number>;
 
-export function createRoom(ranks: Rank[]): { room: TableRoom; wallet: MemoryWallet; hands: HandCounts } {
+export function createRoom(
+	ranks: Rank[],
+	config = fastConfig,
+): { room: TableRoom; wallet: MemoryWallet; hands: HandCounts } {
 	const wallet = new MemoryWallet();
 	const hands: HandCounts = new Map();
 	const stats = {
@@ -123,7 +126,7 @@ export function createRoom(ranks: Rank[]): { room: TableRoom; wallet: MemoryWall
 		{
 			wallet,
 			stats,
-			config: fastConfig,
+			config,
 			shoe: new StackedShoe(ranks),
 			chat: { add: async () => 1, recent: async () => [] },
 			log: memoryLog(),

@@ -4,4 +4,6 @@ dist
 .angular
 .git
 .env
+.env.*
+.claude
 *.log

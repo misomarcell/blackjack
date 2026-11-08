@@ -20,7 +20,6 @@ export interface NewUser {
 	email: string;
 	passwordHash: string;
 	balance: number;
-	isAdmin: boolean;
 }
 
 function toUser(row: UserRow): UserRecord {
@@ -51,9 +50,17 @@ export async function isUsernameOrEmailTaken(username: string, email: string): P
 
 export async function createUser(user: NewUser): Promise<number> {
 	const result = await sql`
-		INSERT INTO users (username, email, password_hash, balance, is_admin)
-		VALUES (${user.username}, ${user.email}, ${user.passwordHash}, ${user.balance}, ${user.isAdmin})`;
+		INSERT INTO users (username, email, password_hash, balance)
+		VALUES (${user.username}, ${user.email}, ${user.passwordHash}, ${user.balance})`;
 	return Number(result.lastInsertRowid);
+}
+
+/**
+ * ADMIN_USERNAME is the only source of admin rights. Names are compared the way MySQL compares usernames
+ * (case-insensitive), and changing the variable moves the rights to the new name.
+ */
+export async function syncAdminFlag(adminUsername: string): Promise<void> {
+	await sql`UPDATE users SET is_admin = (username = ${adminUsername})`;
 }
 
 export async function getBalance(userId: number): Promise<number> {

@@ -21,7 +21,7 @@ import {
 	type TableState,
 	type Wallet,
 } from './model';
-import { playerActions } from './player-actions';
+import { type ActionOutcome, playerActions } from './player-actions';
 import { logAction, logDealerDone, logInsurance, logSettlement } from './round-log';
 import { dealerName, type TableLog, total, value, who } from './table-log';
 
@@ -74,20 +74,16 @@ export class Round {
 		}
 		this.busy = true;
 		const before = [...hand.cards];
-		const outcome = await playerActions[action]({
-			seat,
-			hand,
-			shoe: this.ctx.shoe,
-			wallet: this.ctx.wallet,
-		});
-		this.busy = false;
+		const outcome = await this.runAction(seat, hand, action).finally(() => (this.busy = false));
 		if (typeof outcome === 'object') {
 			return outcome.error;
 		}
 		logAction(this.ctx.log, seat, hand, { action, before });
-		if (outcome === 'done') {
+		// The turn timer may have fired during a wallet call; then the turn already belongs to someone else.
+		const stillTheirTurn = this.handInTurn(seat) === hand;
+		if (stillTheirTurn && outcome === 'done') {
 			this.endTurn();
-		} else {
+		} else if (stillTheirTurn) {
 			this.startTurnTimer(seat, hand);
 		}
 		this.ctx.broadcast();
@@ -101,7 +97,7 @@ export class Round {
 		}
 		seat.insurance = 0;
 		if (accept && (await this.ctx.wallet.debit(seat.player.userId, hand.bet / 2))) {
-			seat.insurance = hand.bet / 2;
+			await this.placeInsurance(seat, seat.player.userId, hand.bet / 2);
 		}
 		logInsurance(this.ctx.log, seat);
 		this.ctx.broadcast();
@@ -109,6 +105,19 @@ export class Round {
 			this.endTurn();
 		}
 		return null;
+	}
+
+	private runAction(seat: Seat, hand: Hand, action: PlayerAction): Promise<ActionOutcome> {
+		const { shoe, wallet } = this.ctx;
+		return Promise.resolve(playerActions[action]({ seat, hand, shoe, wallet }));
+	}
+
+	/** Insurance paid after the window closed (a slow wallet call) is handed straight back. */
+	private async placeInsurance(seat: Seat, userId: number, amount: number): Promise<void> {
+		if (this.ctx.state.phase !== 'insurance' || this.aborted) {
+			return this.ctx.wallet.credit(userId, amount);
+		}
+		seat.insurance = amount;
 	}
 
 	private async dealOpeningCards(): Promise<void> {

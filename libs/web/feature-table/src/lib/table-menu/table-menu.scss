@@ -1,0 +1,33 @@
+:host {
+	display: block;
+}
+
+.menu-button {
+	background: var(--color-base-100);
+	color: var(--color-base-content);
+	--icon-size: 1.1rem;
+}
+
+.menu-box {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+	max-height: calc(100dvh - 2rem);
+}
+
+.menu-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.menu-actions {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+	gap: 0.5rem;
+}
+
+/* The log fills whatever height the dialog has left. */
+.menu-log {
+	--log-height: clamp(4rem, 100dvh - 16rem, 16rem);
+}

@@ -43,6 +43,10 @@
 	gap: 0.5rem;
 }
 
+.table-menu {
+	display: none;
+}
+
 .audio-toggle {
 	background: var(--color-base-100);
 	color: var(--color-base-content);
@@ -55,17 +59,34 @@
 	}
 }
 
-/* Phones: the app bar shows the table name and back button instead (keep in sync with top-bar.scss). */
+/*
+ * Phones (keep in sync with top-bar.scss): the app bar shows the table name and back button, the buttons
+ * move into the menu, and the status is printed faintly on the felt like the table rules.
+ */
 @media (max-width: 767px), (max-height: 500px) {
-	:host {
-		grid-template-columns: 1fr auto;
-	}
-
-	.table-title {
+	.table-title,
+	.actions {
 		display: none;
 	}
 
 	.banner {
-		justify-self: start;
+		grid-column: 2;
+		align-self: start;
+		padding: 0.1rem 0 0;
+		line-height: 1.2;
+		border: 0;
+		background: none;
+		box-shadow: none;
+		color: color-mix(in oklch, var(--color-felt-print) 80%, transparent);
+		font-size: 1.05rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		pointer-events: none;
+	}
+
+	.table-menu {
+		display: block;
+		grid-column: 3;
+		justify-self: end;
 	}
 }

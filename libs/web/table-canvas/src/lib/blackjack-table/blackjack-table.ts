@@ -29,6 +29,10 @@ export class BlackjackTable {
 	readonly viewerId = input<number | null>(null);
 	/** The viewer's seat taking chips right now, highlighted on the felt. */
 	readonly focusSeat = input<number | null>(null);
+	/** CSS pixels kept free above the table for the status overlay. */
+	readonly topInset = input(56);
+	/** Crop the empty felt along the rail, for short phone screens. */
+	readonly compact = input(false);
 	readonly seatPicked = output<number>();
 
 	private readonly stage = viewChild.required<ElementRef<HTMLDivElement>>('stage');
@@ -49,6 +53,7 @@ export class BlackjackTable {
 
 	constructor() {
 		afterNextRender(() => void this.createScene());
+		effect(() => this.scene()?.setFraming({ topInset: this.topInset(), compact: this.compact() }));
 		effect(() => {
 			const scene = this.scene();
 			const table = this.table();

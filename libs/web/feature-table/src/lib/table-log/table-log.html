@@ -1,13 +1,3 @@
 <bj-floating-panel heading="Table log" icon="log" [badge]="unread()" [(open)]="open">
-	<ol #list class="lines" aria-live="polite" aria-label="Table events">
-		@for (entry of entries(); track entry.id) {
-			<li>
-				@for (part of entry.parts; track $index) {
-					<span [class]="'tone-' + part.tone">{{ part.text }}</span>
-				}
-			</li>
-		} @empty {
-			<li class="opacity-60">Nothing has happened yet.</li>
-		}
-	</ol>
+	<bj-log-lines [entries]="entries()" [visible]="open()" />
 </bj-floating-panel>

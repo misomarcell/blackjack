@@ -1,0 +1,42 @@
+:host {
+	display: block;
+}
+
+.lines {
+	height: var(--log-height, clamp(4rem, 20dvh - 3rem, 8rem));
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	font-size: 0.85rem;
+	font-weight: 600;
+	line-height: 1.4;
+
+	li {
+		overflow-wrap: anywhere;
+	}
+}
+
+.tone-player {
+	color: var(--color-log-player);
+	font-weight: 900;
+}
+
+.tone-dealer {
+	color: var(--color-log-dealer);
+	font-weight: 900;
+}
+
+.tone-money {
+	color: var(--color-log-money);
+	font-weight: 900;
+}
+
+.tone-value {
+	color: var(--color-log-value);
+	font-weight: 900;
+}
+
+@media (max-height: 500px) {
+	.lines {
+		height: 4.5rem;
+	}
+}

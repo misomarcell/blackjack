@@ -1,8 +1,9 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { Phase, TableView } from '@blackjack/shared/protocol';
+import type { LogEntry, Phase, TableView } from '@blackjack/shared/protocol';
 import { TableAudio } from '@blackjack/web/table-canvas';
 import { formatDollars, Icon } from '@blackjack/web/ui';
+import { TableMenu } from '../table-menu/table-menu';
 
 const PHASE_MESSAGES: Record<Phase, string> = {
 	idle: 'Place a bet to start',
@@ -14,16 +15,21 @@ const PHASE_MESSAGES: Record<Phase, string> = {
 	settled: 'Round over',
 };
 
-/** Top bar of the table screen: name and limits, what is happening, and the sound/share/seat buttons. */
+/**
+ * Top bar of the table screen: name and limits, what is happening, and the sound/share/seat buttons.
+ * Phones fold the buttons and the table log into a menu and print the status on the felt.
+ */
 @Component({
 	selector: 'bj-table-status',
-	imports: [RouterLink, Icon],
+	imports: [RouterLink, Icon, TableMenu],
 	templateUrl: './table-status.html',
 	styleUrl: './table-status.scss',
 })
 export class TableStatus {
 	readonly table = input.required<TableView>();
 	readonly viewerId = input<number | null>(null);
+	/** The table log, shown in the phone menu. */
+	readonly log = input<LogEntry[]>([]);
 	readonly leaveSeat = output();
 
 	protected readonly audio = inject(TableAudio);

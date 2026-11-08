@@ -1,0 +1,61 @@
+<button
+	type="button"
+	class="btn btn-sm btn-circle chunky-sm menu-button"
+	aria-label="Table menu"
+	aria-haspopup="dialog"
+	(click)="show()"
+>
+	<bj-icon name="menu" />
+</button>
+
+<dialog #dialog class="modal" aria-labelledby="table-menu-title" (close)="open.set(false)">
+	<div class="modal-box chunky menu-box">
+		<header class="menu-header">
+			<h2 id="table-menu-title" class="text-xl">Table</h2>
+			<button
+				type="button"
+				class="btn btn-sm btn-circle btn-ghost"
+				aria-label="Close menu"
+				(click)="close()"
+			>
+				<bj-icon name="close" />
+			</button>
+		</header>
+
+		<div class="menu-actions">
+			<button
+				type="button"
+				class="btn btn-sm chunky-sm"
+				[class.btn-secondary]="audio.soundOn()"
+				[attr.aria-pressed]="audio.soundOn()"
+				(click)="audio.soundOn.set(!audio.soundOn())"
+			>
+				<bj-icon [name]="audio.soundOn() ? 'sound' : 'sound-off'" />
+				Sound {{ audio.soundOn() ? 'on' : 'off' }}
+			</button>
+			<button
+				type="button"
+				class="btn btn-sm chunky-sm"
+				[class.btn-secondary]="audio.musicOn()"
+				[attr.aria-pressed]="audio.musicOn()"
+				(click)="audio.musicOn.set(!audio.musicOn())"
+			>
+				<bj-icon name="music" />
+				Music {{ audio.musicOn() ? 'on' : 'off' }}
+			</button>
+			<button type="button" class="btn btn-sm chunky-sm" (click)="share.emit()">
+				<bj-icon name="link" />
+				{{ copied() ? 'Copied!' : 'Share link' }}
+			</button>
+			@if (seated()) {
+				<button type="button" class="btn btn-sm chunky-sm" (click)="standUp()">Stand up</button>
+			}
+		</div>
+
+		<h3 class="text-base">Table log</h3>
+		<bj-log-lines class="menu-log" [entries]="log()" [visible]="open()" />
+	</div>
+	<form method="dialog" class="modal-backdrop">
+		<button type="submit" aria-label="Close menu">close</button>
+	</form>
+</dialog>

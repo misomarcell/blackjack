@@ -1,0 +1,11 @@
+<ol #list class="lines" aria-live="polite" aria-label="Table events">
+	@for (entry of entries(); track entry.id) {
+		<li>
+			@for (part of entry.parts; track $index) {
+				<span [class]="'tone-' + part.tone">{{ part.text }}</span>
+			}
+		</li>
+	} @empty {
+		<li class="opacity-60">Nothing has happened yet.</li>
+	}
+</ol>

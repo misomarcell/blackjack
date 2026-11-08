@@ -19,6 +19,7 @@ import { TableLog } from '../table-log/table-log';
 import { TableStatus } from '../table-status/table-status';
 
 const TOAST_MS = 2500;
+const PHONE_QUERY = matchMedia('(max-width: 767px), (max-height: 500px)');
 
 /** The table screen: the PixiJS table with Angular controls and chat layered on top. */
 @Component({
@@ -52,6 +53,8 @@ export class TablePage {
 	protected readonly notFound = signal(false);
 	protected readonly toast = signal<string | null>(null);
 	protected readonly viewerId = computed(() => this.auth.user()?.id ?? null);
+	/** Phone layout (keep the query in sync with the stylesheets): table on top, controls docked below. */
+	protected readonly phone = signal(PHONE_QUERY.matches);
 
 	protected readonly bettingOpen = computed(() => {
 		const phase = this.session.table()?.phase;
@@ -112,6 +115,9 @@ export class TablePage {
 			}
 		});
 		effect(() => this.pageTitle.current.set(this.titleInfo()));
+		const onLayoutChange = (event: MediaQueryListEvent): void => this.phone.set(event.matches);
+		PHONE_QUERY.addEventListener('change', onLayoutChange);
+		inject(DestroyRef).onDestroy(() => PHONE_QUERY.removeEventListener('change', onLayoutChange));
 		inject(DestroyRef).onDestroy(() => this.pageTitle.current.set(null));
 		effect((onCleanup) => {
 			const error = this.session.error();

@@ -95,3 +95,16 @@
 		display: none;
 	}
 }
+
+/* Phones: the buttons fill the docked card edge to edge and stay big enough for thumbs. */
+@media (max-width: 767px), (max-height: 500px) {
+	.moves {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.5rem;
+	}
+
+	.move {
+		height: 3.4rem;
+		font-size: 1.35rem;
+	}
+}

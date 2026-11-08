@@ -41,3 +41,12 @@
 		<button type="button" class="btn btn-sm chunky-sm" (click)="leaveSeat.emit()">Stand up</button>
 	}
 </div>
+
+<bj-table-menu
+	class="table-menu"
+	[log]="log()"
+	[seated]="seated()"
+	[copied]="copied()"
+	(share)="share()"
+	(leaveSeat)="leaveSeat.emit()"
+/>

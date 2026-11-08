@@ -52,7 +52,7 @@ export const gameConfig = {
 	/** Time per card the clients need to play the deal animation. */
 	dealMs: 450,
 	/** How long results stay on the table before the next betting round. */
-	resultsMs: 4500,
+	resultsMs: 2500,
 	hitSoft17: env.DEALER_HITS_SOFT_17,
 	decks: env.DECKS,
 };

@@ -64,7 +64,7 @@ export interface Spy {
 	messages: TableServerMessage[];
 }
 
-function states(connection: Spy): TableView[] {
+export function states(connection: Spy): TableView[] {
 	return connection.messages.flatMap((message) => (message.type === 'state' ? [message.table] : []));
 }
 

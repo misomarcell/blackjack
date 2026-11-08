@@ -30,6 +30,8 @@ export type ClientMessage =
 	| { type: 'leave-seat'; seat: number }
 	| { type: 'bet'; seat: number; amount: number }
 	| { type: 'clear-bet'; seat: number }
+	/** Sets the seat's bet to exactly `amount` and confirms it (0 sits the round out). */
+	| { type: 'rebet'; seat: number; amount: number }
 	| { type: 'ready'; seat: number }
 	| { type: 'action'; seat: number; action: PlayerAction }
 	| { type: 'insurance'; seat: number; accept: boolean }

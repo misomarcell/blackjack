@@ -10,8 +10,6 @@ import { formatDollars } from '@blackjack/web/ui';
 export class InsurancePrompt {
 	readonly cost = input.required<number>();
 	readonly affordable = input.required<boolean>();
-	/** "Seat 3" when the viewer holds several seats, otherwise empty. */
-	readonly seatLabel = input('');
 	readonly decide = output<boolean>();
 
 	protected readonly dollars = formatDollars;

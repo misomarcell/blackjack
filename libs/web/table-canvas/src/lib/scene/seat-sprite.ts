@@ -7,6 +7,7 @@ import { HandPointer } from './hand-pointer';
 import { handOrigin, handScale, type Point, seatPosition } from './layout';
 import { colors, textStyles } from './palette';
 import { pill } from './pill';
+import { readyBadge } from './ready-badge';
 import type { SceneSounds } from './sounds';
 import { ease, type Tweener } from './tween';
 
@@ -28,11 +29,6 @@ function paintSpot(spot: Graphics, open: boolean, pickable: boolean, isViewer: b
 		color: isViewer ? colors.yellow : colors.cream,
 		alpha: 0.9,
 	});
-}
-
-/** A seat confirmed without chips sits the round out. */
-function readyTag(seat: SeatView): string {
-	return seat.bet > 0 ? 'READY' : 'SITTING OUT';
 }
 
 export interface SeatContext {
@@ -178,7 +174,7 @@ export class SeatSprite extends Container {
 		const stack = chipStacks(amount, this.index + 1);
 		stack.y = -2;
 		const label = pill(formatDollars(amount), colors.ink);
-		label.position.set(0, 48);
+		label.position.set(0, 54);
 		label.scale.set(0.8);
 		this.bet.addChild(stack, label);
 	}
@@ -188,15 +184,16 @@ export class SeatSprite extends Container {
 		if (!seat.player) {
 			return;
 		}
-		const tags = [
-			context.isViewer ? 'YOU' : null,
-			context.showReady ? readyTag(seat) : null,
-			seat.insurance ? 'INSURED' : null,
-		];
-		const suffix = tags.filter(Boolean).join(' · ');
-		const name = pill(suffix ? `${seat.player.username} · ${suffix}` : seat.player.username, colors.rail);
+		const { username } = seat.player;
+		const name = pill(seat.insurance ? `${username} · INSURED` : username, colors.rail);
 		name.alpha = seat.player.connected ? 1 : 0.45;
 		this.nameplate.addChild(name);
+		if (context.showReady) {
+			// A ready seat with no chips is sitting the round out.
+			const badge = readyBadge(seat.bet === 0);
+			badge.position.set(name.width / 2 + 10, 0);
+			this.nameplate.addChild(badge);
+		}
 	}
 
 	private labelPosition(hand: number, handCount: number, cardCount: number): Point {

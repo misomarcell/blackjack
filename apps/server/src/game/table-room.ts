@@ -142,6 +142,7 @@ export class TableRoom implements RoundContext {
 		'leave-seat': (seat) => this.seating.leave(seat),
 		bet: (seat, message) => this.betting.placeBet(seat, message.amount),
 		'clear-bet': (seat) => this.betting.clearBet(seat),
+		rebet: (seat, message) => this.betting.rebet(seat, message.amount),
 		ready: (seat) => this.betting.ready(seat),
 		action: (seat, message) =>
 			this.round ? this.round.act(seat, message.action) : 'It is not your turn',

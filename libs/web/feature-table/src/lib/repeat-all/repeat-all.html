@@ -1,0 +1,12 @@
+@if (total() > 0) {
+	<button
+		type="button"
+		class="btn btn-accent chunky-sm repeat-button"
+		[disabled]="!affordable()"
+		[attr.title]="affordable() ? null : 'Not enough balance'"
+		(click)="repeat.emit(bets())"
+	>
+		<bj-icon name="repeat" />
+		Repeat all &amp; deal · {{ dollars(total()) }}
+	</button>
+}

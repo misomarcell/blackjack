@@ -13,6 +13,8 @@ export interface CardTarget {
 }
 
 const STAGGER_MS = 280;
+/** A short beat between one snapshot's cards landing and the next snapshot's cards moving. */
+const QUEUE_GAP_MS = 180;
 const SLIDE_MS = 360;
 const FLIP_MS = 260;
 const MOVE_MS = 260;
@@ -33,8 +35,6 @@ export class CardLayer extends Container {
 	private readonly placements = new WeakMap<CardSprite, Placement>();
 	/** When the last running deal, flip or move finishes (performance.now() time). */
 	private settledAt = 0;
-	/** When the next deal or flip may start, so a new snapshot never jumps ahead of cards still in flight. */
-	private nextSlotAt = 0;
 	/** Delay of animation slot 0 in the current sync. */
 	private baseDelay = 0;
 
@@ -56,19 +56,18 @@ export class CardLayer extends Container {
 		const fresh = targets
 			.filter((target) => !this.sprites.has(target.card.id))
 			.sort((a, b) => a.card.seq - b.card.seq);
-		const now = performance.now();
-		this.baseDelay = Math.max(0, this.nextSlotAt - now);
+		// A new snapshot waits until every card already moving has landed and shown its face,
+		// so the dealer never turns a card before the player sees their last one.
+		const busy = this.remainingMs;
+		this.baseDelay = busy > 0 ? busy + QUEUE_GAP_MS : 0;
 		let slot = 0;
 		for (const target of targets) {
 			slot = this.update(target, slot);
 		}
 		fresh.forEach((target) => void this.deal(target, this.slotDelay(slot++)));
-		if (slot > 0) {
-			this.nextSlotAt = now + this.slotDelay(slot);
-		}
 	}
 
-	/** Cards deal and flip one after another, after anything an earlier snapshot already queued. */
+	/** Cards deal and flip one after another within a snapshot, after anything still in flight. */
 	private slotDelay(slot: number): number {
 		return this.baseDelay + slot * STAGGER_MS;
 	}

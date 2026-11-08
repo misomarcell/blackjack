@@ -59,6 +59,34 @@ export class Betting {
 		return null;
 	}
 
+	/** Sets a seat's bet to exactly `amount` and confirms it in one step, for "repeat all and deal". */
+	async rebet(seat: Seat, amount: number): Promise<string | null> {
+		const error = this.rebetError(seat, amount);
+		const userId = seat.player?.userId;
+		if (error !== null || userId === undefined) {
+			return error;
+		}
+		const moved = await this.moveBet(seat, userId, amount - seat.bet);
+		return moved ?? this.ready(seat);
+	}
+
+	/** Adds `change` to a seat's bet (negative refunds), paying through the wallet. */
+	private async moveBet(seat: Seat, userId: number, change: number): Promise<string | null> {
+		const { wallet } = this.ctx;
+		if (change > 0 && !(await wallet.debit(userId, change))) {
+			return 'Not enough balance';
+		}
+		if (!this.canStillBet(seat, userId) || seat.ready) {
+			await wallet.credit(userId, Math.max(change, 0));
+			return 'Bets are closed';
+		}
+		seat.bet += change;
+		if (change < 0) {
+			await wallet.credit(userId, -change);
+		}
+		return null;
+	}
+
 	/** Confirms a seat's bet. A seat with no chips at all sits the round out (handy with several seats). */
 	ready(seat: Seat): string | null {
 		const { minBet } = this.ctx.state.table;
@@ -138,6 +166,18 @@ export class Betting {
 	/** Bets can close or the player can leave while the wallet call is in flight. */
 	private canStillBet(seat: Seat, userId: number): boolean {
 		return this.open && seat.player?.userId === userId;
+	}
+
+	private rebetError(seat: Seat, amount: number): string | null {
+		const { minBet, maxBet } = this.ctx.state.table;
+		if (!seat.player) {
+			return 'Take a seat first';
+		}
+		if (!this.open || seat.ready) {
+			return 'Bets are closed';
+		}
+		const valid = amount === 0 || (amount >= minBet && amount <= maxBet && amount % CHIP_VALUES[0] === 0);
+		return valid ? null : `Bets must be between $${minBet} and $${maxBet}`;
 	}
 
 	private betError(seat: Seat, amount: number): string | null {

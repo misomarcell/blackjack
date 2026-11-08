@@ -22,8 +22,6 @@ export class ActionBar {
 	readonly hand = input.required<HandView>();
 	readonly handCount = input.required<number>();
 	readonly balance = input.required<number>();
-	/** "Seat 3" when the viewer holds several seats, otherwise empty. */
-	readonly seatLabel = input('');
 	readonly act = output<PlayerAction>();
 
 	private readonly ranks = computed(() => this.hand().cards.map((card) => ({ rank: card.rank as Rank })));

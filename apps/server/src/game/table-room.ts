@@ -12,6 +12,7 @@ import {
 	moneyOnTable,
 	occupiedSeats,
 	type Seat,
+	seatsOfUser,
 	type TableState,
 	type Wallet,
 } from './model';
@@ -76,6 +77,11 @@ export class TableRoom implements RoundContext {
 
 	get playerCount(): number {
 		return occupiedSeats(this.state).length;
+	}
+
+	/** Chips a user has on this table: bets, hands in play and insurance, over all their seats. */
+	moneyOf(userId: number): number {
+		return seatsOfUser(this.state, userId).reduce((sum, seat) => sum + moneyOnTable(seat), 0);
 	}
 
 	async join(connection: TableConnection): Promise<void> {

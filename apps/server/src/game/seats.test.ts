@@ -75,6 +75,20 @@ describe('TableRoom seats', () => {
 		expect(playing.seats[3]?.hands).toHaveLength(0);
 	});
 
+	it('reports the chips a player has on the table, over all their seats', async () => {
+		setup([]);
+		const alice = player(1);
+		await seatAndBet(room, alice, 0, 25);
+		await room.handle(alice, { type: 'sit', seat: 3 });
+		await room.handle(alice, { type: 'bet', seat: 3, amount: 100 });
+		expect(room.moneyOf(1)).toBe(125);
+		expect(room.moneyOf(2)).toBe(0);
+
+		await room.handle(alice, { type: 'clear-bet', seat: 0 });
+		await room.handle(alice, { type: 'clear-bet', seat: 3 });
+		expect(room.moneyOf(1)).toBe(0);
+	});
+
 	it('only accepts moves for seats the player holds', async () => {
 		setup([]);
 		const alice = player(1);

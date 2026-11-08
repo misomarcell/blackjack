@@ -225,17 +225,22 @@
 		flex-wrap: nowrap;
 	}
 
-	/* Phones skip the brand (the lobby is one tap away from every screen) and fold the admin links. */
-	.brand,
+	/* Phones fold the admin links into the menu. */
 	.main-nav {
 		display: none;
+	}
+
+	.brand {
+		font-size: 1.2rem;
 	}
 
 	.nav-menu {
 		display: block;
 	}
 
+	/* A screen with its own title (the table) shows that instead of the brand. */
 	:host(.with-page) {
+		.brand,
 		.nav-menu {
 			display: none;
 		}
@@ -276,5 +281,21 @@
 	.app-bar {
 		min-height: 2.9rem;
 		padding-block: 0.25rem;
+	}
+}
+
+/* The narrowest phones: a smaller brand and tighter gaps keep everything on one row. */
+@media (max-width: 360px) {
+	.app-bar {
+		gap: 0.45rem;
+		padding-inline: 0.6rem;
+	}
+
+	.brand {
+		font-size: 1.05rem;
+	}
+
+	.account {
+		gap: 0.4rem;
 	}
 }

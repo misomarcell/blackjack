@@ -1,4 +1,4 @@
-import { computed, DestroyRef, inject, Service, signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Service, signal } from '@angular/core';
 import type {
 	ChatMessage,
 	ClientMessage,
@@ -59,8 +59,22 @@ export class TableSession {
 		return this.myTurnSeat()?.hands[hand] ?? null;
 	});
 
+	/** Bets, hands and insurance the viewer has on this table, over all their seats. */
+	readonly chipsInPlay = computed(() =>
+		this.mySeats().reduce(
+			(sum, seat) =>
+				sum + seat.bet + (seat.insurance ?? 0) + seat.hands.reduce((all, hand) => all + hand.bet, 0),
+			0,
+		),
+	);
+
 	constructor() {
-		inject(DestroyRef).onDestroy(() => this.socket?.close());
+		// The app bar offers a refill only when nothing is left on the table either.
+		effect(() => this.auth.chipsInPlay.set(this.chipsInPlay()));
+		inject(DestroyRef).onDestroy(() => {
+			this.socket?.close();
+			this.auth.chipsInPlay.set(0);
+		});
 	}
 
 	connect(tableId: string): void {

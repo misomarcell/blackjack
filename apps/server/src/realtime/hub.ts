@@ -6,11 +6,16 @@ import { addHandsPlayed } from '../db/players.repo';
 import { findTable, listTables, type TableRecord } from '../db/tables.repo';
 import type { Connection } from '../game/connection';
 import { TableRoom } from '../game/table-room';
+import { RefillGate } from '../wallet/refill-gate';
 import { credit, debit, onBalanceChange } from '../wallet/wallet';
 
 type LobbyConnection = Connection<LobbyServerMessage>;
 
 const rooms = new Map<string, TableRoom>();
+/** Refills only while nothing is in play; the tables use its wallet, so it sees every bet and refund. */
+const refillGate = new RefillGate({ debit, credit }, (userId) =>
+	[...rooms.values()].reduce((sum, room) => sum + room.moneyOf(userId), 0),
+);
 const lobbyConnections = new Set<LobbyConnection>();
 let lobbyRefreshQueued = false;
 
@@ -59,7 +64,7 @@ export async function openRoom(tableId: string): Promise<TableRoom | null> {
 	const room =
 		rooms.get(tableId) ??
 		new TableRoom(table, {
-			wallet: { debit, credit },
+			wallet: refillGate.tableWallet,
 			stats: { addHandsPlayed },
 			chat: { add: addChatMessage, recent: recentChatMessages },
 			log: { add: addLogEntry, recent: recentLogEntries },
@@ -73,6 +78,11 @@ export async function openRoom(tableId: string): Promise<TableRoom | null> {
 export function reconfigureRoom(table: TableRecord): void {
 	rooms.get(table.id)?.configure(table);
 	refreshLobby();
+}
+
+/** Runs a refill only while the user has no chips on a table (see RefillGate). Null when they do. */
+export function refillWhenIdle<T>(userId: number, grant: () => Promise<T>): Promise<T | null> {
+	return refillGate.refill(userId, grant);
 }
 
 /** A removed player loses every live connection: the lobby and any table they are at. */

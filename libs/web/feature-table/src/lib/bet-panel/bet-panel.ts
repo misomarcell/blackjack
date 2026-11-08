@@ -28,6 +28,13 @@ export class BetPanel {
 
 	protected readonly sittingOut = computed(() => this.canSitOut() && this.bet() === 0);
 	protected readonly canPlace = computed(() => this.sittingOut() || this.bet() >= this.minBet());
+	/** The button says what is missing until the minimum is down. */
+	protected readonly placeLabel = computed(() => {
+		if (this.sittingOut()) {
+			return 'Sit out this round';
+		}
+		return this.canPlace() ? 'Place bet' : `Min. bet ${formatDollars(this.minBet())}`;
+	});
 
 	/** Offered while no chips are down yet. */
 	protected readonly showRepeat = computed(() => this.bet() === 0 && this.lastBet() > 0);

@@ -38,5 +38,5 @@
 	}
 </div>
 <button type="button" class="btn btn-primary chunky-sm place" [disabled]="!canPlace()" (click)="ready.emit()">
-	{{ sittingOut() ? 'Sit out this round' : 'Place bet' }}
+	{{ placeLabel() }}
 </button>

@@ -3,7 +3,7 @@
 }
 
 .lines {
-	height: clamp(4rem, 20dvh - 3rem, 8rem);
+	height: var(--chat-height, clamp(4rem, 20dvh - 3rem, 8rem));
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	font-size: 0.85rem;
@@ -19,6 +19,6 @@
 
 @media (max-height: 500px) {
 	.lines {
-		height: 4.5rem;
+		height: var(--chat-height, 4.5rem);
 	}
 }

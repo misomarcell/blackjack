@@ -31,17 +31,17 @@
 				<p class="status-bar"><span class="loading loading-dots"></span> Joining table…</p>
 			}
 
-			<!-- Phones keep only the chat here; the log moves into the table menu. -->
-			<div class="side">
-				<bj-table-log class="side-log" [entries]="session.log()" />
-				<bj-chat-panel [messages]="session.chat()" (send)="send({ type: 'chat', text: $event })" />
-			</div>
-
 			@if (toast(); as message) {
 				<div class="toast toast-top toast-center">
 					<p class="alert alert-warning chunky-sm" role="status">{{ message }}</p>
 				</div>
 			}
+		</div>
+
+		<!-- The log moves into the table menu on phones, where the chat sits between the table and controls. -->
+		<div class="side">
+			<bj-table-log class="side-log" [entries]="session.log()" />
+			<bj-chat-panel [messages]="session.chat()" (send)="send({ type: 'chat', text: $event })" />
 		</div>
 
 		@if (session.table(); as table) {

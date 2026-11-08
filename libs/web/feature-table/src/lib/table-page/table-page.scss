@@ -125,16 +125,18 @@
 
 /*
  * Phones (keep in sync with PHONE_QUERY): the table takes the top and shrinks to fit, the controls dock
- * full width underneath, the chat button sits just above them, and the log lives in the table menu.
+ * full width at the bottom of the screen, the chat sits between them, and the log lives in the table menu.
  */
 @media (max-width: 767px), (max-height: 500px) {
 	.screen {
 		display: grid;
+		grid-template-areas: 'table' 'dock';
 		grid-template-rows: minmax(0, 1fr) auto;
 		background: var(--color-floor);
 	}
 
 	.table-area {
+		grid-area: table;
 		position: relative;
 		inset: auto;
 	}
@@ -147,16 +149,32 @@
 		display: none;
 	}
 
+	/* Landscape: the chat button rests on the table's bottom-left corner, just above the controls. */
 	.side {
-		--panel-width: min(20rem, calc(100vw - 1rem));
-		bottom: 0.4rem;
+		--panel-width: min(20rem, calc(100vw - 1.5rem));
+		/* Short landscape screens: the open chat must fit above the controls (the app bar and the dock
+		 * with "Repeat all" take about 12rem, the panel's own chrome about 6rem). */
+		--chat-height: clamp(2rem, 100dvh - 18.5rem, 8rem);
+		grid-area: table;
+		align-self: end;
+		justify-self: start;
+		position: relative;
+		inset: auto;
+		z-index: 1;
+		margin: 0 0 0.4rem 0.5rem;
 	}
 
+	/* Side margins leave room for the pulsing "your move" ring around the card. */
 	.controls {
+		grid-area: dock;
 		position: static;
 		translate: none;
 		gap: 0.4rem;
-		padding: 0.4rem 0.5rem 0.5rem;
+		padding: 0.75rem;
+
+		&:empty {
+			display: none;
+		}
 	}
 
 	/* A seated player's dock keeps one height through the round, so the table does not jump around. */
@@ -174,22 +192,54 @@
 	.hud-timer {
 		margin-inline: -0.6rem;
 	}
+
+	/* A tighter ring that fits inside the dock's margins. */
+	.attention {
+		outline-width: 4px;
+		animation-name: attention-tight;
+	}
+}
+
+@keyframes attention-tight {
+	0%,
+	100% {
+		outline-color: color-mix(in oklch, var(--color-accent) 35%, transparent);
+		outline-offset: 2px;
+	}
+
+	50% {
+		outline-color: var(--color-accent);
+		outline-offset: 6px;
+	}
 }
 
 @media (max-height: 500px) {
 	.seated .controls {
-		--dock-height: 5.6rem;
+		--dock-height: 6.2rem;
 	}
 }
 
-/* Portrait phones have height to spare: the table keeps its shape at the top with the controls right below. */
+/*
+ * Portrait phones: the table keeps its shape at the top, the controls stick to the bottom of the screen,
+ * and the chat fills the space between them.
+ */
 @media (max-width: 767px) and (orientation: portrait) {
 	.screen {
-		grid-template-rows: auto auto;
-		align-content: start;
+		grid-template-areas: 'table' 'chat' 'dock';
+		grid-template-rows: auto minmax(0, 1fr) auto;
 	}
 
 	.table-area {
 		aspect-ratio: 3 / 2;
+	}
+
+	.side {
+		--panel-width: 100%;
+		/* What is left between the 3:2 table and the docked controls, minus the panel's own chrome. */
+		--chat-height: clamp(2.5rem, 100dvh - 66.67vw - 22rem, 14rem);
+		grid-area: chat;
+		justify-self: stretch;
+		align-items: stretch;
+		margin: 0.5rem 0.75rem 0;
 	}
 }
